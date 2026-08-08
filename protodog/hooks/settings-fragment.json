@@ -1,0 +1,21 @@
+{
+  "//": "Wiring example for .claude/settings.json — activation is engineer-owned. Merge the hooks key; commands assume the repository root as cwd and require only the .NET SDK. Warm invocation is ~190 ms via the file-based build cache; if that ever matters, `dotnet publish protodog/hooks/protodog-hooks.cs` produces a native binary — swap the command to its output path.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "dotnet protodog/hooks/protodog-hooks.cs pre-bash" }]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "dotnet protodog/hooks/protodog-hooks.cs pre-write" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "dotnet protodog/hooks/protodog-hooks.cs post-plan-write" }]
+      }
+    ]
+  }
+}

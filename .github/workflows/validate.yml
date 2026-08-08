@@ -1,0 +1,27 @@
+name: validate
+on:
+  push:
+  pull_request:
+jobs:
+  sweep:
+    # macOS runner: the test drivers use BSD sed; hooks/validators need only the .NET SDK.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Manifests parse
+        run: |
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python3 -m json.tool protodog/.claude-plugin/plugin.json > /dev/null
+          python3 -m json.tool protodog/hooks/hooks.json > /dev/null
+          python3 -m json.tool protodog/hooks/settings-fragment.json > /dev/null
+      - name: Plan and spec validation
+        run: ./protodog/validators/test-validators.sh
+      - name: Registry validation
+        run: ./protodog/validators/test-registry.sh
+      - name: Launcher gates (dry-run)
+        run: ./protodog/scripts/test-audit-launch.sh
+      - name: Enforcement fences
+        run: ./protodog/hooks/test-hooks.sh

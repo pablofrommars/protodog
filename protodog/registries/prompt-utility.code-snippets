@@ -1,0 +1,288 @@
+{
+	// Family: ordinary prompt utilities, standalone mini protocols, and composition helpers.
+	// Mechanical style: ../skills/agentic-execution-protocol/references/prompt-registry-style.md.
+	// These entries do not invoke or write Protodog state.
+
+	// ============================================================
+	// FULL PROMPT UTILITIES AND MINI PROTOCOLS (p-*)
+	// ============================================================
+	"Prompt: Protocol Ideation": {
+		"scope": "markdown",
+		"prefix": "p-ideate-protocol",
+		"body": [
+			"<task>",
+			"Help me shape the supplied intent and obtain enough grounded orientation to ballpark its blast radius and cost before I choose the Task or Program execution profile.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Describe the intent, known scope and exclusions, constraints, and exact references when available.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- This is optional pre-protocol ideation: do not select a profile, plan, implement, or create Protodog state or artifacts.",
+			"- Work multi-turn; let questions emerge from concrete contradictions, uncertainty, or branches rather than a questionnaire.",
+			"- Persist only on my explicit instruction; results destined for planning are saved under inputs/ with cited provenance.",
+			"</instructions>",
+			"$0"
+		],
+		"description": "Shape and orient intent before choosing an execution profile; portable to any host, creates no artifact"
+	},
+	"Prompt: Repository Ideation": {
+		"scope": "markdown",
+		"prefix": "p-ideate-repo",
+		"body": [
+			"<task>",
+			"Collaboratively explore the supplied repository problem, widen and test meaningful directions, and help me settle defensible conclusions without planning or implementing them.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Describe the problem or hypothesis, relevant repository surfaces and references, known constraints, and any direction already favored.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Treat this as a multi-turn working session. Do not attempt to complete the exploration or produce a final guide in the first response.",
+			"- Ground material claims in applicable repository instructions, documentation, code, and immediate seams. Distinguish current behavior, documented intent, my direction, inference, and uncertainty.",
+			"- Begin with a concise preliminary baseline: relevant behavior and boundaries, forces behind the current shape, concrete friction, contradictions, and material unknowns. Let my feedback correct or redirect it as part of the conversation rather than as a formal approval gate.",
+			"- In each turn, advance one coherent decision surface or small related batch. Generate materially distinct alternatives only where the direction remains open; test consequential assumptions, strongest objections, trade-offs, reversibility, and affected seams before recommending.",
+			"- Maintain local session state as `settled conclusions / active directions / unresolved decisions`. Reconcile it after every correction or new repository fact. Surface it when materially changed or requested; do not print a ceremonial ledger every turn.",
+			"- Continue automatically to the next useful decision surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
+			"- Do not create Protodog gates, profile state, specs, plans, or implementation.",
+			"- Close only on my explicit instruction. Do not persist by default.",
+			"</instructions>",
+			"",
+			"<output>",
+			"Work conversationally across turns. On explicit close, return an in-session synthesis of settled conclusions, necessary rationale, rejected directions worth preserving, unresolved decisions and assumptions, and useful next validation. If I explicitly request persistence, write the requested artifact beginning with `Why this document exists`; preserve conclusions and continuation context rather than session narrative.",
+			"</output>",
+			"$0"
+		],
+		"description": "Start a multi-turn, repository-grounded ideation mini protocol"
+	},
+	"Prompt: DDD Ideation": {
+		"scope": "markdown",
+		"prefix": "p-ddd-ideate",
+		"body": [
+			"<task>",
+			"Collaboratively explore the domain and converge on a pragmatic model useful for the stated problem.",
+			"</task>",
+			"",
+			"<context>",
+			"Problem or process: ${1:describe the domain problem or process}",
+			"Domain language and exact meanings: ${2:supply known terms and definitions}",
+			"Relevant types, processes, documentation, or tests: ${3:supply references when available}",
+			"Known business rules and invariants: ${4:supply known rules}",
+			"Constraints, disagreements, and uncertainty: ${5:none known}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Treat this as a multi-turn modeling session. Do not attempt a complete domain model in the first response; establish the first useful language, rule, boundary, or invariant surface and let my feedback shape subsequent turns.",
+			"- Ground proposed language and rules in supplied domain evidence; distinguish facts, assumptions, alternatives, and questions for a domain expert.",
+			"- Use supplied domain names exactly. Surface overloaded, conflicting, or unstable terminology; never silently normalize it or substitute a convenient synonym.",
+			"- Use DDD technical terms precisely. Do not label something an entity, value object, aggregate, bounded context, or domain event unless its defining characteristics are supported.",
+			"- When repository references are supplied, inspect the relevant types and processes as evidence of the current implementation and model. Do not treat existing code as automatic domain truth or authority for future design.",
+			"- Use strategic DDD concepts only where boundaries, ownership, or relationships materially affect the problem. Use tactical concepts only where behavior and invariants justify them.",
+			"- Challenge leaky boundaries, anemic models, accidental coupling, and pattern-shaped designs that lack domain evidence.",
+			"- Do not force bounded contexts, aggregates, value objects, events, repositories, services, or factories into the result. Explicitly recommend CRUD or a simpler model when sufficient.",
+			"- Advance one coherent domain decision surface or small related batch per turn, reconcile my corrections, and continue until I explicitly close the session.",
+			"- Maintain a lightweight evolving domain-language ledger as local session state. Surface it only when terminology changes materially or I ask.",
+			"- Do not implement, perform an audit, or create an artifact unless I request it.",
+			"</instructions>",
+			"",
+			"<output>",
+			"Work conversationally. On explicit close, return a concise in-session summary of the settled model, rationale, remaining domain questions, and next validation. Create no file by default.",
+			"</output>",
+			"$0"
+		],
+		"description": "Start a multi-turn Domain-Driven Design ideation mini protocol"
+	},
+	"Prompt: Independent Audit": {
+		"scope": "markdown",
+		"prefix": "p-audit",
+		"body": [
+			"<task>",
+			"Perform an independent, adversarial, undirected audit of the supplied context.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Identify the audit boundary, exact code or artifact references, applicable repository or domain material, and relevant state.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Choose investigation paths from the evidence; do not assume a suspected issue or desired result.",
+			"- Consider every applicable common dimension: outcome and acceptance; internal and cross-artifact consistency; evidence, verification, measurement, and evaluation integrity; scope, constraints, invariants, authority, and applicable policy; relevant failure, recovery, concurrency, integration, security, data, operability, and maintainability risks; and unnecessary complexity or ceremony.",
+			"- State each finding as one falsifiable claim with exact evidence, affected surface, concrete consequence, and `high / medium / low` confidence. Treat inaccessible or unresolvable claims as limitations rather than guessing. Do not invent findings to fill a report shape.",
+			"- State inspected coverage and limitations. A clean result applies only to that coverage.",
+			"- Complete without an intermediate scope-inventory stop or engineer steering.",
+			"- Audit only. Do not remediate or create Protocol plans, gates, numbered audit state, challenges, or acceptance updates.",
+			"</instructions>",
+			"",
+			"<output>",
+			"${2:Return the audit report in this session.}",
+			"</output>",
+			"$0"
+		],
+		"description": "Run a self-contained independent audit of code or engineering artifacts"
+	},
+	"Prompt: Audit Prompt Registry": {
+		"scope": "markdown",
+		"prefix": "p-audit-registry",
+		"body": [
+			"<task>",
+			"Perform an independent, adversarial review of the supplied prompt registry and the immediate harness behavior that materially changes model input or judges model output.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Identify the registry, immediate harness, applicable conventions and references, supported hosts, and explicit exclusions.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Establish enough of the actual composition and execution path to interpret the registry correctly.",
+			"- Choose high-value investigation paths from the evidence. Follow suspected recurring patterns across entries when useful; do not inventory every prompt merely to claim coverage.",
+			"- Consider when applicable: instruction conflict or ambiguity; overlap and catalogue cost; hidden dependencies; authority, HIL, and persistence behavior; cross-host divergence with a named mechanism; harness composition, truncation, schema, validation, retry, and evaluation behavior; safety; and material static or repeated token cost.",
+			"- State every finding as one falsifiable claim with exact registry or harness evidence, affected surface, concrete behavioral/safety/portability/efficiency consequence, and `high / medium / low` confidence. A style preference alone is not a finding.",
+			"- Preserve placeholders, registered structure, authority, safeguards, and output contracts in any proposed rewrite. Identify desired behavior changes separately rather than hiding them in prose.",
+			"- Use `keep / tighten / merge / split / rename / retire` only where a disposition is useful; do not force one row per inspected prompt.",
+			"- Audit only. Do not edit the registry or harness, create Protocol state, or stop for an intermediate inventory review.",
+			"</instructions>",
+			"",
+			"<output>",
+			"Return the audit in this session. State inspected coverage and limits, systemic findings, prioritized atomic findings with exact evidence, and justified catalogue or harness actions. Do not claim exhaustive coverage unless explicitly required and achieved.",
+			"</output>",
+			"$0"
+		],
+		"description": "Run a risk-driven adversarial review of a prompt registry and its immediate harness"
+	},
+	"Prompt: Persist Session": {
+		"scope": "markdown",
+		"prefix": "p-persist-session",
+		"body": [
+			"<task>",
+			"Persist this session to ${1:@clear/destination/path}.",
+			"Write for ${2:engineers and LLMs}; include enough context for another session to continue.",
+			"Preserve ${3:the conclusions plus only the context needed to understand and apply them}; omit thought process and session narrative.",
+			"Open the artifact with `Why this document exists`.",
+			"</task>",
+			"$0"
+		],
+		"description": "Persist session conclusions and continuation context to an explicit destination"
+	},
+	"Prompt: Improve Prompt": {
+		"scope": "markdown",
+		"prefix": "p-improve-prompt",
+		"body": [
+			"<task>",
+			"Improve the prompt supplied in context without silently changing its behavior or authority.",
+			"</task>",
+			"",
+			"<context>",
+			"$TM_SELECTED_TEXT$0",
+			"</context>",
+			"",
+			"<guardrails>",
+			"- Preserve placeholders, intended outcome, scope, authority boundaries, safeguards, acceptance criteria, and output contract.",
+			"- Remove avoidable ambiguity, conflict, duplication, and text that does not change decisions or outputs.",
+			"- Do not introduce roles, lifecycle stages, persistence, or response structure that the prompt does not need.",
+			"- Identify any desirable behavior change separately; do not hide it inside the ready-to-use rewrite.",
+			"</guardrails>",
+			"",
+			"<output>",
+			"Return a concise diagnosis, the improved prompt ready to use, a concise account of material wording changes, and proposed behavior changes only when any exist.",
+			"</output>"
+		],
+		"description": "Improve the selected prompt while preserving its behavioral and authority contracts"
+	},
+
+	// ============================================================
+	// COMPOSITION HELPERS
+	// ============================================================
+	"Prompt: Open Task Block": {
+		"scope": "markdown",
+		"prefix": "p-task",
+		"body": [
+			"<task>",
+			"$0",
+			"</task>"
+		],
+		"description": "Open a task block; this does not invoke the Task Protocol"
+	},
+	"Context: Block": {
+		"scope": "markdown",
+		"prefix": "c-context",
+		"body": [
+			"<context>",
+			"$0",
+			"</context>"
+		],
+		"description": "Open a free-text context block"
+	},
+	"Examples: Good vs Bad": {
+		"scope": "markdown",
+		"prefix": "e-goodbad",
+		"body": [
+			"<examples>",
+			"<good_example>",
+			"${1:what to do}",
+			"<reasoning>${2:why this works}</reasoning>",
+			"</good_example>",
+			"",
+			"<bad_example>",
+			"${3:what to avoid}",
+			"<reasoning>${4:why this fails}</reasoning>",
+			"</bad_example>",
+			"</examples>",
+			"$0"
+		],
+		"description": "Insert contrastive good and bad examples with rationale"
+	},
+	"Guardrails: Open Block": {
+		"scope": "markdown",
+		"prefix": "g-guardrails",
+		"body": [
+			"<guardrails>",
+			"",
+			"$0",
+			"",
+			"</guardrails>"
+		],
+		"description": "Open a guardrails block without implied guardrail content"
+	},
+	"Guardrail: Don't Fabricate": {
+		"scope": "markdown",
+		"prefix": "g-nofake",
+		"body": [
+			"- Do not invent unavailable facts, APIs, signatures, methods, configuration keys, commands, or paths. Verify from available sources when possible; otherwise mark the uncertainty and state what would settle it.$0"
+		],
+		"description": "Require factual verification or explicit uncertainty"
+	},
+	"Guardrail: Ask Only About Material Ambiguity": {
+		"scope": "markdown",
+		"prefix": "g-ask",
+		"body": [
+			"- Resolve ambiguity from the supplied context and available evidence first. Ask up to ${1:3} focused questions only when an unresolved choice materially changes the result, authority, or safety; otherwise state the assumption and continue.$0"
+		],
+		"description": "Resolve evidence first and ask only about material unresolved choices"
+	},
+	"Guardrail: Verification": {
+		"scope": "markdown",
+		"prefix": "g-verify",
+		"body": [
+			"- Verify the result in proportion to risk. Do not weaken tests, evaluations, validation, cases, or acceptance criteria to obtain a pass; report material evidence, limitations, and actionable failures.$0"
+		],
+		"description": "Require proportionate verification without weakening acceptance"
+	},
+	"Guardrail: Independent Session Defaults": {
+		"scope": "markdown",
+		"prefix": "g-default",
+		"body": [
+			"<guardrails>",
+			"- Resolve ambiguity from the supplied context and available evidence first. Ask only when an unresolved choice materially changes the result, authority, or safety; otherwise state the assumption and continue.",
+			"- Distinguish supported facts, derived conclusions, assumptions, and unresolved uncertainty. Do not fabricate unavailable facts; state what would settle a material unknown.",
+			"- Follow applicable instructions and stay within the supplied scope and authority. Capability, access, or available tools do not grant permission or decision ownership.",
+			"- Preserve existing work and unrelated content. Do not overwrite or discard it merely to simplify the task.",
+			"- Do not perform destructive, external, paid, sensitive-data, or difficult-to-reverse actions without explicit authority. When authorized, minimize exposure and disclose the effect.",
+			"- Verify the result in proportion to risk. Report material evidence, limitations, failures, and omitted verification honestly.",
+			"</guardrails>",
+			"$0"
+		],
+		"description": "Insert domain-neutral safety and verification defaults for an independent session"
+	}
+}

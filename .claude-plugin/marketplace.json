@@ -1,0 +1,11 @@
+{
+  "name": "kennel",
+  "owner": { "name": "Pablo Belin" },
+  "plugins": [
+    {
+      "name": "protodog",
+      "source": "./protodog",
+      "description": "Protodog — agentic execution protocol: entry skills, enforcement hooks, validators, and audit launcher."
+    }
+  ]
+}
