@@ -168,7 +168,7 @@ internal sealed record Configuration
 	// Pinned auditor configuration — adapter-owned; change only through a reviewed update.
 	public string ExecutablePath { get; init; } = "codex";
 
-	public string Model { get; init; } = "sol";
+	public string Model { get; init; } = "gpt-5.6-sol";
 
 	public string Sandbox { get; init; } = "read-only";
 
