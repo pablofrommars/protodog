@@ -6,10 +6,39 @@
 using System.Text.RegularExpressions;
 
 string[] statuses = ["pending planning", "ready", "in progress", "blocked", "completed", "superseded", "cancelled"];
-string[] terminal = ["completed", "superseded", "cancelled"];
-string[] accStatuses = ["pending", "satisfied", "accepted exception", "unmet"];
-string[] gateStatuses = ["open", "settled"];
 string[] cadences = ["interactive", "continuous"];
+
+// Status markers, reused across row kinds: not started, active, done, needs attention, and
+// closed without being met. Each is a single codepoint with no variation selector — a marker
+// requiring U+FE0F would be rejected on an invisible difference after an ordinary copy-paste.
+// The marker is the scannable summary; the label beside it remains the precise status.
+string[] markers = ["⬜", "🟡", "✅", "🔴", "⬛"];
+Dictionary<string, string> workMarkers = new()
+{
+	["pending planning"] = "⬜",
+	["ready"] = "⬜",
+	["in progress"] = "🟡",
+	["blocked"] = "🔴",
+	["completed"] = "✅",
+	["superseded"] = "⬛",
+	["cancelled"] = "⬛",
+};
+Dictionary<string, string> acceptanceMarkers = new()
+{
+	["pending"] = "⬜",
+	["satisfied"] = "✅",
+	["accepted exception"] = "⬛",
+	["unmet"] = "🔴",
+};
+Dictionary<string, string> gateMarkers = new()
+{
+	["open"] = "🔴",
+	["settled"] = "✅",
+};
+
+// Alternation, never a character class: 🟡 and 🔴 are surrogate pairs in UTF-16, and a class
+// would match their halves independently.
+var workCell = new Regex($@"^({string.Join("|", markers)}) (~~)?([A-Z]+-\d{{2,}})(~~)? · (.+)$");
 var auditFileName = new Regex(@"^audit-\d{2,}(-dispatch|-challenge)?\.md$");
 var problems = new List<string>();
 
@@ -185,22 +214,24 @@ List<string> Refs(string? cell, string pattern)
 
 WorkCell? ParseWorkCell(string cell)
 {
-	// "- [ ] STEP-01 · ready" / "- [x] ~~GATE-01~~ · settled" — checkbox, id, status in one cell.
-	var m = Regex.Match(cell, @"^- \[( |x)\] (~~)?([A-Z]+-\d{2,})(~~)? · (.+)$");
+	// "⬜ STEP-01 · ready" / "✅ ~~GATE-01~~ · settled" — marker, id, status in one cell.
+	var m = workCell.Match(cell);
 	if (!m.Success || m.Groups[2].Value.Length != m.Groups[4].Value.Length)
 	{
 		return null;
 	}
 
-	return new WorkCell(m.Groups[1].Value == "x", m.Groups[3].Value, m.Groups[5].Value.Trim(), m.Groups[2].Value.Length > 0);
+	return new WorkCell(m.Groups[1].Value, m.Groups[3].Value, m.Groups[5].Value.Trim(), m.Groups[2].Value.Length > 0);
 }
 
-WorkCell? CheckWorkCell(string file, string cell, string idPattern, string[] allowed, bool gate)
+// The marker map's keys are the row kind's status enum; its values are the required marker.
+// strikeStatus names the one status whose identifier is struck, or null when none is.
+WorkCell? CheckWorkCell(string file, string cell, string idPattern, Dictionary<string, string> allowed, string? strikeStatus)
 {
 	var parsed = ParseWorkCell(cell);
 	if (parsed is null)
 	{
-		Bad(file, $"id cell \"{cell}\" must be \"- [ ] <ID> · <status>\"");
+		Bad(file, $"id cell \"{cell}\" must be \"<marker> <ID> · <status>\" with marker one of {string.Join(" ", markers)}");
 		return null;
 	}
 
@@ -209,21 +240,19 @@ WorkCell? CheckWorkCell(string file, string cell, string idPattern, string[] all
 		Bad(file, $"id \"{parsed.Id}\" malformed");
 	}
 
-	if (!allowed.Contains(parsed.Status))
+	if (!allowed.TryGetValue(parsed.Status, out var expected))
 	{
 		Bad(file, $"status \"{parsed.Status}\" not in enum for \"{parsed.Id}\"");
 		return parsed;
 	}
 
-	// A gate is done when settled; any other work row is done when its status is terminal.
-	var done = gate ? parsed.Status == "settled" : terminal.Contains(parsed.Status);
-	if (parsed.Checked != done)
+	if (parsed.Marker != expected)
 	{
-		Bad(file, $"\"{parsed.Id}\" status \"{parsed.Status}\" requires checkbox \"[{(done ? "x" : " ")}]\"");
+		Bad(file, $"\"{parsed.Id}\" status \"{parsed.Status}\" requires marker \"{expected}\" (got \"{parsed.Marker}\")");
 	}
 
 	// Strikethrough marks a settled gate and nothing else.
-	if (parsed.Struck != (gate && done))
+	if (parsed.Struck != (strikeStatus is not null && parsed.Status == strikeStatus))
 	{
 		Bad(file, parsed.Struck
 			? $"\"{parsed.Id}\" must not strike its id"
@@ -296,7 +325,7 @@ void CheckGates(string file, string[] lines, List<Section> sections, bool[] mask
 			continue;
 		}
 
-		var cell = CheckWorkCell(file, row[0], @"^GATE-\d{2,}$", gateStatuses, true);
+		var cell = CheckWorkCell(file, row[0], @"^GATE-\d{2,}$", gateMarkers, "settled");
 		if (cell is not null && !seen.Add(cell.Id))
 		{
 			Bad(file, $"duplicate id \"{cell.Id}\"");
@@ -360,7 +389,7 @@ HashSet<string>? CheckAcceptanceTable(string file, string[] lines, List<Section>
 		return null;
 	}
 
-	var table = CheckTable(file, lines, section, ["Criterion", "Status", "Evidence"], title, mask);
+	var table = CheckTable(file, lines, section, ["Criterion", "Evidence"], title, mask);
 	if (table is null)
 	{
 		return null;
@@ -369,19 +398,16 @@ HashSet<string>? CheckAcceptanceTable(string file, string[] lines, List<Section>
 	var ids = new HashSet<string>();
 	foreach (var row in table.Rows)
 	{
-		if (!Regex.IsMatch(row[0], @"^ACCEPTANCE-\d{2,}$"))
+		if (row.Count < 2)
 		{
-			Bad(file, $"acceptance criterion id \"{row[0]}\" must match ACCEPTANCE-NN");
+			Bad(file, $"acceptance row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 2");
+			continue;
 		}
 
-		if (!ids.Add(row[0]))
+		var cell = CheckWorkCell(file, row[0], @"^ACCEPTANCE-\d{2,}$", acceptanceMarkers, null);
+		if (cell is not null && !ids.Add(cell.Id))
 		{
-			Bad(file, $"duplicate acceptance criterion \"{row[0]}\"");
-		}
-
-		if (!accStatuses.Contains(row[1]))
-		{
-			Bad(file, $"acceptance status \"{row[1]}\" not in enum for \"{row[0]}\"");
+			Bad(file, $"duplicate acceptance criterion \"{cell.Id}\"");
 		}
 	}
 
@@ -398,7 +424,7 @@ void CheckStepRows(string file, Table table, string idPattern, HashSet<string>? 
 			continue;
 		}
 
-		var cell = CheckWorkCell(file, row[0], idPattern, statuses, false);
+		var cell = CheckWorkCell(file, row[0], idPattern, workMarkers, null);
 		if (cell is not null && !seen.Add(cell.Id))
 		{
 			Bad(file, $"duplicate id \"{cell.Id}\"");
@@ -492,7 +518,7 @@ void ValidateProgramPlan(string file, string? planDir)
 				continue;
 			}
 
-			var cell = CheckWorkCell(file, row[0], @"^TRACK-\d{2,}$", statuses, false);
+			var cell = CheckWorkCell(file, row[0], @"^TRACK-\d{2,}$", workMarkers, null);
 			var label = cell?.Id ?? row[0];
 			if (cell is not null && !ids.Add(cell.Id))
 			{
@@ -588,7 +614,7 @@ void ValidateTrackPlan(string file)
 				continue;
 			}
 
-			var cell = CheckWorkCell(file, row[0], @"^BLOCK-\d{2,}$", statuses, false);
+			var cell = CheckWorkCell(file, row[0], @"^BLOCK-\d{2,}$", workMarkers, null);
 			if (cell is not null && !blockIds.Add(cell.Id))
 			{
 				Bad(file, $"duplicate block \"{cell.Id}\"");
@@ -774,7 +800,7 @@ void ValidateDirectory(string directory)
 
 internal sealed record Table(List<string> Header, List<List<string>> Rows);
 
-internal sealed record WorkCell(bool Checked, string Id, string Status, bool Struck);
+internal sealed record WorkCell(string Marker, string Id, string Status, bool Struck);
 
 internal sealed record Section(string Title, int Start)
 {

@@ -16,10 +16,10 @@
 
 | Track | Outcome | Track plan | Dependencies | Acceptance |
 |---|---|---|---|---|
-| - [ ] TRACK-01 · pending planning | <track outcome> | not created | — | ACCEPTANCE-01 |
+| ⬜ TRACK-01 · pending planning | <track outcome> | not created | — | ACCEPTANCE-01 |
 
 ## Program acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
-| ACCEPTANCE-01 | pending | — |
+| Criterion | Evidence |
+|---|---|
+| ⬜ ACCEPTANCE-01 · pending | — |

@@ -31,10 +31,13 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
 6. **Markdown-in-repo artifacts are the sole state authority**; harness task lists are one-way
    mirrors; harness IDs never enter canonical artifacts. Templates + write-time validators own
    the shape; enum drift, ID reuse, unmapped acceptance, and empty sections are mechanically
-   rejected. Status lives in the identifier cell beside a checkbox rather than in its own column,
-   so the scannable marker and the authoritative enum cannot drift apart; strikethrough is reserved
-   for settled gates; and `## Contents` is validated against the actual sections, which makes the
-   index an enforced invariant instead of decoration that rots.
+   rejected. Status lives in the identifier cell beside a status marker rather than in its own
+   column, so the scannable glyph and the authoritative enum cannot drift apart. The marker set is
+   five meanings reused across every row kind — not one glyph per status — because a reader should
+   learn it once, and it is restricted to single codepoints since a variation selector is invisible
+   in an editor and lost on copy-paste. Strikethrough is reserved for settled gates, and
+   `## Contents` is validated against the actual sections, which makes the index an enforced
+   invariant instead of decoration that rots.
 7. **Program profile mechanics are inherited from native subagent worktree isolation**; the
    coordinator never cedes plan-write ownership or the Program worktree (this resolves the
    coordination-writer seam AUDIT-01 found in the predecessor). Concurrent writers remain gated

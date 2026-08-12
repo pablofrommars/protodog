@@ -43,7 +43,7 @@ expect_bad "missing header field" "$TMP/task-plan.md"
 
 # Duplicate the step row in place, inside the Steps table — appending past the acceptance
 # table would instead be read as a malformed acceptance row.
-seed; awk '{print} /^\| - \[ \] STEP-01/{print}' "$TMP/task-plan.md" > "$TMP/dup.md"; mv "$TMP/dup.md" "$TMP/task-plan.md"
+seed; awk '{print} /^\| ⬜ STEP-01/{print}' "$TMP/task-plan.md" > "$TMP/dup.md"; mv "$TMP/dup.md" "$TMP/task-plan.md"
 expect_bad "duplicate step id" "$TMP/task-plan.md"
 
 seed; sed -i '' 's/| ACCEPTANCE-01 | <command/| ACCEPTANCE-99 | <command/' "$TMP/task-plan.md"
@@ -56,23 +56,38 @@ expect_bad "empty optional section" "$TMP/task-plan.md"
 seed; sed -i '' 's/- Next boundary: STEP-01/- Next boundary: STEP-07/' "$TMP/task-plan.md"
 expect_bad "next boundary references unknown step" "$TMP/task-plan.md"
 
-# --- negative: id cell (checkbox + id + status) ------------------------------
-seed; sed -i '' 's/| - \[ \] STEP-01 · ready |/| STEP-01 |/' "$TMP/task-plan.md"
-expect_bad "bare id without checkbox and status" "$TMP/task-plan.md"
+# --- id cell: marker + id + status, marker and label must agree --------------
+seed; sed -i '' 's/⬜ STEP-01 · ready/🟡 STEP-01 · in progress/' "$TMP/task-plan.md"
+expect_ok "active marker on an in-progress step" "$TMP/task-plan.md"
 
-seed; sed -i '' 's/- \[ \] STEP-01 · ready/- [ ] STEP-01/' "$TMP/task-plan.md"
-expect_bad "checkbox without status label" "$TMP/task-plan.md"
+seed; sed -i '' 's/⬜ STEP-01 · ready/⬛ STEP-01 · cancelled/' "$TMP/task-plan.md"
+expect_ok "closed-not-met marker on a cancelled step" "$TMP/task-plan.md"
 
-seed; sed -i '' 's/- \[ \] STEP-01 · ready/- [x] STEP-01 · ready/' "$TMP/task-plan.md"
-expect_bad "checked box on non-terminal status" "$TMP/task-plan.md"
+seed; sed -i '' 's/| ⬜ STEP-01 · ready |/| STEP-01 |/' "$TMP/task-plan.md"
+expect_bad "bare id without marker and status" "$TMP/task-plan.md"
 
-seed; sed -i '' 's/- \[ \] STEP-01 · ready/- [ ] STEP-01 · completed/' "$TMP/task-plan.md"
-expect_bad "unchecked box on terminal status" "$TMP/task-plan.md"
+seed; sed -i '' 's/⬜ STEP-01 · ready/⬜ STEP-01/' "$TMP/task-plan.md"
+expect_bad "marker without status label" "$TMP/task-plan.md"
 
-seed; sed -i '' 's/- \[ \] STEP-01 · ready/- [ ] STEP-01 · doing stuff/' "$TMP/task-plan.md"
+seed; sed -i '' 's/⬜ STEP-01 · ready/- [ ] STEP-01 · ready/' "$TMP/task-plan.md"
+expect_bad "retired checkbox grammar" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ STEP-01 · ready/✅ STEP-01 · ready/' "$TMP/task-plan.md"
+expect_bad "done marker on a ready step" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ STEP-01 · ready/⬜ STEP-01 · completed/' "$TMP/task-plan.md"
+expect_bad "not-started marker on a completed step" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ STEP-01 · ready/🟡 STEP-01 · blocked/' "$TMP/task-plan.md"
+expect_bad "active marker on a blocked step" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ STEP-01 · ready/❌ STEP-01 · blocked/' "$TMP/task-plan.md"
+expect_bad "marker outside the defined set" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ STEP-01 · ready/⬜ STEP-01 · doing stuff/' "$TMP/task-plan.md"
 expect_bad "status outside enum inside id cell" "$TMP/task-plan.md"
 
-seed; sed -i '' 's/- \[ \] STEP-01 · ready/- [ ] ~~STEP-01~~ · ready/' "$TMP/task-plan.md"
+seed; sed -i '' 's/⬜ STEP-01 · ready/⬜ ~~STEP-01~~ · ready/' "$TMP/task-plan.md"
 expect_bad "strikethrough on a step id" "$TMP/task-plan.md"
 
 # --- negative: contents ------------------------------------------------------
@@ -88,6 +103,36 @@ expect_bad "contents entry is not a link" "$TMP/task-plan.md"
 
 seed; sed -i '' '/^## Contents$/,/^## Steps$/{/^## Steps$/!d;}' "$TMP/task-plan.md"
 expect_bad "missing contents section" "$TMP/task-plan.md"
+
+# --- acceptance: same markers, own enum -------------------------------------
+# 🔴 for unmet is the point of the marker set: a criterion checked and failed is visibly
+# distinct from one merely pending, which a binary checkbox could not express.
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/✅ ACCEPTANCE-01 · satisfied/' "$TMP/task-plan.md"
+expect_ok "satisfied criterion is done" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/⬛ ACCEPTANCE-01 · accepted exception/' "$TMP/task-plan.md"
+expect_ok "accepted exception is closed without being met" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/🔴 ACCEPTANCE-01 · unmet/' "$TMP/task-plan.md"
+expect_ok "unmet criterion needs attention" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/| ⬜ ACCEPTANCE-01 · pending |/| ACCEPTANCE-01 |/' "$TMP/task-plan.md"
+expect_bad "bare acceptance criterion id" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/✅ ACCEPTANCE-01 · pending/' "$TMP/task-plan.md"
+expect_bad "done marker on a pending criterion" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/⬜ ACCEPTANCE-01 · satisfied/' "$TMP/task-plan.md"
+expect_bad "not-started marker on a satisfied criterion" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/⬜ ACCEPTANCE-01 · unmet/' "$TMP/task-plan.md"
+expect_bad "unmet criterion not marked for attention" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/⬜ ACCEPTANCE-01 · completed/' "$TMP/task-plan.md"
+expect_bad "work status used for a criterion" "$TMP/task-plan.md"
+
+seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/✅ ~~ACCEPTANCE-01~~ · satisfied/' "$TMP/task-plan.md"
+expect_bad "strikethrough on an acceptance id" "$TMP/task-plan.md"
 
 cp "$T/dispatch.md" "$TMP/DISPATCH-01.md"; sed -i '' '/- Return path:/d' "$TMP/DISPATCH-01.md"
 expect_bad "dispatch missing required key" "$TMP/DISPATCH-01.md"
@@ -122,7 +167,7 @@ gated() { # id-cell -> a task plan carrying one gate
 
 | ID | Checkable result | Affected surfaces | Acceptance | Verification |
 |---|---|---|---|---|
-| - [ ] STEP-01 · blocked | a | b | ACCEPTANCE-01 | c |
+| 🔴 STEP-01 · blocked | a | b | ACCEPTANCE-01 | c |
 
 ## Gates
 
@@ -132,19 +177,20 @@ gated() { # id-cell -> a task plan carrying one gate
 
 ## Acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
-| ACCEPTANCE-01 | pending | — |
+| Criterion | Evidence |
+|---|---|
+| ⬜ ACCEPTANCE-01 · pending | — |
 EOF
 }
 
-gated '- [ ] GATE-01 · open';        expect_ok  "open gate is unchecked and unstruck" "$TMP/task-plan.md"
-gated '- [x] ~~GATE-01~~ · settled'; expect_ok  "settled gate is checked and struck" "$TMP/task-plan.md"
-gated '- [x] GATE-01 · settled';     expect_bad "settled gate without strikethrough" "$TMP/task-plan.md"
-gated '- [ ] ~~GATE-01~~ · settled'; expect_bad "settled gate left unchecked" "$TMP/task-plan.md"
-gated '- [ ] ~~GATE-01~~ · open';    expect_bad "open gate struck early" "$TMP/task-plan.md"
-gated '- [x] GATE-01 · completed';   expect_bad "work status used for a gate" "$TMP/task-plan.md"
-gated '- [x] ~~GATE-01 · settled';   expect_bad "unbalanced strikethrough markers" "$TMP/task-plan.md"
+gated '🔴 GATE-01 · open';        expect_ok  "open gate needs attention and is unstruck" "$TMP/task-plan.md"
+gated '✅ ~~GATE-01~~ · settled'; expect_ok  "settled gate is done and struck" "$TMP/task-plan.md"
+gated '✅ GATE-01 · settled';     expect_bad "settled gate without strikethrough" "$TMP/task-plan.md"
+gated '🔴 ~~GATE-01~~ · settled'; expect_bad "settled gate carrying the open marker" "$TMP/task-plan.md"
+gated '🔴 ~~GATE-01~~ · open';    expect_bad "open gate struck early" "$TMP/task-plan.md"
+gated '⬜ GATE-01 · open';        expect_bad "wrong marker on an open gate" "$TMP/task-plan.md"
+gated '✅ GATE-01 · completed';   expect_bad "work status used for a gate" "$TMP/task-plan.md"
+gated '✅ ~~GATE-01 · settled';   expect_bad "unbalanced strikethrough markers" "$TMP/task-plan.md"
 
 # Discriminating fence fixture: an unmasked scanner finds the fenced decoy table first
 # (wrong columns, unmapped acceptance); a masked scanner sees only the real table.
@@ -167,7 +213,7 @@ cat > "$TMP/task-plan.md" <<'EOF'
 
 | ID | Checkable result | Affected surfaces | Acceptance | Verification |
 |---|---|---|---|---|
-| - [ ] STEP-01 · ready | a | b | ACCEPTANCE-01 | c |
+| ⬜ STEP-01 · ready | a | b | ACCEPTANCE-01 | c |
 
 ## Acceptance
 
@@ -175,12 +221,12 @@ cat > "$TMP/task-plan.md" <<'EOF'
 | wrong | cols |
 |---|---|
 ## Phantom
-| - [ ] STEP-01 · ready | decoy |
+| ⬜ STEP-01 · ready | decoy |
 ```
 
-| Criterion | Status | Evidence |
-|---|---|---|
-| ACCEPTANCE-01 | pending | — |
+| Criterion | Evidence |
+|---|---|
+| ⬜ ACCEPTANCE-01 · pending | — |
 EOF
 expect_ok "fenced content is opaque to section/table scanning" "$TMP/task-plan.md"
 

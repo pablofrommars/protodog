@@ -16,10 +16,10 @@
 
 | ID | Checkable result | Affected surfaces | Acceptance | Verification |
 |---|---|---|---|---|
-| - [ ] STEP-01 · ready | <independently checkable result> | <files, contracts, or read-only scope> | ACCEPTANCE-01 | <command, check, or inspection> |
+| ⬜ STEP-01 · ready | <independently checkable result> | <files, contracts, or read-only scope> | ACCEPTANCE-01 | <command, check, or inspection> |
 
 ## Acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
-| ACCEPTANCE-01 | pending | — |
+| Criterion | Evidence |
+|---|---|
+| ⬜ ACCEPTANCE-01 · pending | — |

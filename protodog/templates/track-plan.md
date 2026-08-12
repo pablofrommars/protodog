@@ -17,16 +17,16 @@
 
 | Block | Checkable result | Dependencies | Acceptance |
 |---|---|---|---|
-| - [ ] BLOCK-01 · ready | <checkable block result> | — | ACCEPTANCE-01 |
+| ⬜ BLOCK-01 · ready | <checkable block result> | — | ACCEPTANCE-01 |
 
 ## BLOCK-01 — <label>
 
 | Step | Checkable result | Affected surfaces | Acceptance | Verification |
 |---|---|---|---|---|
-| - [ ] STEP-01 · ready | <independently checkable result> | <surfaces> | ACCEPTANCE-01 | <check> |
+| ⬜ STEP-01 · ready | <independently checkable result> | <surfaces> | ACCEPTANCE-01 | <check> |
 
 ## Acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
-| ACCEPTANCE-01 | pending | — |
+| Criterion | Evidence |
+|---|---|
+| ⬜ ACCEPTANCE-01 · pending | — |

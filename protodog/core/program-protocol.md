@@ -89,7 +89,7 @@ A lean index and live cross-track state authority; canonical shape in
 |---|---|---|---|---|
 ```
 
-Rows follow the Foundation's plan row grammar — `- [ ] TRACK-01 · pending planning` in the `Track`
+Rows follow the Foundation's plan row grammar — `⬜ TRACK-01 · pending planning` in the `Track`
 cell, no separate status column — and `## Contents` indexes every other section in document order.
 It lists exactly the sections the plan has: the kernel above carries only `## Tracks`, so adding
 **Program acceptance** or any optional live state below adds its entry at the same time.
@@ -139,8 +139,8 @@ Canonical shape in `protodog/templates/track-plan.md`:
 
 ## Acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
+| Criterion | Evidence |
+|---|---|
 ```
 
 Tracks are Program-scoped; blocks and steps are track-scoped; identifiers are stable after

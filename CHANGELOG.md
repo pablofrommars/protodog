@@ -1,20 +1,25 @@
 # Changelog
 
-## Unreleased
+## 2.0.0 — 2026-08-12
 
-Plan artifact dialect change — breaking for existing plans, which must be migrated.
+Plan artifact dialect change — breaking for existing plans, which must be migrated. Major bump so
+`claude plugins update` propagates the templates and validator together; a plan written under 1.0.0
+is rejected by the 2.0.0 validator.
 
 - Every plan opens with `## Contents`, listing all other sections in document order; validated
   against the sections actually present.
-- Work rows carry checkbox, identifier, and status in one identifier cell
-  (`- [ ] STEP-01 · ready`); the separate `Status` column is removed from the Steps, Tracks, and
-  Blocks tables. The checkbox is `[x]` exactly on a terminal status. Acceptance tables are
-  unchanged.
+- Rows carrying state — step, block, track, gate, acceptance criterion — put status marker,
+  identifier, and status label in one identifier cell (`⬜ STEP-01 · ready`); the separate `Status`
+  column is removed from the Steps, Tracks, Blocks, and Acceptance tables.
+- Five status markers, reused across every row kind: ⬜ not started, 🟡 active, ✅ done, 🔴 needs
+  attention, ⬛ closed without being met. Marker and label must agree (enforced). All are single
+  codepoints — a marker requiring U+FE0F is invisible in an editor and lost on copy-paste. Spec
+  acceptance-criteria tables are unaffected (they carry no status).
 - Gates are a specified table with `open`/`settled` status; a settled gate strikes its identifier
-  (`- [x] ~~GATE-01~~ · settled`). Strikethrough is reserved for that and rejected elsewhere.
+  (`✅ ~~GATE-01~~ · settled`). Strikethrough is reserved for that and rejected elsewhere.
 - Under `continuous` cadence, the owning plan is updated and verified as part of every work-row
   transition — prose rule, since no validator can observe a transition.
-- Test baseline: plan-validator checks 16 → 33.
+- Test baseline: plan-validator checks 16 → 48.
 
 ## 1.0.0 — 2026-08-03
 

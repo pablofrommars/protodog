@@ -80,13 +80,16 @@ unknown statuses, unmapped acceptance references, and renumbered IDs are rejecte
 
 ## Acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
+| Criterion | Evidence |
+|---|---|
 ```
 
-Rows follow the Foundation's plan row grammar: `- [ ] STEP-01 · ready` carries checkbox,
-identifier, and status in the `ID` cell, so there is no separate status column. `## Contents` lists
-every other section in document order and is updated whenever a section is added or removed.
+Rows follow the Foundation's plan row grammar: `⬜ STEP-01 · ready` carries status marker,
+identifier, and status label in the `ID` cell, so there is no separate status column. Acceptance
+rows use the same markers against their own enum — `✅ ACCEPTANCE-01 · satisfied`,
+`🔴 ACCEPTANCE-02 · unmet` — so a criterion that failed is visibly distinct from one still
+`pending`. `## Contents` lists every other section in document order and is updated whenever a
+section is added or removed.
 
 While `pending planning`, `Grounding source` may temporarily replace `Spec context` with exact
 input references and the concise invocation context needed for resumption; it is removed once spec
@@ -113,8 +116,8 @@ and a link to retained larger output.
 
 | ID | Gate | Owner | Blocked work | Closure |
 |---|---|---|---|---|
-| - [x] ~~GATE-01~~ · settled | authorization — audit launch | engineer | STEP-04 | granted 2026-08-12; DECISION-01 |
-| - [ ] GATE-02 · open | decision — retry backoff | engineer | STEP-06 | engineer selects strategy |
+| ✅ ~~GATE-01~~ · settled | authorization — audit launch | engineer | STEP-04 | granted 2026-08-12; DECISION-01 |
+| 🔴 GATE-02 · open | decision — retry backoff | engineer | STEP-06 | engineer selects strategy |
 ```
 
 The `Gate` cell names the gate type — `decision`, `authorization`, or `evidence` — and its subject;
@@ -232,13 +235,13 @@ fix plan exists.
 
 | ID | Checkable result | Affected surfaces | Acceptance | Verification |
 |---|---|---|---|---|
-| - [ ] STEP-01 · ready | Example uses the supported retry option and renders correctly. | `docs/retries.md` | ACCEPTANCE-01 | Build docs; inspect rendered example. |
+| ⬜ STEP-01 · ready | Example uses the supported retry option and renders correctly. | `docs/retries.md` | ACCEPTANCE-01 | Build docs; inspect rendered example. |
 
 ## Acceptance
 
-| Criterion | Status | Evidence |
-|---|---|---|
-| ACCEPTANCE-01 | pending | — |
+| Criterion | Evidence |
+|---|---|
+| ⬜ ACCEPTANCE-01 · pending | — |
 ```
 
 Nothing else is required — no gates, decisions, topology, or completion-report sections, and the

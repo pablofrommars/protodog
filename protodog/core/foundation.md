@@ -117,21 +117,46 @@ lists for sparse optional state; omit absent optional sections (enforced).
 
 ### Plan row grammar and contents index
 
-Every plan work row — step, block, track, gate — carries its checkbox, identifier, and status in
-one identifier cell, and no plan table has a separate status column (enforced):
+Every plan row that carries state — step, block, track, gate, acceptance criterion — puts its
+status marker, identifier, and status label in one identifier cell, and no plan table has a
+separate status column (enforced):
 
 ```text
-- [ ] STEP-01 · ready
-- [x] STEP-02 · completed
-- [x] ~~GATE-01~~ · settled
+⬜ STEP-01 · ready
+🟡 STEP-02 · in progress
+✅ STEP-03 · completed
+🔴 ACCEPTANCE-02 · unmet
+✅ ~~GATE-01~~ · settled
 ```
 
-The checkbox is `[x]` exactly when the row is no longer outstanding — a terminal status
-(`completed`, `superseded`, `cancelled`) for work rows, `settled` for a gate — and `[ ]` otherwise.
-A binary box cannot carry a seven-value enum, so the status label always accompanies it and remains
-the precise state; the box is the scannable summary. Strikethrough marks a settled gate identifier
-and appears nowhere else: work that ends as `superseded` or `cancelled` says so in its status label
-rather than by striking a durable identifier.
+Five markers carry meaning, not status, and are reused across every row kind. A reader learns the
+set once and scans any plan with it:
+
+| Marker | Meaning | Work row | Acceptance criterion | Gate |
+|---|---|---|---|---|
+| ⬜ | not started | `pending planning`, `ready` | `pending` | — |
+| 🟡 | active | `in progress` | — | — |
+| ✅ | done | `completed` | `satisfied` | `settled` |
+| 🔴 | needs attention | `blocked` | `unmet` | `open` |
+| ⬛ | closed without being met | `superseded`, `cancelled` | `accepted exception` | — |
+
+The mapping is many-to-one, so the marker narrows the state without naming it: the label beside it
+is the precise status and the only thing to quote, grep, or reason from. Marker and label must
+agree (enforced) — a row cannot claim `completed` under 🟡. The grouping is chosen so that the
+distinction a reader acts on survives the collapse: 🔴 separates a criterion that was checked and
+failed from one merely `pending`, and ⬛ separates work closed without being met from work
+completed.
+
+Markers are single codepoints requiring no variation selector. This is a constraint on the set, not
+an aesthetic: a marker needing U+FE0F is invisible in most editors, silently dropped by ordinary
+copy-paste, and would fail validation against a row that looks identical to a correct one.
+
+Strikethrough marks a settled gate identifier and appears nowhere else. Work that ends `superseded`
+or `cancelled`, and a criterion closed by `accepted exception`, say so through ⬛ and the status
+label rather than by striking a durable identifier.
+
+A spec's acceptance-criteria table is unaffected by this grammar: it defines criteria and assigns
+their IDs, carries no status, and is immutable once bound.
 
 Every plan opens with a `## Contents` section listing every other section as a link, in document
 order (enforced). It is the plan's section index, so which optional live state a plan actually
