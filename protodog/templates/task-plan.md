@@ -7,11 +7,16 @@
   - @specs/<document>.md
 - Next boundary: STEP-01
 
+## Contents
+
+- [Steps](#steps)
+- [Acceptance](#acceptance)
+
 ## Steps
 
-| ID | Checkable result | Affected surfaces | Acceptance | Verification | Status |
-|---|---|---|---|---|---|
-| STEP-01 | <independently checkable result> | <files, contracts, or read-only scope> | ACCEPTANCE-01 | <command, check, or inspection> | ready |
+| ID | Checkable result | Affected surfaces | Acceptance | Verification |
+|---|---|---|---|---|
+| - [ ] STEP-01 · ready | <independently checkable result> | <files, contracts, or read-only scope> | ACCEPTANCE-01 | <command, check, or inspection> |
 
 ## Acceptance
 

@@ -115,6 +115,29 @@ assign ownership at section level. Preserve engineer-maintained content and reco
 changes rather than overwriting. Use compact tables for dense homogeneous indexes and labeled
 lists for sparse optional state; omit absent optional sections (enforced).
 
+### Plan row grammar and contents index
+
+Every plan work row — step, block, track, gate — carries its checkbox, identifier, and status in
+one identifier cell, and no plan table has a separate status column (enforced):
+
+```text
+- [ ] STEP-01 · ready
+- [x] STEP-02 · completed
+- [x] ~~GATE-01~~ · settled
+```
+
+The checkbox is `[x]` exactly when the row is no longer outstanding — a terminal status
+(`completed`, `superseded`, `cancelled`) for work rows, `settled` for a gate — and `[ ]` otherwise.
+A binary box cannot carry a seven-value enum, so the status label always accompanies it and remains
+the precise state; the box is the scannable summary. Strikethrough marks a settled gate identifier
+and appears nowhere else: work that ends as `superseded` or `cancelled` says so in its status label
+rather than by striking a durable identifier.
+
+Every plan opens with a `## Contents` section listing every other section as a link, in document
+order (enforced). It is the plan's section index, so which optional live state a plan actually
+carries is visible without reading it. Anchors follow the host's ordinary heading-slug convention
+and are not themselves enforced.
+
 ## Shared lifecycle and work status
 
 ```text
@@ -195,6 +218,17 @@ through unambiguous planned work until a gate, stop condition, required engineer
 completion, or engineer intervention. Cadence changes interaction frequency only. A Program has a
 Program default with track and block overrides; the most-specific active setting wins and expires
 with its scope. The engineer may intervene at any time.
+
+**Plan currency under `continuous` cadence.** An interactive boundary forces the plan current — the
+report is written from it, and the engineer sees the state. `Continuous` removes that boundary, so
+the plan is the only place the engineer can observe progress and the only state resumption has.
+Under `continuous`, writing the owning plan is therefore part of the transition itself, not
+bookkeeping deferred to a convenient moment: on every status transition of a work row — and on
+every acceptance, gate, or decision outcome that transition settles — update the plan and verify
+the persisted artifact reflects the new state before dependent work proceeds. A transition whose
+plan write cannot be verified is a failure to triage under the recovery policy, not a step to
+continue past. This is a prose rule: no validator can see a transition, only the artifact it left
+behind.
 
 Execution is sequential by default. A plan selects concurrency only when it names the exact work,
 dependency independence, write surfaces, independent verification, and reconciliation. Every

@@ -68,16 +68,25 @@ unknown statuses, unmapped acceptance references, and renumbered IDs are rejecte
   - @specs/<document>.md
 - Next boundary: STEP-01
 
+## Contents
+
+- [Steps](#steps)
+- [Acceptance](#acceptance)
+
 ## Steps
 
-| ID | Checkable result | Affected surfaces | Acceptance | Verification | Status |
-|---|---|---|---|---|---|
+| ID | Checkable result | Affected surfaces | Acceptance | Verification |
+|---|---|---|---|---|
 
 ## Acceptance
 
 | Criterion | Status | Evidence |
 |---|---|---|
 ```
+
+Rows follow the Foundation's plan row grammar: `- [ ] STEP-01 · ready` carries checkbox,
+identifier, and status in the `ID` cell, so there is no separate status column. `## Contents` lists
+every other section in document order and is updated whenever a section is added or removed.
 
 While `pending planning`, `Grounding source` may temporarily replace `Spec context` with exact
 input references and the concise invocation context needed for resumption; it is removed once spec
@@ -89,13 +98,32 @@ begins; a materially different replacement supersedes and links.
 
 ### Optional live state
 
-Add only sections that carry applicable state: **Gates** (owner, closure, blocked steps — removed
-after the outcome is persisted), **Decisions**, **Authority** (only engineer grants not carried by
-enforced configuration), **Assumptions and open questions**, **Deferred issues and accepted gaps**,
-**Execution topology** (only when concurrency is selected), **Material notes** (concise, dated,
-only when the reason for a change matters for resumption or audit). There is no event log, attempt
-log, or completion-report artifact. Keep evidence concise and referential: the command or check,
-material result, repository-state provenance when material, and a link to retained larger output.
+Add only sections that carry applicable state: **Gates**, **Decisions**, **Authority** (only
+engineer grants not carried by enforced configuration), **Assumptions and open questions**,
+**Deferred issues and accepted gaps**, **Execution topology** (only when concurrency is selected),
+**Material notes** (concise, dated, only when the reason for a change matters for resumption or
+audit). There is no event log, attempt log, or completion-report artifact. Keep evidence concise
+and referential: the command or check, material result, repository-state provenance when material,
+and a link to retained larger output.
+
+**Gates.** A gate is `open` or `settled`, and a settled gate strikes its identifier:
+
+```markdown
+## Gates
+
+| ID | Gate | Owner | Blocked work | Closure |
+|---|---|---|---|---|
+| - [x] ~~GATE-01~~ · settled | authorization — audit launch | engineer | STEP-04 | granted 2026-08-12; DECISION-01 |
+| - [ ] GATE-02 · open | decision — retry backoff | engineer | STEP-06 | engineer selects strategy |
+```
+
+The `Gate` cell names the gate type — `decision`, `authorization`, or `evidence` — and its subject;
+`Closure` states the condition that settles it, and once settled, the outcome reference. Striking
+the identifier settles it visibly while other gates remain open, so a reader sees at a glance what
+still blocks work. The section is removed once no gate remains open and every outcome is persisted
+where it belongs — a decision under **Decisions**, a grant under **Authority**, an exception in the
+acceptance table. Striking is the settled marker, not the archive: the plan is live state, not a
+gate history.
 
 ## Execution
 
@@ -136,6 +164,13 @@ ordinary boundary report states completed work, material evidence, and the next 
 actual gate uses the fuller decision-ready Foundation request. Cadence is Task-wide; the engineer
 may switch it explicitly at any time, and `go` releases one declared boundary without changing
 cadence or authority.
+
+Under `continuous` cadence, apply the Foundation's plan-currency rule: with no boundary report to
+surface it, the task plan is the engineer's only view of progress. Each step transition — including
+the acceptance, gate, and decision outcomes it settles — updates the task plan, and that update is
+verified against the persisted artifact before the next step starts. Checkpoint commits already
+happen at coherent verified units regardless of cadence; plan currency is the state half of the
+same discipline.
 
 ## Resumption and profile replacement
 
@@ -188,11 +223,16 @@ fix plan exists.
   - @specs/retry-example.md
 - Next boundary: STEP-01
 
+## Contents
+
+- [Steps](#steps)
+- [Acceptance](#acceptance)
+
 ## Steps
 
-| ID | Checkable result | Affected surfaces | Acceptance | Verification | Status |
-|---|---|---|---|---|---|
-| STEP-01 | Example uses the supported retry option and renders correctly. | `docs/retries.md` | ACCEPTANCE-01 | Build docs; inspect rendered example. | ready |
+| ID | Checkable result | Affected surfaces | Acceptance | Verification |
+|---|---|---|---|---|
+| - [ ] STEP-01 · ready | Example uses the supported retry option and renders correctly. | `docs/retries.md` | ACCEPTANCE-01 | Build docs; inspect rendered example. |
 
 ## Acceptance
 
@@ -201,6 +241,7 @@ fix plan exists.
 | ACCEPTANCE-01 | pending | — |
 ```
 
-Nothing else is required — no gates, decisions, topology, or completion-report sections. A Task
-needing optional machinery adds exactly the sections that carry state, as in the template's larger
-example; features appear because the Task needs them, not as a checklist.
+Nothing else is required — no gates, decisions, topology, or completion-report sections, and the
+contents index stays two entries long because the plan has two sections. A Task needing optional
+machinery adds exactly the sections that carry state and lists them in `## Contents`, as in the
+gates example above; features appear because the Task needs them, not as a checklist.

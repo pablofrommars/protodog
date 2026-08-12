@@ -6,7 +6,9 @@
 using System.Text.RegularExpressions;
 
 string[] statuses = ["pending planning", "ready", "in progress", "blocked", "completed", "superseded", "cancelled"];
+string[] terminal = ["completed", "superseded", "cancelled"];
 string[] accStatuses = ["pending", "satisfied", "accepted exception", "unmet"];
+string[] gateStatuses = ["open", "settled"];
 string[] cadences = ["interactive", "continuous"];
 var auditFileName = new Regex(@"^audit-\d{2,}(-dispatch|-challenge)?\.md$");
 var problems = new List<string>();
@@ -181,6 +183,127 @@ List<string> Refs(string? cell, string pattern)
 	return [.. Regex.Matches(cell, pattern).Select(m => m.Value)];
 }
 
+WorkCell? ParseWorkCell(string cell)
+{
+	// "- [ ] STEP-01 · ready" / "- [x] ~~GATE-01~~ · settled" — checkbox, id, status in one cell.
+	var m = Regex.Match(cell, @"^- \[( |x)\] (~~)?([A-Z]+-\d{2,})(~~)? · (.+)$");
+	if (!m.Success || m.Groups[2].Value.Length != m.Groups[4].Value.Length)
+	{
+		return null;
+	}
+
+	return new WorkCell(m.Groups[1].Value == "x", m.Groups[3].Value, m.Groups[5].Value.Trim(), m.Groups[2].Value.Length > 0);
+}
+
+WorkCell? CheckWorkCell(string file, string cell, string idPattern, string[] allowed, bool gate)
+{
+	var parsed = ParseWorkCell(cell);
+	if (parsed is null)
+	{
+		Bad(file, $"id cell \"{cell}\" must be \"- [ ] <ID> · <status>\"");
+		return null;
+	}
+
+	if (!Regex.IsMatch(parsed.Id, idPattern))
+	{
+		Bad(file, $"id \"{parsed.Id}\" malformed");
+	}
+
+	if (!allowed.Contains(parsed.Status))
+	{
+		Bad(file, $"status \"{parsed.Status}\" not in enum for \"{parsed.Id}\"");
+		return parsed;
+	}
+
+	// A gate is done when settled; any other work row is done when its status is terminal.
+	var done = gate ? parsed.Status == "settled" : terminal.Contains(parsed.Status);
+	if (parsed.Checked != done)
+	{
+		Bad(file, $"\"{parsed.Id}\" status \"{parsed.Status}\" requires checkbox \"[{(done ? "x" : " ")}]\"");
+	}
+
+	// Strikethrough marks a settled gate and nothing else.
+	if (parsed.Struck != (gate && done))
+	{
+		Bad(file, parsed.Struck
+			? $"\"{parsed.Id}\" must not strike its id"
+			: $"settled gate \"{parsed.Id}\" must strike its id (~~{parsed.Id}~~)");
+	}
+
+	return parsed;
+}
+
+void CheckContents(string file, string[] lines, List<Section> sections, bool[] mask)
+{
+	var contents = sections.FirstOrDefault(s => s.Title == "Contents");
+	if (contents is null)
+	{
+		Bad(file, "missing \"## Contents\" section");
+		return;
+	}
+
+	if (sections[0].Start != contents.Start)
+	{
+		Bad(file, "\"## Contents\" must be the first section");
+	}
+
+	var listed = new List<string>();
+	for (var i = contents.Start + 1; i < contents.End; i++)
+	{
+		if (mask[i] || lines[i].Trim().Length == 0)
+		{
+			continue;
+		}
+
+		var entry = Regex.Match(lines[i], @"^- \[(.+)\]\(#[^)]*\)\s*$");
+		if (entry.Success)
+		{
+			listed.Add(entry.Groups[1].Value.Trim());
+		}
+		else
+		{
+			Bad(file, $"contents entry \"{lines[i].Trim()}\" must be \"- [<section title>](#<anchor>)\"");
+		}
+	}
+
+	var expected = sections.Where(s => s.Start != contents.Start).Select(s => s.Title).ToList();
+	if (!listed.SequenceEqual(expected))
+	{
+		Bad(file, $"contents must list every section in document order [{string.Join(", ", expected)}] (got [{string.Join(", ", listed)}])");
+	}
+}
+
+void CheckGates(string file, string[] lines, List<Section> sections, bool[] mask)
+{
+	var section = sections.FirstOrDefault(s => s.Title == "Gates");
+	if (section is null)
+	{
+		return;
+	}
+
+	var table = CheckTable(file, lines, section, ["ID", "Gate", "Owner", "Blocked work", "Closure"], "Gates", mask);
+	if (table is null)
+	{
+		return;
+	}
+
+	var seen = new HashSet<string>();
+	foreach (var row in table.Rows)
+	{
+		if (row.Count < 5)
+		{
+			Bad(file, $"gates row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 5");
+			continue;
+		}
+
+		var cell = CheckWorkCell(file, row[0], @"^GATE-\d{2,}$", gateStatuses, true);
+		if (cell is not null && !seen.Add(cell.Id))
+		{
+			Bad(file, $"duplicate id \"{cell.Id}\"");
+		}
+	}
+}
+
 void CheckEmptySections(string file, string[] lines, bool[] mask)
 {
 	foreach (var section in Sections(lines, mask))
@@ -269,21 +392,16 @@ void CheckStepRows(string file, Table table, string idPattern, HashSet<string>? 
 {
 	foreach (var row in table.Rows)
 	{
-		var id = row[0];
-		if (!Regex.IsMatch(id, idPattern))
+		if (row.Count < 5)
 		{
-			Bad(file, $"id \"{id}\" malformed");
+			Bad(file, $"step row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 5");
+			continue;
 		}
 
-		if (!seen.Add(id))
+		var cell = CheckWorkCell(file, row[0], idPattern, statuses, false);
+		if (cell is not null && !seen.Add(cell.Id))
 		{
-			Bad(file, $"duplicate id \"{id}\"");
-		}
-
-		var status = row[^1];
-		if (!statuses.Contains(status))
-		{
-			Bad(file, $"status \"{status}\" not in enum for \"{id}\"");
+			Bad(file, $"duplicate id \"{cell.Id}\"");
 		}
 
 		if (accIds is not null)
@@ -292,7 +410,7 @@ void CheckStepRows(string file, Table table, string idPattern, HashSet<string>? 
 			{
 				if (!accIds.Contains(reference))
 				{
-					Bad(file, $"\"{id}\" references unmapped {reference}");
+					Bad(file, $"\"{cell?.Id ?? row[0]}\" references unmapped {reference}");
 				}
 			}
 		}
@@ -313,6 +431,8 @@ void ValidateTaskPlan(string file)
 	}
 
 	CheckEmptySections(file, lines, mask);
+	CheckContents(file, lines, sections, mask);
+	CheckGates(file, lines, sections, mask);
 	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
 	var stepsSection = sections.FirstOrDefault(s => s.Title == "Steps");
 	if (stepsSection is null)
@@ -321,7 +441,7 @@ void ValidateTaskPlan(string file)
 		return;
 	}
 
-	var table = CheckTable(file, lines, stepsSection, ["ID", "Checkable result", "Affected surfaces", "Acceptance", "Verification", "Status"], "Steps", mask);
+	var table = CheckTable(file, lines, stepsSection, ["ID", "Checkable result", "Affected surfaces", "Acceptance", "Verification"], "Steps", mask);
 	var seen = new HashSet<string>();
 	if (table is not null)
 	{
@@ -351,6 +471,8 @@ void ValidateProgramPlan(string file, string? planDir)
 	}
 
 	CheckEmptySections(file, lines, mask);
+	CheckContents(file, lines, sections, mask);
+	CheckGates(file, lines, sections, mask);
 	var tracksSection = sections.FirstOrDefault(s => s.Title == "Tracks");
 	if (tracksSection is null)
 	{
@@ -358,30 +480,28 @@ void ValidateProgramPlan(string file, string? planDir)
 		return;
 	}
 
-	var table = CheckTable(file, lines, tracksSection, ["Track", "Outcome", "Track plan", "Dependencies", "Acceptance", "Status"], "Tracks", mask);
+	var table = CheckTable(file, lines, tracksSection, ["Track", "Outcome", "Track plan", "Dependencies", "Acceptance"], "Tracks", mask);
 	var ids = new HashSet<string>();
 	if (table is not null)
 	{
 		foreach (var row in table.Rows)
 		{
-			if (!Regex.IsMatch(row[0], @"^TRACK-\d{2,}$"))
+			if (row.Count < 5)
 			{
-				Bad(file, $"track id \"{row[0]}\" malformed");
+				Bad(file, $"tracks row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 5");
+				continue;
 			}
 
-			if (!ids.Add(row[0]))
+			var cell = CheckWorkCell(file, row[0], @"^TRACK-\d{2,}$", statuses, false);
+			var label = cell?.Id ?? row[0];
+			if (cell is not null && !ids.Add(cell.Id))
 			{
-				Bad(file, $"duplicate track \"{row[0]}\"");
-			}
-
-			if (!statuses.Contains(row[5]))
-			{
-				Bad(file, $"status \"{row[5]}\" not in enum for \"{row[0]}\"");
+				Bad(file, $"duplicate track \"{cell.Id}\"");
 			}
 
 			if (row[2] != "not created" && !row[2].StartsWith('@'))
 			{
-				Bad(file, $"\"{row[0]}\" Track plan cell must be \"not created\" or an @reference");
+				Bad(file, $"\"{label}\" Track plan cell must be \"not created\" or an @reference");
 			}
 
 			if (planDir is not null && row[2].StartsWith("@plan/"))
@@ -389,18 +509,23 @@ void ValidateProgramPlan(string file, string? planDir)
 				var root = Path.GetFullPath(Path.Combine(planDir, "..", ".."));
 				if (!File.Exists(Path.Combine(root, row[2][1..])))
 				{
-					Bad(file, $"\"{row[0]}\" track plan {row[2]} does not exist");
+					Bad(file, $"\"{label}\" track plan {row[2]} does not exist");
 				}
 			}
 		}
 
 		foreach (var row in table.Rows)
 		{
+			if (row.Count < 5)
+			{
+				continue;
+			}
+
 			foreach (var dependency in Refs(row[3], @"TRACK-\d{2,}"))
 			{
 				if (!ids.Contains(dependency))
 				{
-					Bad(file, $"\"{row[0]}\" depends on unknown {dependency}");
+					Bad(file, $"\"{ParseWorkCell(row[0])?.Id ?? row[0]}\" depends on unknown {dependency}");
 				}
 			}
 		}
@@ -441,6 +566,8 @@ void ValidateTrackPlan(string file)
 	}
 
 	CheckEmptySections(file, lines, mask);
+	CheckContents(file, lines, sections, mask);
+	CheckGates(file, lines, sections, mask);
 	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
 	var blocksSection = sections.FirstOrDefault(s => s.Title == "Blocks");
 	if (blocksSection is null)
@@ -449,35 +576,37 @@ void ValidateTrackPlan(string file)
 		return;
 	}
 
-	var blocksTable = CheckTable(file, lines, blocksSection, ["Block", "Checkable result", "Dependencies", "Acceptance", "Status"], "Blocks", mask);
+	var blocksTable = CheckTable(file, lines, blocksSection, ["Block", "Checkable result", "Dependencies", "Acceptance"], "Blocks", mask);
 	var blockIds = new HashSet<string>();
 	if (blocksTable is not null)
 	{
 		foreach (var row in blocksTable.Rows)
 		{
-			if (!Regex.IsMatch(row[0], @"^BLOCK-\d{2,}$"))
+			if (row.Count < 4)
 			{
-				Bad(file, $"block id \"{row[0]}\" malformed");
+				Bad(file, $"blocks row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 4");
+				continue;
 			}
 
-			if (!blockIds.Add(row[0]))
+			var cell = CheckWorkCell(file, row[0], @"^BLOCK-\d{2,}$", statuses, false);
+			if (cell is not null && !blockIds.Add(cell.Id))
 			{
-				Bad(file, $"duplicate block \"{row[0]}\"");
-			}
-
-			if (!statuses.Contains(row[4]))
-			{
-				Bad(file, $"status \"{row[4]}\" not in enum for \"{row[0]}\"");
+				Bad(file, $"duplicate block \"{cell.Id}\"");
 			}
 		}
 
 		foreach (var row in blocksTable.Rows)
 		{
+			if (row.Count < 4)
+			{
+				continue;
+			}
+
 			foreach (var dependency in Refs(row[2], @"BLOCK-\d{2,}"))
 			{
 				if (!blockIds.Contains(dependency))
 				{
-					Bad(file, $"\"{row[0]}\" depends on unknown {dependency}");
+					Bad(file, $"\"{ParseWorkCell(row[0])?.Id ?? row[0]}\" depends on unknown {dependency}");
 				}
 			}
 		}
@@ -492,7 +621,7 @@ void ValidateTrackPlan(string file)
 			Bad(file, $"detail section \"{section.Title}\" has no Blocks-table row");
 		}
 
-		var stepTable = CheckTable(file, lines, section, ["Step", "Checkable result", "Affected surfaces", "Acceptance", "Verification", "Status"], section.Title, mask);
+		var stepTable = CheckTable(file, lines, section, ["Step", "Checkable result", "Affected surfaces", "Acceptance", "Verification"], section.Title, mask);
 		if (stepTable is not null)
 		{
 			CheckStepRows(file, stepTable, @"^STEP-\d{2,}$", accIds, seenSteps);
@@ -644,6 +773,8 @@ void ValidateDirectory(string directory)
 }
 
 internal sealed record Table(List<string> Header, List<List<string>> Rows);
+
+internal sealed record WorkCell(bool Checked, string Id, string Status, bool Struck);
 
 internal sealed record Section(string Title, int Start)
 {

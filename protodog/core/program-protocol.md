@@ -79,11 +79,20 @@ A lean index and live cross-track state authority; canonical shape in
   - @specs/<document>.md
 - Next: TRACK-01
 
+## Contents
+
+- [Tracks](#tracks)
+
 ## Tracks
 
-| Track | Outcome | Track plan | Dependencies | Acceptance | Status |
-|---|---|---|---|---|---|
+| Track | Outcome | Track plan | Dependencies | Acceptance |
+|---|---|---|---|---|
 ```
+
+Rows follow the Foundation's plan row grammar — `- [ ] TRACK-01 · pending planning` in the `Track`
+cell, no separate status column — and `## Contents` indexes every other section in document order.
+It lists exactly the sections the plan has: the kernel above carries only `## Tracks`, so adding
+**Program acceptance** or any optional live state below adds its entry at the same time.
 
 `Next` names one selected track or an explicit release set — a resume pointer and interaction
 selection, not a queue or concurrency declaration; omitted when nothing is eligible. The track
@@ -112,15 +121,21 @@ Canonical shape in `protodog/templates/track-plan.md`:
 - Cadence override: interactive | continuous   (omit when inheriting)
 - Next boundary: STEP-01                       (interactive cadence only)
 
+## Contents
+
+- [Blocks](#blocks)
+- [BLOCK-NN — <label>](#block-nn--label)
+- [Acceptance](#acceptance)
+
 ## Blocks
 
-| Block | Checkable result | Dependencies | Acceptance | Status |
-|---|---|---|---|---|
+| Block | Checkable result | Dependencies | Acceptance |
+|---|---|---|---|
 
 ## BLOCK-NN — <label>
 
-| Step | Checkable result | Affected surfaces | Acceptance | Verification | Status |
-|---|---|---|---|---|---|
+| Step | Checkable result | Affected surfaces | Acceptance | Verification |
+|---|---|---|---|---|
 
 ## Acceptance
 
@@ -129,8 +144,10 @@ Canonical shape in `protodog/templates/track-plan.md`:
 ```
 
 Tracks are Program-scoped; blocks and steps are track-scoped; identifiers are stable after
-execution starts. Track plans use the Task plan's optional state forms where applicable and never
-copy Program-level state. Plans are live state, not transcripts.
+execution starts. Block and step rows use the same identifier-cell grammar, and each block detail
+section appears in `## Contents` as it is added. Track plans use the Task plan's optional state
+forms where applicable — including the gates table, whose settled rows strike their identifiers —
+and never copy Program-level state. Plans are live state, not transcripts.
 
 ## Status and progressive planning
 
@@ -207,6 +224,15 @@ descendants until members complete and reconcile; gates and stop conditions alwa
 coordinating agent owns engineer-facing HIL, batches related requests, and continues independent
 authorized work while a gate blocks only dependent work. Checkpoint commits inside managed
 worktrees follow the Git policy regardless of cadence.
+
+Under `continuous` cadence — at Program, track, or block scope — apply the Foundation's
+plan-currency rule against the plan that owns the transition: a step or block transition updates
+its track plan, and cross-track state, track status, dependencies, and `Next` update the program
+plan. Each update is verified against the persisted artifact before dependent work proceeds. A
+track agent verifies its own track plan and returns cross-track deltas through its return path; the
+coordinator's reconciliation of those deltas into the program plan is itself such a transition. A
+continuous Program that leaves plans trailing execution has no boundary report to correct them and
+nothing durable for resumption to read.
 
 ## Resumption, failure, and profile replacement
 
