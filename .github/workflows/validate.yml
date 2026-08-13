@@ -23,5 +23,7 @@ jobs:
         run: ./protodog/validators/test-registry.sh
       - name: Launcher gates (dry-run)
         run: ./protodog/scripts/test-audit-launch.sh
+      - name: Sweep-safety checker
+        run: ./protodog/scripts/test-sweep-check.sh
       - name: Enforcement fences
         run: ./protodog/hooks/test-hooks.sh

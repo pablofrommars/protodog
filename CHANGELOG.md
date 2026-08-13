@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.1.0 — 2026-08-13
+
+Plan-maintenance skills: proof-then-judgment, engineer-confirmed.
+
+- New `plan-sweep` skill — the engineer-triggered retirement sweep. A deterministic checker
+  (`scripts/sweep-check.cs`) proves terminal + lifted + landed per `plan/` entry and doubles as
+  the plan-tree survey; the skill adds the one judgment step (citation liveness) and deletes only
+  engineer-confirmed directories, as one sweep commit. Legacy pre-3.0 plans fail the lift proof
+  by design — their lift record is the register — and require explicit per-entry override.
+- New `deferred-review` skill — register drift hunting: verifies every parked row against current
+  repository state (closed by later work, fired triggers, claims that no longer reproduce, stale
+  defaults) and applies only engineer-ratified transitions; a fired trigger proposes activation,
+  never silent closure.
+- Test baseline: new sweep-check suite (8 checks), wired into CI as the fifth suite.
+
 ## 3.0.0 — 2026-08-13
 
 Three protocol-fit remediations from the first weeks of daily use. Major bump per the 2.0.0

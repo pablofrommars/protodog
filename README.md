@@ -64,9 +64,10 @@ under `plan/`, specs under `specs/`).
 ./protodog/validators/test-registry.sh     # snippet registries
 ./protodog/hooks/test-hooks.sh             # enforcement fences (incl. plugin-mode resolution)
 ./protodog/scripts/test-audit-launch.sh    # launcher gates (dry-run, no Codex contact)
+./protodog/scripts/test-sweep-check.sh     # retirement sweep-safety checker
 ```
 
-CI runs the same four suites plus manifest checks on every push (macOS runner: the test drivers
+CI runs the same five suites plus manifest checks on every push (macOS runner: the test drivers
 use BSD sed).
 
 ## Use
@@ -194,6 +195,17 @@ stateDiagram-v2
     class blocked attention
     class superseded,cancelled closednm
 ```
+
+### Maintenance
+
+Two engineer-invoked skills keep `plan/` honest. `/protodog:plan-sweep` is the retirement sweep:
+a deterministic checker proves terminal + lifted + landed for every entry
+(`dotnet protodog/scripts/sweep-check.cs`, usable standalone as the plan-tree survey), the skill
+adds the one judgment step — citation liveness — and deletes only what you confirm, as one sweep
+commit. `/protodog:deferred-review` hunts register drift: it verifies every parked row against
+current repository state (closed by later work? trigger fired? claim still reproduces?) and
+applies only the transitions you ratify. The survey is a command, not a document — there is no
+index artifact to maintain.
 
 ## Notes
 

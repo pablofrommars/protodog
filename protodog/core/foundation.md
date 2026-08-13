@@ -25,6 +25,7 @@ Status: committed normative Foundation, Claude-native line.
 | Entry | Task and Program skills | Implement the invocation contract |
 | Prompt registries | `prompt-utility.code-snippets`, `boxer.code-snippets` under `prompt-registry-style.md` | Host-portable prompts outside Protocol state |
 | Ideation mechanics | `ideation-audit` skill | Claude-native adversarial pressure for ideation sessions — outside Protocol state |
+| Maintenance mechanics | `plan-sweep`, `deferred-review` skills with `scripts/sweep-check.cs` | Engineer-confirmed retirement and register upkeep |
 
 This table is the complete normative closure; nothing outside it carries Protocol authority. A
 validator rejection outranks a prose interpretation for whatever the validator decides; disputes

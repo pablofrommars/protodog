@@ -70,6 +70,13 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     terminal plan directories; Git history on `main` is the archive, which one-commit landing
     guarantees. `plan/` is never an ADR store: durable rationale moves to specs or repository
     documentation.
+13. **Plan maintenance is proof-then-judgment, engineer-confirmed** (added 2026-08-13). The
+    `plan-sweep` skill deletes nothing that the deterministic checker (`scripts/sweep-check.cs`:
+    every plan terminal, obligations lifted, content landed) has not proven and the engineer has
+    not confirmed; citation liveness is the one judgment step in between. The `deferred-review`
+    skill proposes register transitions with evidence and applies only what the engineer
+    ratifies — a fired trigger proposes activation, never silent closure. The survey is a
+    command, not a document: no index artifact returns.
 
 ## Accepted background rationale
 
