@@ -1,14 +1,47 @@
 # Protodog
 
-## Why this document exists
+## What this is
 
-Installation and maintenance guide for Protodog, the Claude-native agentic execution protocol,
-distributed from this repository as a Claude Code plugin. The normative authority is
-`protodog/core/`; this file never overrides it.
+Protodog is an execution protocol for agent-assisted engineering: one engineer's working
+methodology encoded as installable machinery for Claude Code — skills as entry points, hooks and
+validators as enforcement, Markdown artifacts in the repository as the only execution state. It
+does not orchestrate models or generate code; it constrains how delegated work enters,
+progresses, and lands, so every session runs under the same contract instead of whatever the
+model woke up believing.
+
+The concepts, in one pass. The engineer selects one of two **profiles** — Task (bounded
+objective, one agent) or Program (multi-track, dispatched) — never the protocol itself. Context
+moves through a provenance chain: `inputs/` (unvalidated material, including anything an external
+model produced), `specs/` (reconciled intent, immutable once a plan binds it), `plan/` (live
+state — steps, acceptance criteria, gates, decisions, all under stable IDs). **Gates** are the
+only human-in-the-loop interface — decision, authorization, evidence — and authority is explicit:
+model capability, tool access, and prior success never create permission. **Cadence** —
+`interactive` by default, `continuous` by explicit override — sets how often the engineer is
+consulted, and changes nothing else. **Assurance** scales
+with risk, and an audit means independent, adversarial, and undirected within scope — executed
+by a different vendor's model through a hash-pinned read-only launcher, never by the author
+grading itself.
+
+The discipline is mechanical wherever it can be: hooks deny engineer-owned Git (push, fetch,
+rebase, history rewrites, `main`); validators reject malformed plans, marker/status drift,
+unmapped acceptance, edits to bound specs or audit reports, and terminal plans still carrying
+live obligations. Prose is reserved for judgment. Git is a split contract — the agent checkpoints
+freely inside its managed worktree, the engineer owns landing, and one Task or whole Program
+reaches `main` as exactly one commit. Plans die on schedule: obligations lift to a register,
+landed directories are swept, Git history is the archive.
+
+What that buys: no per-session variance in how delegation works; no silent agent overreach; no
+state rotting in chat scrollback — resumption is the plan plus the repository, nothing else; no
+"done" without evidence — acceptance maps to checks, and a pass cannot be manufactured by
+weakening one; no self-graded review; contained Git blast radius; no plan archaeology — the
+working tree carries only what still decides something.
+
+This file is the install and operations guide; the normative authority is `protodog/core/`, and
+this README never overrides it.
 
 ## Contents
 
-- [Why this document exists](#why-this-document-exists)
+- [What this is](#what-this-is)
 - [Prerequisites](#prerequisites)
 - [Install](#install)
 - [Release ritual](#release-ritual)
@@ -88,9 +121,7 @@ Ideation results enter the Protocol only as `inputs/` documents with cited prove
 Start bounded work with `/protodog:task`, long-lived multi-track work with `/protodog:program`;
 supply intent or exact `@inputs/` / `@specs/` references. Artifacts land under `inputs/`,
 `specs/`, and `plan/<plan-id>/` of the repository you're in, per `protodog/core/foundation.md`.
-Sessions start `interactive` — proceed to a declared boundary, report, wait — and may be switched
-to `continuous`, where the plan itself is the engineer's window on progress. Yellow below marks
-the engineer-owned moments; everything else is delegated agent work.
+Yellow below marks the engineer-owned moments; everything else is delegated agent work.
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
@@ -124,6 +155,46 @@ flowchart TD
 
     classDef engineer fill:#facc151a,stroke:#facc1533,color:#eab308
     classDef done fill:#4ade801a,stroke:#22c55e33,color:#4ade80
+```
+
+### Cadence
+
+Cadence governs how often the engineer is consulted — nothing else. It never changes authority,
+verification, or who commits; checkpoints happen at coherent verified units in either mode.
+
+- **`interactive`** (default): proceed to the declared boundary — the first one normally a small,
+  reversible, independently verified unit — report completed work, material evidence, and the
+  next unit, then wait. `go` releases exactly the declared boundary and changes nothing else.
+- **`continuous`** (explicit override, at invocation or any time): proceed through unambiguous
+  planned work until a gate, a stop condition, a required engineer action, or completion. With no
+  boundary reports, the plan is the engineer's only window — every status transition writes the
+  owning plan and verifies the persisted state before dependent work proceeds.
+- Cadence is profile-wide in a Task; a Program has a default with track and block overrides — the
+  most specific active setting wins and expires with its scope. The engineer may intervene at any
+  time, and in neither cadence are grounding, planning, or plan revision approval stops.
+
+```mermaid
+%%{init: {'theme':'dark'}}%%
+sequenceDiagram
+    participant E as Engineer
+    participant A as Agent
+    participant P as Owning plan
+
+    rect rgba(96,165,250,0.1)
+        note over E,P: interactive (default) — consult at declared boundaries
+        A->>A: Execute the declared unit
+        A->>E: Boundary report: work, evidence, next unit
+        E-->>A: go — releases exactly that boundary
+        A->>A: Execute the next declared unit
+    end
+    rect rgba(192,132,252,0.1)
+        note over E,P: continuous (explicit override) — the plan is the window
+        A->>A: Execute step
+        A->>P: Write the transition, verify persisted state
+        A->>A: Execute next step
+        A->>P: Write the transition, verify persisted state
+        A->>E: Stop only at a gate, stop condition, or completion
+    end
 ```
 
 ### Audit cycle
