@@ -24,7 +24,8 @@ delegation is part of profile invocation and is cadence-independent — cadence 
 engineer is consulted, not who commits.
 
 **Engineer-owned, always**: fetch and synchronization with `main`; publishing any ref; rebase onto
-`main`; history rewrites; squash; landing; worktree cleanup and branch deletion. Where guarded
+`main`; history rewrites; squash; landing; worktree cleanup and branch deletion; retirement of
+terminal plan directories (the land-then-sweep rule in the Foundation). Where guarded
 repository scripts exist, they are the only path for these operations; where they do not, these
 operations happen only by the engineer's hand.
 

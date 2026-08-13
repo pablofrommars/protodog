@@ -2,7 +2,8 @@
 // validate-registry.cs — deterministic validator for the prompt snippet registries.
 // Usage: dotnet validate-registry.cs <file.code-snippets> ...
 // Checks: JSONC parseability, required fields, scope, unique keys and prefixes across ALL
-// given files, tab-stop ordering and numbering, and the p-protocol-* skill reservation.
+// given files, tab-stop ordering and numbering, and mini-protocol family coherence
+// (p-protocol-* prefix <-> "mini protocol" description).
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -62,9 +63,14 @@ foreach (var file in args)
 			}
 
 			var prefix = snippet.TryGetProperty("prefix", out var prefixElement) ? prefixElement.GetString() ?? "" : "";
-			if (prefix.StartsWith("p-protocol-"))
+			var description = snippet.TryGetProperty("description", out var descriptionElement) ? descriptionElement.GetString() ?? "" : "";
+			var familyPrefix = prefix.StartsWith("p-protocol-");
+			var familyDescription = description.Contains("mini protocol", StringComparison.OrdinalIgnoreCase);
+			if (familyPrefix != familyDescription)
 			{
-				Bad(file, $"{location} prefix \"{prefix}\" is reserved for Protocol entry skills");
+				Bad(file, familyPrefix
+					? $"{location} prefix \"{prefix}\" marks the mini-protocol family; description must say \"mini protocol\""
+					: $"{location} description claims a mini protocol; prefix must start with \"p-protocol-\"");
 			}
 
 			Track(keys, key, file);

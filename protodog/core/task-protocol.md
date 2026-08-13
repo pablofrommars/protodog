@@ -105,7 +105,10 @@ Add only sections that carry applicable state: **Gates**, **Decisions**, **Autho
 engineer grants not carried by enforced configuration), **Assumptions and open questions**,
 **Deferred issues and accepted gaps**, **Execution topology** (only when concurrency is selected),
 **Material notes** (concise, dated, only when the reason for a change matters for resumption or
-audit). There is no event log, attempt log, or completion-report artifact. Keep evidence concise
+audit). There is no event log, attempt log, or completion-report artifact. On a terminal plan,
+every top-level item under **Deferred issues and accepted gaps** ends with a disposition arrow —
+`→ D-NN` once lifted to the deferred register, or `→ closed: <reason>` when it does not outlive
+the Task (enforced). Keep evidence concise
 and referential: the command or check, material result, repository-state provenance when material,
 and a link to retained larger output.
 
@@ -189,10 +192,14 @@ successor exists.
 
 A Task is `completed` only when every bound acceptance criterion is `satisfied` or has an
 engineer-approved `accepted exception`; required verification has evidence; materially omitted
-verification is disclosed; and no open gate blocks completion. The final response summarizes
-acceptance, material evidence, omissions, retained issues or gaps, and landing state when material
-— it is not persisted as a separate report. Completion is not landing; when landing occurs, the
-whole Task is one commit on `main` through the engineer-triggered mechanism.
+verification is disclosed; no open gate blocks completion; and the plan's outward state is
+settled under the Foundation's lift rule — deferred issues, accepted gaps, and still-unresolved
+open questions lift to `plan/deferred.md` as self-sufficient rows or carry their stated closure
+through the disposition arrows (enforced). The final response summarizes acceptance, material
+evidence, omissions, retained issues or gaps, and landing state when material — it is not
+persisted as a separate report. Completion is not landing; when landing occurs, the whole Task is
+one commit on `main` through the engineer-triggered mechanism, and the terminal plan directory
+then awaits the engineer-triggered retirement sweep.
 
 ## Assurance and audit
 

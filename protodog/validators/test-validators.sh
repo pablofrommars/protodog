@@ -28,6 +28,7 @@ expect_ok "template program plan" "$T/program-plan.md"
 expect_ok "template track plan"   "$T/track-plan.md"
 expect_ok "template dispatch"     "$T/dispatch.md"
 expect_ok "template spec"         "$T/spec.md"
+expect_ok "template deferred register" "$T/deferred-register.md"
 
 # --- negative: one seeded violation per check class -------------------------
 seed() { cp "$T/task-plan.md" "$TMP/task-plan.md"; }
@@ -191,6 +192,88 @@ gated '🔴 ~~GATE-01~~ · open';    expect_bad "open gate struck early" "$TMP/t
 gated '⬜ GATE-01 · open';        expect_bad "wrong marker on an open gate" "$TMP/task-plan.md"
 gated '✅ GATE-01 · completed';   expect_bad "work status used for a gate" "$TMP/task-plan.md"
 gated '✅ ~~GATE-01 · settled';   expect_bad "unbalanced strikethrough markers" "$TMP/task-plan.md"
+
+# --- terminal lift: a terminal plan is not the sole carrier of a live obligation ---
+lifted() { # status, deferred item line -> a task plan carrying both
+  cat > "$TMP/task-plan.md" <<EOF
+# Lift fixture
+
+- Profile: Task
+- Status: $1
+- Cadence: interactive
+- Spec context:
+  - @specs/x.md
+
+## Contents
+
+- [Steps](#steps)
+- [Acceptance](#acceptance)
+- [Deferred issues and accepted gaps](#deferred-issues-and-accepted-gaps)
+
+## Steps
+
+| ID | Checkable result | Affected surfaces | Acceptance | Verification |
+|---|---|---|---|---|
+| ✅ STEP-01 · completed | a | b | ACCEPTANCE-01 | c |
+
+## Acceptance
+
+| Criterion | Evidence |
+|---|---|
+| ✅ ACCEPTANCE-01 · satisfied | done |
+
+## Deferred issues and accepted gaps
+
+- $2
+EOF
+}
+
+lifted 'completed' 'retry backoff tuning → D-03'
+expect_ok "terminal plan with lifted deferred item" "$TMP/task-plan.md"
+
+lifted 'completed' 'retry backoff tuning → closed: obsoleted by STEP-01'
+expect_ok "terminal plan with closed deferred item" "$TMP/task-plan.md"
+
+lifted 'completed' 'retry backoff tuning'
+expect_bad "terminal plan with un-lifted deferred item" "$TMP/task-plan.md"
+
+lifted 'cancelled' 'retry backoff tuning'
+expect_bad "cancelled plan with un-lifted deferred item" "$TMP/task-plan.md"
+
+lifted 'in progress' 'retry backoff tuning'
+expect_ok "live plan carries deferred item without arrow" "$TMP/task-plan.md"
+
+# --- deferred register --------------------------------------------------------
+reg() { # parked id cell, disposition -> a register carrying one parked and one closed row
+  cat > "$TMP/deferred.md" <<EOF
+# Deferred register
+
+## Contents
+
+- [Parked](#parked)
+- [Closed](#closed)
+
+## Parked
+
+| ID | Item | Disposition | Revisit | Provenance |
+|---|---|---|---|---|
+| $1 | claim, why it matters, what settles it | $2 | — | plan-x DEFERRED-01, 2026-08-13 |
+
+## Closed
+
+| ID | Outcome |
+|---|---|
+| ✅ D-09 · closed | done by task-y, 2026-08-13 |
+EOF
+}
+
+reg '⬜ D-01 · parked' 'actionable';       expect_ok  "register parked row" "$TMP/deferred.md"
+reg '⬜ D-01 · parked' "engineer's call";  expect_ok  "register disposition with apostrophe" "$TMP/deferred.md"
+reg '⬜ D-01 · parked' 'someday';          expect_bad "register disposition outside enum" "$TMP/deferred.md"
+reg '✅ D-01 · closed' 'actionable';       expect_bad "closed status under Parked" "$TMP/deferred.md"
+reg '⬛ D-01 · dropped' 'actionable';      expect_bad "dropped status under Parked" "$TMP/deferred.md"
+reg '⬜ D-09 · parked' 'actionable';       expect_bad "duplicate register id across sections" "$TMP/deferred.md"
+reg '⬜ D-01 · pending' 'actionable';      expect_bad "register status outside enum" "$TMP/deferred.md"
 
 # Discriminating fence fixture: an unmasked scanner finds the fenced decoy table first
 # (wrong columns, unmapped acceptance); a masked scanner sees only the real table.

@@ -14,13 +14,18 @@ Status: committed registry mechanics, Claude-native line.
 
 | Registry | Content | Prefixes |
 |---|---|---|
-| `prompt-utility.code-snippets` | Full prompt utilities, standalone mini protocols, and composition helpers | `p-*`, `c-*`, `e-*`, `g-*` |
+| `prompt-utility.code-snippets` | Ideation mini protocols, full prompt utilities, and composition helpers | `p-protocol-*`, `p-*`, `c-*`, `e-*`, `g-*` |
 | `boxer.code-snippets` | Verbatim standalone Boxer family and its local dialect | `bx-*` |
 
-The `p-protocol-*` prefix is reserved for Protocol entry skills and may not be used by any snippet
-(enforced by the registry validator). A utility or mini protocol must not imply Protocol
-conformance or write canonical Protocol state; standalone mini protocols may align with Foundation
-terminology but operate under their own bounded contracts.
+The `p-protocol-*` prefix marks the mini-protocol family: snippets that open a governed multi-turn
+working session with its own session state and close semantics. Family membership is declared by
+the prefix and echoed by the phrase "mini protocol" in the description; the two must agree
+(enforced by the registry validator). A mini protocol is a standalone bounded contract: it may
+align with Foundation terminology, but it never implies Protodog conformance and never writes
+canonical Protocol state — Protocol entry remains skills-only, and skills are invoked by name, so
+no snippet prefix can collide with them. The former skills-only reservation of `p-protocol-*` was
+retired 2026-08-13: it defended against a collision that cannot occur, and the namespace now
+carries the family it was guarding.
 
 ## Snippet mechanics
 
@@ -45,6 +50,6 @@ and mini protocol is self-contained for its declared operating environment.
 ## Validation
 
 `protodog/validators/validate-registry.cs` deterministically checks parseability, required
-fields, key and prefix uniqueness across the registry set, tab-stop ordering, and the
-`p-protocol-*` reservation. Deterministic validation does not replace the risk-driven
-`p-audit-registry` adversarial review.
+fields, key and prefix uniqueness across the registry set, tab-stop ordering, and mini-protocol
+family coherence (`p-protocol-*` prefix ↔ "mini protocol" description). Deterministic validation
+does not replace the risk-driven `p-audit-registry` adversarial review.

@@ -24,6 +24,7 @@ Status: committed normative Foundation, Claude-native line.
 | Enforcement | `protodog/hooks/`, `protodog/validators/` | Deterministic checks; authoritative for what they decide |
 | Entry | Task and Program skills | Implement the invocation contract |
 | Prompt registries | `prompt-utility.code-snippets`, `boxer.code-snippets` under `prompt-registry-style.md` | Host-portable prompts outside Protocol state |
+| Ideation mechanics | `ideation-audit` skill | Claude-native adversarial pressure for ideation sessions — outside Protocol state |
 
 This table is the complete normative closure; nothing outside it carries Protocol authority. A
 validator rejection outranks a prose interpretation for whatever the validator decides; disputes
@@ -34,8 +35,10 @@ about a validator's correctness are resolved by fixing the validator, not by ove
 The engineer selects Task or Program by invoking its skill from sufficient current-session or
 persisted context. The Protocol does not score the choice, select automatically, or promote a Task
 when Program-like conditions appear. Ideation happens outside the Protocol — through the external
-engine or a portable utility prompt — and its results enter only as `inputs/` documents with cited
-provenance.
+engine or a portable ideation mini protocol; inside a Claude ideation session, the
+`ideation-audit` skill may dispatch adversarial subagent audits of the session's settled
+conclusions, which remain session material. Ideation results enter the Protocol only as `inputs/`
+documents with cited provenance.
 
 If later evidence makes the selected profile unsuitable, the agent presents a decision-ready
 recommendation. Only the engineer may choose a replacement. The original plan becomes `superseded`,
@@ -97,9 +100,33 @@ path derives from it.
 | Program dispatch | `plan/<plan-id>/dispatches/DISPATCH-NN.md` |
 | Audit cycle (profile-wide) | `plan/<plan-id>/audits/` |
 | Audit cycle (track) | `plan/<plan-id>/tracks/TRACK-NN/audits/` |
+| Deferred register | `plan/deferred.md` |
 
 An audit cycle consists of exactly these files, numbered within their declared scope:
 `audit-NN-dispatch.md`, `audit-NN.md`, `audit-NN-challenge.md`.
+
+### Plan membership, lift, and retirement
+
+`plan/` holds exactly two kinds of entry: plan-id directories and the deferred register
+(`plan/deferred.md`, shaped by its template and validated on write). Ideation products enter as
+`inputs/`; rationale that must outlive its plan moves to spec context or repository
+documentation. `plan/` is working execution state — never an archive, and never a decision record
+in disguise.
+
+A plan may not go terminal while it is the sole carrier of a live obligation. Before `completed`,
+`superseded`, or `cancelled` is recorded, every deferred issue and accepted gap — and any open
+question still unresolved, which becomes a deferred issue at that moment — either lifts to the
+deferred register or records its closure through the owning profile's disposition-arrow grammar
+(enforced). A lifted row is self-sufficient: it carries the condensed claim, why it matters, and
+its revisit condition, because the source plan will be retired; its provenance cell points into
+history, not at required reading.
+
+Retirement deletes terminal, landed plan directories from the working tree. Git history on `main`
+is the archive — one-commit landing guarantees the provenance — and a terminal plan is delete-safe
+by construction: after the lift, nothing may cite it as ongoing authority. Retirement is
+engineer-triggered, land-then-sweep; an agent never retires a plan directory on its own
+initiative. Audit-report immutability forbids edits while the plan lives; it does not survive the
+plan — retirement removes the directory whole.
 
 ### Canonical state and working views
 

@@ -1,5 +1,35 @@
 # Changelog
 
+## 3.0.0 — 2026-08-13
+
+Three protocol-fit remediations from the first weeks of daily use. Major bump per the 2.0.0
+precedent: the plan dialect gets stricter (terminal-lift arrows), so templates and validator must
+propagate together.
+
+- **Mini-protocol family prefix, catalogue re-cut by subject.** The ideation mini protocols are
+  now `p-protocol-ideate-feature` (merges the former intent-shaping and repository ideation
+  prompts — repository-grounded work shaping that ends in blast-radius and profile orientation),
+  `p-protocol-ideate-concept` (new: pure conceptual ideation — approaches, abstractions, no
+  repository required), and `p-protocol-ideate-domain` (was DDD ideation). The skills-only
+  reservation of `p-protocol-*` is retired — skills are invoked by name, so no snippet prefix can
+  collide with them — and the registry validator enforces family coherence instead
+  (`p-protocol-*` prefix ↔ "mini protocol" description). The audit and utility prompts keep `p-*`.
+- **New `ideation-audit` skill.** From inside an ideation mini protocol, dispatches fresh-context
+  adversarial subagent audits of the session's settled conclusions — grounded (with repository
+  access) and/or conceptual (deliberately without) — so design concepts and logic are settled
+  before planning. Creates no Protodog state; findings reach planning only as `inputs/` with
+  cited provenance.
+- **Plan lifecycle: membership, lift, retirement.** `plan/` holds only plan-id directories and
+  the deferred register (`plan/deferred.md`, template `templates/deferred-register.md`, validated
+  on write via the hook). A plan may not go terminal as the sole carrier of a live obligation:
+  deferred issues and accepted gaps lift to the register as self-sufficient rows or record their
+  closure via disposition arrows — `→ D-NN` / `→ closed: <reason>`, tracks may also point at
+  `→ ISSUE-NN` (enforced). Terminal, landed plan directories are deleted by the engineer-triggered
+  retirement sweep; Git history on `main` is the archive. Stricter than 2.0.x in one case: a
+  terminal plan written with un-arrowed deferred items is now rejected; live plans are unaffected
+  until they complete.
+- Test baseline: plan-validator 48 → 61, registry 7 → 9, hooks 35 → 38, launcher 8 unchanged.
+
 ## 2.0.0 — 2026-08-12
 
 Plan artifact dialect change — breaking for existing plans, which must be migrated. Major bump so

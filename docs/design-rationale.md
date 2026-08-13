@@ -18,8 +18,11 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
    internal on the top Claude model), and ideation engine whose syntheses enter as `inputs/` with
    cited provenance — never directly into `specs/` or `plan/`.
 3. **Mini-protocols and utilities stay in the snippet registry** (host-portable text — the same
-   expansion serves any host, including Codex). Entry points are skills; `p-protocol-*`-style
-   reserved prefixes are skills-only, enforced by the registry validator.
+   expansion serves any host, including Codex). Entry points are skills, invoked by name — no
+   snippet prefix can collide with them, so the original skills-only reservation of `p-protocol-*`
+   was retired (re-ruled 2026-08-13) and the prefix now marks the mini-protocol family itself
+   (`p-protocol-ideate-*`: snippets opening a governed multi-turn working session), with
+   prefix↔description coherence enforced by the registry validator.
 4. **Audit loop**: audits are selected at planning time as planned units; launch is a per-audit
    HIL authorization gate (cost + data egress — deliberate: no standing grant for repository
    content leaving the boundary); the guarded launcher takes exactly one argument, re-verifies
@@ -52,6 +55,21 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
    Scope of installation mirrors scope of portability.
 10. **C# follows the firm style guide** (`tsu/.github/instructions/csharp.instructions.md`): tabs,
     Allman, mandatory control-flow braces, restrictive comment policy.
+11. **Ideation hardens before planning, with Claude-native pressure** (added 2026-08-13). The
+    `ideation-audit` skill dispatches fresh-context adversarial subagents from inside an ideation
+    mini protocol — a grounded auditor with repository access and a conceptual auditor deliberately
+    without it — so design concepts and logic are settled while they are still cheap to change. It
+    creates no Protocol state and never satisfies Protocol assurance; findings are session
+    material, and only `inputs/` with cited provenance carries them toward planning. The
+    host-portable fallback is `p-audit` in a fresh session.
+12. **Plans die; registers and history carry what outlives them** (added 2026-08-13). `plan/`
+    holds only plan-id directories and the deferred register (`plan/deferred.md`). A plan may not
+    go terminal as the sole carrier of a live obligation — every deferred issue and accepted gap
+    lifts to the register or records its closure via disposition arrows (enforced). Lifted rows
+    are self-sufficient because retirement — engineer-triggered, land-then-sweep — deletes
+    terminal plan directories; Git history on `main` is the archive, which one-commit landing
+    guarantees. `plan/` is never an ADR store: durable rationale moves to specs or repository
+    documentation.
 
 ## Accepted background rationale
 

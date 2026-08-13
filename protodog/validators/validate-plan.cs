@@ -1,7 +1,8 @@
 #!/usr/bin/env dotnet
 // validate-plan.cs — deterministic validator for Protodog artifacts.
 // Usage: dotnet validate-plan.cs <path> ... where <path> is a plan/<plan-id> directory
-// (whole tree, cross-references, audit-cycle filenames) or an individual artifact file.
+// (whole tree, cross-references, audit-cycle filenames), an individual artifact file, or the
+// deferred register (plan/deferred.md).
 // Exit 0: valid. Exit 1: violations, one per line as "<file>: <message>". Exit 2: usage.
 using System.Text.RegularExpressions;
 
@@ -35,6 +36,13 @@ Dictionary<string, string> gateMarkers = new()
 	["open"] = "🔴",
 	["settled"] = "✅",
 };
+Dictionary<string, string> registerMarkers = new()
+{
+	["parked"] = "⬜",
+	["closed"] = "✅",
+	["dropped"] = "⬛",
+};
+string[] dispositions = ["actionable", "engineer's call", "trigger-blocked", "standing debt"];
 
 // Alternation, never a character class: 🟡 and 🔴 are surrogate pairs in UTF-16, and a class
 // would match their halves independently.
@@ -443,6 +451,121 @@ void CheckStepRows(string file, Table table, string idPattern, HashSet<string>? 
 	}
 }
 
+// A terminal plan may not be the sole carrier of a live obligation: every top-level item in the
+// section lifts to the deferred register or records its closure inline.
+void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool[] mask, string? status, string sectionTitle, string arrowPattern, string expectation)
+{
+	if (status is not ("completed" or "superseded" or "cancelled"))
+	{
+		return;
+	}
+
+	var section = sections.FirstOrDefault(s => s.Title == sectionTitle);
+	if (section is null)
+	{
+		return;
+	}
+
+	for (var i = section.Start + 1; i < section.End; i++)
+	{
+		if (mask[i] || !lines[i].StartsWith("- "))
+		{
+			continue;
+		}
+
+		if (!Regex.IsMatch(lines[i], arrowPattern))
+		{
+			var item = lines[i][2..];
+			Bad(file, $"terminal plan: \"{(item.Length > 60 ? item[..60] + "…" : item)}\" in \"## {sectionTitle}\" must end with {expectation}");
+		}
+	}
+}
+
+void ValidateDeferredRegister(string file)
+{
+	var lines = File.ReadAllLines(file);
+	var mask = FenceMask(lines);
+	var sections = Sections(lines, mask);
+	CheckEmptySections(file, lines, mask);
+	CheckContents(file, lines, sections, mask);
+	var ids = new HashSet<string>();
+	var parked = sections.FirstOrDefault(s => s.Title == "Parked");
+	if (parked is null)
+	{
+		Bad(file, "missing \"## Parked\" section");
+	}
+	else
+	{
+		var table = CheckTable(file, lines, parked, ["ID", "Item", "Disposition", "Revisit", "Provenance"], "Parked", mask);
+		if (table is not null)
+		{
+			foreach (var row in table.Rows)
+			{
+				if (row.Count < 5)
+				{
+					Bad(file, $"parked row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 5");
+					continue;
+				}
+
+				var cell = CheckWorkCell(file, row[0], @"^D-\d{2,}$", registerMarkers, null);
+				if (cell is not null)
+				{
+					if (!ids.Add(cell.Id))
+					{
+						Bad(file, $"duplicate id \"{cell.Id}\"");
+					}
+
+					if (cell.Status != "parked")
+					{
+						Bad(file, $"\"{cell.Id}\" under \"## Parked\" must be \"parked\" (got \"{cell.Status}\")");
+					}
+				}
+
+				if (!dispositions.Contains(row[2]))
+				{
+					Bad(file, $"disposition \"{row[2]}\" not in enum for \"{cell?.Id ?? row[0]}\"");
+				}
+			}
+		}
+	}
+
+	var closed = sections.FirstOrDefault(s => s.Title == "Closed");
+	if (closed is null)
+	{
+		Bad(file, "missing \"## Closed\" section");
+		return;
+	}
+
+	var closedTable = CheckTable(file, lines, closed, ["ID", "Outcome"], "Closed", mask);
+	if (closedTable is null)
+	{
+		return;
+	}
+
+	foreach (var row in closedTable.Rows)
+	{
+		if (row.Count < 2)
+		{
+			Bad(file, $"closed row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 2");
+			continue;
+		}
+
+		var cell = CheckWorkCell(file, row[0], @"^D-\d{2,}$", registerMarkers, null);
+		if (cell is not null)
+		{
+			if (!ids.Add(cell.Id))
+			{
+				Bad(file, $"duplicate id \"{cell.Id}\"");
+			}
+
+			if (cell.Status == "parked")
+			{
+				Bad(file, $"\"{cell.Id}\" under \"## Closed\" cannot be \"parked\"");
+			}
+		}
+	}
+}
+
 void ValidateTaskPlan(string file)
 {
 	var lines = File.ReadAllLines(file);
@@ -459,6 +582,8 @@ void ValidateTaskPlan(string file)
 	CheckEmptySections(file, lines, mask);
 	CheckContents(file, lines, sections, mask);
 	CheckGates(file, lines, sections, mask);
+	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Deferred issues and accepted gaps",
+		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"");
 	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
 	var stepsSection = sections.FirstOrDefault(s => s.Title == "Steps");
 	if (stepsSection is null)
@@ -499,6 +624,8 @@ void ValidateProgramPlan(string file, string? planDir)
 	CheckEmptySections(file, lines, mask);
 	CheckContents(file, lines, sections, mask);
 	CheckGates(file, lines, sections, mask);
+	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Program issue ledger",
+		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"");
 	var tracksSection = sections.FirstOrDefault(s => s.Title == "Tracks");
 	if (tracksSection is null)
 	{
@@ -594,6 +721,8 @@ void ValidateTrackPlan(string file)
 	CheckEmptySections(file, lines, mask);
 	CheckContents(file, lines, sections, mask);
 	CheckGates(file, lines, sections, mask);
+	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Deferred issues and accepted gaps",
+		@"→ (ISSUE-\d{2,}|D-\d{2,}|closed: .+)$", "\"→ ISSUE-NN\" (deduplicated into the ledger), \"→ D-NN\", or \"→ closed: <reason>\"");
 	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
 	var blocksSection = sections.FirstOrDefault(s => s.Title == "Blocks");
 	if (blocksSection is null)
@@ -755,6 +884,11 @@ void ValidateFile(string file, string? planDir)
 			ValidateDispatch(file);
 			break;
 		}
+		case var name when name == "deferred.md" || name == "deferred-register.md":
+		{
+			ValidateDeferredRegister(file);
+			break;
+		}
 		case var name when name == "spec.md" || file.Contains($"{separator}specs{separator}"):
 		{
 			ValidateSpec(file);
@@ -762,7 +896,7 @@ void ValidateFile(string file, string? planDir)
 		}
 		default:
 		{
-			Bad(file, "unrecognized artifact type (expected task-plan.md, program-plan.md, track-plan.md, DISPATCH-NN*.md, or a spec)");
+			Bad(file, "unrecognized artifact type (expected task-plan.md, program-plan.md, track-plan.md, DISPATCH-NN*.md, deferred.md, or a spec)");
 			break;
 		}
 	}
@@ -785,7 +919,7 @@ void ValidateDirectory(string directory)
 			continue;
 		}
 
-		if (baseName is "task-plan.md" or "program-plan.md" or "track-plan.md" || Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$"))
+		if (baseName is "task-plan.md" or "program-plan.md" or "track-plan.md" or "deferred.md" || Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$"))
 		{
 			ValidateFile(file, directory);
 			any = true;

@@ -162,7 +162,8 @@ void PreWrite()
 void PostPlanWrite()
 {
 	var baseName = Path.GetFileName(filePath);
-	var isPlan = baseName is "task-plan.md" or "program-plan.md" or "track-plan.md" || Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$");
+	var isRegister = baseName == "deferred.md" && Regex.IsMatch(Path.GetFullPath(filePath).Replace('\\', '/'), @"(^|/)plan/deferred\.md$");
+	var isPlan = isRegister || baseName is "task-plan.md" or "program-plan.md" or "track-plan.md" || Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$");
 	if (!isPlan)
 	{
 		return;

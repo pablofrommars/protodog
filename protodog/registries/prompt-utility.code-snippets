@@ -1,42 +1,21 @@
 {
-	// Family: ordinary prompt utilities, standalone mini protocols, and composition helpers.
-	// Mechanical style: ../skills/agentic-execution-protocol/references/prompt-registry-style.md.
-	// These entries do not invoke or write Protodog state.
+	// Families: ideation mini protocols (p-protocol-*), full prompt utilities (p-*), and
+	// composition helpers (c-*, e-*, g-*). Mechanical style: prompt-registry-style.md (same
+	// directory). These entries do not invoke or write Protodog state.
 
 	// ============================================================
-	// FULL PROMPT UTILITIES AND MINI PROTOCOLS (p-*)
+	// MINI PROTOCOLS (p-protocol-*)
 	// ============================================================
-	"Prompt: Protocol Ideation": {
+	"Mini Protocol: Feature Ideation": {
 		"scope": "markdown",
-		"prefix": "p-ideate-protocol",
+		"prefix": "p-protocol-ideate-feature",
 		"body": [
 			"<task>",
-			"Help me shape the supplied intent and obtain enough grounded orientation to ballpark its blast radius and cost before I choose the Task or Program execution profile.",
+			"Collaboratively shape the supplied intent into a defensible feature direction: explore the relevant repository surfaces, widen and test meaningful alternatives, and settle conclusions — including, when execution is in sight, enough orientation to ballpark blast radius, cost, and Task-or-Program fit — without planning or implementing.",
 			"</task>",
 			"",
 			"<context>",
-			"${1:Describe the intent, known scope and exclusions, constraints, and exact references when available.}",
-			"</context>",
-			"",
-			"<instructions>",
-			"- This is optional pre-protocol ideation: do not select a profile, plan, implement, or create Protodog state or artifacts.",
-			"- Work multi-turn; let questions emerge from concrete contradictions, uncertainty, or branches rather than a questionnaire.",
-			"- Persist only on my explicit instruction; results destined for planning are saved under inputs/ with cited provenance.",
-			"</instructions>",
-			"$0"
-		],
-		"description": "Shape and orient intent before choosing an execution profile; portable to any host, creates no artifact"
-	},
-	"Prompt: Repository Ideation": {
-		"scope": "markdown",
-		"prefix": "p-ideate-repo",
-		"body": [
-			"<task>",
-			"Collaboratively explore the supplied repository problem, widen and test meaningful directions, and help me settle defensible conclusions without planning or implementing them.",
-			"</task>",
-			"",
-			"<context>",
-			"${1:Describe the problem or hypothesis, relevant repository surfaces and references, known constraints, and any direction already favored.}",
+			"${1:Describe the intent or problem, relevant repository surfaces and references, known scope and exclusions, constraints, and any direction already favored.}",
 			"</context>",
 			"",
 			"<instructions>",
@@ -46,8 +25,8 @@
 			"- In each turn, advance one coherent decision surface or small related batch. Generate materially distinct alternatives only where the direction remains open; test consequential assumptions, strongest objections, trade-offs, reversibility, and affected seams before recommending.",
 			"- Maintain local session state as `settled conclusions / active directions / unresolved decisions`. Reconcile it after every correction or new repository fact. Surface it when materially changed or requested; do not print a ceremonial ledger every turn.",
 			"- Continue automatically to the next useful decision surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
-			"- Do not create Protodog gates, profile state, specs, plans, or implementation.",
-			"- Close only on my explicit instruction. Do not persist by default.",
+			"- Profile orientation is a conclusion, not a selection: state blast radius, cost, and profile fit as settled conclusions when execution is in sight, and leave the choice to me. Do not create Protodog gates, profile state, specs, plans, or implementation.",
+			"- Close only on my explicit instruction. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance.",
 			"</instructions>",
 			"",
 			"<output>",
@@ -55,11 +34,41 @@
 			"</output>",
 			"$0"
 		],
-		"description": "Start a multi-turn, repository-grounded ideation mini protocol"
+		"description": "Start a multi-turn, repository-grounded feature ideation mini protocol; settles direction and profile orientation without entering the Protocol"
 	},
-	"Prompt: DDD Ideation": {
+	"Mini Protocol: Concept Ideation": {
 		"scope": "markdown",
-		"prefix": "p-ddd-ideate",
+		"prefix": "p-protocol-ideate-concept",
+		"body": [
+			"<task>",
+			"Collaboratively explore the supplied concept and converge on defensible conceptual conclusions — abstractions, approaches, and their limits — independent of any repository or execution intent.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Describe the concept or question, the motivating problem, known prior art or sources, constraints, and any position already held.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Treat this as a multi-turn conceptual working session. No repository grounding is assumed or required; when sources, papers, or artifacts are supplied, cite them exactly.",
+			"- Distinguish established knowledge, supported inference, working hypothesis, and speculation. Never present speculation as settled; state what evidence, experiment, or worked example would settle a material unknown.",
+			"- Begin with a concise framing baseline: the core question, the forces on it, materially distinct schools or approaches, and material unknowns. Let my feedback correct or redirect it as part of the conversation rather than as a formal approval gate.",
+			"- In each turn, advance one coherent conceptual surface or small related batch. Stress abstractions against concrete cases, edge conditions, and failure modes; test the strongest objections and materially distinct alternatives before recommending.",
+			"- Maintain local session state as `settled conclusions / active directions / unresolved questions`. Reconcile it after every correction or new fact. Surface it when materially changed or requested; do not print a ceremonial ledger every turn.",
+			"- Continue automatically to the next useful surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
+			"- Do not create Protodog state, select a profile, plan, or implement.",
+			"- Close only on my explicit instruction. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance.",
+			"</instructions>",
+			"",
+			"<output>",
+			"Work conversationally across turns. On explicit close, return an in-session synthesis of settled conclusions, necessary rationale, rejected directions worth preserving, unresolved questions, and useful next validation. If I explicitly request persistence, write the requested artifact beginning with `Why this document exists`; preserve conclusions and continuation context rather than session narrative.",
+			"</output>",
+			"$0"
+		],
+		"description": "Start a multi-turn conceptual ideation mini protocol for abstractions and approaches; needs no repository grounding"
+	},
+	"Mini Protocol: Domain Ideation": {
+		"scope": "markdown",
+		"prefix": "p-protocol-ideate-domain",
 		"body": [
 			"<task>",
 			"Collaboratively explore the domain and converge on a pragmatic model useful for the stated problem.",
@@ -92,8 +101,11 @@
 			"</output>",
 			"$0"
 		],
-		"description": "Start a multi-turn Domain-Driven Design ideation mini protocol"
+		"description": "Start a multi-turn, DDD-informed domain ideation mini protocol converging on a pragmatic model"
 	},
+	// ============================================================
+	// FULL PROMPT UTILITIES (p-*)
+	// ============================================================
 	"Prompt: Independent Audit": {
 		"scope": "markdown",
 		"prefix": "p-audit",

@@ -259,7 +259,10 @@ closure; and unresolved Program-relevant items are deduplicated into the program
   - revisit or reopening condition: ...
 ```
 
-Resolved findings remain linked track evidence and are not copied into the ledger. Track completion
+Resolved findings remain linked track evidence and are not copied into the ledger. On a terminal
+track plan, every top-level item under **Deferred issues and accepted gaps** ends with a
+disposition arrow — `→ ISSUE-NN` when deduplicated into the program issue ledger, `→ D-NN` when
+lifted directly to the deferred register, or `→ closed: <reason>` (enforced). Track completion
 does not claim repository integration.
 
 ## Repository integration and completion
@@ -272,8 +275,10 @@ acceptance, dependencies, baselines, and the ledger, and selects next work.
 
 A Program is `completed` only when every bound acceptance criterion is `satisfied` or excepted;
 every relevant track is terminal; required cross-track verification and integration reconciliation
-have evidence; materially omitted verification is disclosed; no gate blocks completion; and
-unresolved deferred issues and accepted gaps are disclosed. Cancelling a track does not discard its
+have evidence; materially omitted verification is disclosed; no gate blocks completion; and the
+issue ledger is settled outward under the Foundation's lift rule — every top-level `ISSUE-NN`
+still unresolved lifts to `plan/deferred.md` as a self-sufficient row or carries its stated
+closure (`→ D-NN` / `→ closed: <reason>`, enforced). Cancelling a track does not discard its
 acceptance ownership — affected criteria are reassigned, removed through superseding spec context,
 or closed by accepted exception. The whole Program lands as one commit on `main` through the
 engineer-triggered mechanism; completion does not imply landing.

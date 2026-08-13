@@ -55,6 +55,15 @@ sed -i '' 's/- Status: pending planning/- Status: vibing/' "$TMP/task-plan.md"
 expect_deny  post-plan-write "$(file_json "$TMP/task-plan.md")" "invalid plan is rejected back"
 expect_allow post-plan-write "$(file_json "$ROOT/README-nonexistent.txt")" "non-plan files ignored"
 
+# --- post-plan-write: deferred-register routing (plan/deferred.md only) ------
+mkdir -p "$TMP/plan" "$TMP/elsewhere"
+cp "$ROOT/protodog/templates/deferred-register.md" "$TMP/plan/deferred.md"
+expect_allow post-plan-write "$(file_json "$TMP/plan/deferred.md")" "valid deferred register passes"
+sed -i '' 's/trigger-blocked/someday/' "$TMP/plan/deferred.md"
+expect_deny  post-plan-write "$(file_json "$TMP/plan/deferred.md")" "invalid deferred register is rejected back"
+cp "$TMP/plan/deferred.md" "$TMP/elsewhere/deferred.md"
+expect_allow post-plan-write "$(file_json "$TMP/elsewhere/deferred.md")" "deferred.md outside plan/ ignored"
+
 # --- plugin-mode resolution: env-provided roots and denial-log override ------
 PLUGIN_LOG="$TMP/plugin-denials.log"
 plugin_run() { echo "$2" | env CLAUDE_PLUGIN_ROOT="$ROOT/protodog" CLAUDE_PROJECT_DIR="$ROOT" PROTOCOL_DENIAL_LOG="$PLUGIN_LOG" dotnet "$HERE/protodog-hooks.cs" "$1" >/dev/null 2>&1; }
