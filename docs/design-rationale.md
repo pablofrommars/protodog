@@ -77,6 +77,23 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     skill proposes register transitions with evidence and applies only what the engineer
     ratifies — a fired trigger proposes activation, never silent closure. The survey is a
     command, not a document: no index artifact returns.
+14. **Diagram-suited work keeps a working canvas — one doctrine across stations** (added
+    2026-08-15; provenance: `inputs/ideation-visual-support-handoff.md`). The closing diagram
+    companion of an ideation session proved the visual form and failed only on timing; the fix is
+    content diagrams maintained from the baseline turn. A session-state map was explicitly
+    considered and shelved — the pain is visual support on the problem content, not on session
+    placement; do not re-propose it. The canvas is a working view under the Foundation rule —
+    mirrored to, never from; it illustrates, the owning artifact rules — with fixed structure
+    (master at fixed altitude with concern lanes and the landing rule; one-question zooms;
+    alternatives drawn in the affected region plus one ring before the prose comparison) and a
+    fixed legend. The portable clause lives in the `p-protocol-ideate-*` prose, the mechanics in
+    the `working-canvas` skill, the gate-presentation contract in the profile prose. Implementer
+    rulings on the handoff's open points: losing sketches are deleted on settlement (the
+    conclusions record keeps why they lost); ~ten boxes is a number loosely held; mixed detection
+    cues default canvas-on (a discarded canvas is cheap); a diagram's existence never argues
+    against reopening; continuity across stations is per-station seeding through the existing
+    promotion rule, not one evolving file; an execution canvas retires with its plan unless
+    explicitly graduated into documentation; built/verified renders purple (palette headroom).
 
 ## Accepted background rationale
 

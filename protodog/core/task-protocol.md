@@ -171,6 +171,14 @@ actual gate uses the fuller decision-ready Foundation request. Cadence is Task-w
 may switch it explicitly at any time, and `go` releases one declared boundary without changing
 cadence or authority.
 
+**Gate presentation on the working canvas.** A Task in a diagram-suited domain — a mapping between
+structures, a topology, a lifecycle, a data flow — may maintain a working canvas, the Foundation's
+session-scoped rendered working view: mirrored to, never authoritative. Where one is maintained, a
+decision gate surfaced for ruling includes its options drawn in the affected region plus one ring
+of surrounding context; the ruling recolors the canvas, and step completion recolors the affected
+region as built. The gate row and the outcome persisted in the plan remain the sole authority —
+the canvas illustrates, the plan rules.
+
 Under `continuous` cadence, apply the Foundation's plan-currency rule: with no boundary report to
 surface it, the task plan is the engineer's only view of progress. Each step transition — including
 the acceptance, gate, and decision outcomes it settles — updates the task plan, and that update is

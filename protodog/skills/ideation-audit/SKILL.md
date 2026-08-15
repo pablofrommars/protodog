@@ -37,7 +37,8 @@ Stated in plain language inside the invocation, only when they differ from defau
    itself a claim under audit), and any steering — no suspected weaknesses, no priority hints, no
    per-claim instructions. Within its scope the audit is undirected: the auditors choose where to
    dig. A directed check ("verify function X against Y") is ordinary session work, not this
-   dispatch.
+   dispatch. A working canvas maintained by the session informs this distillation but is never a
+   substitute for it or attached to it — the brief stays self-contained.
 2. **Dispatch fresh-context subagents**, one per selected mode:
    - **Grounded auditor** — receives the brief and repository read access. Attacks the
      conclusions' factual footing: does the repository actually behave as claimed, do the cited
@@ -57,7 +58,9 @@ Stated in plain language inside the invocation, only when they differ from defau
    invented to fill a report shape; a clean result applies only to the stated coverage.
 4. **Reconcile in session.** Merge the findings into the session as challenge material: update the
    `settled conclusions / active directions / unresolved decisions` ledger, reopening any
-   conclusion a finding materially undermines. Adopting, rejecting, or testing a finding is
-   session work with the engineer; a finding is never silently authoritative.
+   conclusion a finding materially undermines. When the session maintains a working canvas,
+   reconciliation includes it: a reopened conclusion recolors its nodes red. Adopting, rejecting,
+   or testing a finding is session work with the engineer; a finding is never silently
+   authoritative.
 5. **Persistence.** Nothing persists by default. On explicit instruction, results destined for
    planning are saved under `inputs/` with cited provenance, like every ideation product.

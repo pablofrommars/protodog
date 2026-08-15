@@ -1,5 +1,34 @@
 # Changelog
 
+## 3.2.0 — 2026-08-15
+
+Working canvas: visual support for diagram-suited work, one doctrine across stations. Provenance:
+`inputs/ideation-visual-support-handoff.md` (relocated from the originating session repository);
+open-point rulings recorded as `docs/design-rationale.md` decision 14.
+
+- **Portable clause in the ideation mini protocols.** All three `p-protocol-ideate-*` snippets:
+  a diagram-suited subject (a mapping between structures, a topology, a lifecycle, a data flow)
+  maintains a working canvas from the baseline turn — one master model at fixed altitude with
+  concern lanes and the landing rule, one-question zooms per decision surface, alternatives drawn
+  in the affected region plus one ring of context before the prose comparison, winners drawn in
+  and losing sketches deleted on settlement, a diagram's existence never arguing against
+  reopening. Host-neutral: structured prose where the host renders no diagrams.
+- **New `working-canvas` skill** — the Claude-native mechanics: detection cues (mixed cues
+  default on), the fixed cross-session legend (gray exists / blue open / green settled / yellow
+  gated / red reopened / purple built-verified), the session-scoped mermaid file with the
+  IDE-preview hint, styling deference to a host `mermaid-style` skill, per-station base canvases
+  (problem model / plan structure with the gate DAG / system as built), per-station seeding
+  through the existing promotion rule, promotion only on explicit instruction.
+- **`ideation-audit` coupling**: reconciliation recolors reopened conclusions red; the brief
+  stays self-contained — a canvas informs its distillation, never substitutes for it.
+- **Gate presentation in the profiles.** Task and Program prose gain the contract: where a canvas
+  is maintained, a gate surfaced for ruling includes its options drawn in the affected region
+  plus one ring of context; the ruling recolors, execution recolors built work, and the plan
+  remains the sole authority. The Foundation lists the canvas among working views and the skill
+  in the normative set.
+- Test baseline: unchanged (61 plan-validator / 9 registry / 38 hooks / 8 launcher / 8
+  sweep-check) — no artifact-dialect or enforcement change; registries re-validated.
+
 ## 3.1.0 — 2026-08-13
 
 Plan-maintenance skills: proof-then-judgment, engineer-confirmed.

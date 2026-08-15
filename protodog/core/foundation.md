@@ -25,6 +25,7 @@ Status: committed normative Foundation, Claude-native line.
 | Entry | Task and Program skills | Implement the invocation contract |
 | Prompt registries | `prompt-utility.code-snippets`, `boxer.code-snippets` under `prompt-registry-style.md` | Host-portable prompts outside Protocol state |
 | Ideation mechanics | `ideation-audit` skill | Claude-native adversarial pressure for ideation sessions — outside Protocol state |
+| Canvas mechanics | `working-canvas` skill | Claude-native maintenance of the working canvas for diagram-suited sessions — a working view, outside Protocol state |
 | Maintenance mechanics | `plan-sweep`, `deferred-review` skills with `scripts/sweep-check.cs` | Engineer-confirmed retirement and register upkeep |
 
 This table is the complete normative closure; nothing outside it carries Protocol authority. A
@@ -132,7 +133,8 @@ plan — retirement removes the directory whole.
 ### Canonical state and working views
 
 Plans, specs, and audit artifacts in the repository are the sole authority for execution state.
-Harness task lists, session memory, and transcripts are working views: state may be mirrored *to*
+Harness task lists, session memory, transcripts, and the working canvas — the session-scoped
+rendered model a diagram-suited session may keep — are working views: state may be mirrored *to*
 them for visibility, never *from* them, and harness-generated identifiers never appear in canonical
 artifacts. Durable identifiers are readable and stable: `ACCEPTANCE-01`, `GATE-02`, `STEP-01`,
 `BLOCK-01`, `TRACK-01`, `DISPATCH-01`, `DECISION-01`. Never reuse or renumber one after execution

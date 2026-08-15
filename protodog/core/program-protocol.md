@@ -225,6 +225,15 @@ coordinating agent owns engineer-facing HIL, batches related requests, and conti
 authorized work while a gate blocks only dependent work. Checkpoint commits inside managed
 worktrees follow the Git policy regardless of cadence.
 
+**Gate presentation on the working canvas.** A Program in a diagram-suited domain may maintain a
+working canvas — the Foundation's session-scoped rendered working view, mirrored to and never
+authoritative — maintained by the coordinating agent like every engineer-facing surface. Where one
+is maintained, a gate surfaced for ruling includes its options drawn in the affected region plus
+one ring of surrounding context; the ruling recolors the canvas, and integration reconciliation
+recolors combined structure as built. Program scale — many gates, long horizon — is where the
+rendered gate and dependency order pays most. The owning plan remains the sole authority — the
+canvas illustrates, the plan rules.
+
 Under `continuous` cadence — at Program, track, or block scope — apply the Foundation's
 plan-currency rule against the plan that owns the transition: a step or block transition updates
 its track plan, and cross-track state, track status, dependencies, and `Next` update the program

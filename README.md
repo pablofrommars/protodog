@@ -114,6 +114,13 @@ no repository required), or `p-protocol-ideate-domain` (domain modeling).
 Inside a Claude ideation session, `/protodog:ideation-audit` dispatches fresh-context adversarial
 subagent audits — grounded in the repository and/or purely conceptual — of the session's settled
 conclusions, so design concepts and logic are settled while they are still cheap to change.
+For diagram-suited subjects — structure mappings, topologies, lifecycles, data flows —
+`/protodog:working-canvas` keeps a working canvas from the baseline turn: one master model in
+concern lanes plus one-question zooms, alternatives sketched in context before the prose
+comparison, recolored at settlement and audit reconciliation, promotable at close. The same
+doctrine follows work into the profiles — a gate in a diagram-suited domain presents its options
+drawn in context, and execution recolors built work — with the canvas always a working view,
+never state.
 Ideation results enter the Protocol only as `inputs/` documents with cited provenance.
 
 ### One session, one profile
