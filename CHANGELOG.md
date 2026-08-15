@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.4.0 — 2026-08-15
+
+Profile recommendation on request; the `p-protocol-*` family re-cut to carry it. Rationale
+recorded as `docs/design-rationale.md` decision 16.
+
+- New `p-protocol-recommend-profile` registry snippet — a one-shot grounded Task-vs-Program
+  orientation for cold entry (work that skips ideation's profile orientation): weighs bounded
+  objective versus long-lived horizon, latent track topology, cross-track state / dispatch /
+  concurrent-writer needs, and proportionality (decomposability alone is not a Program signal);
+  returns the recommendation with confidence, driving criteria with evidence, flip conditions,
+  and the suggested invocation line. Advisory only, and the Foundation now says so: a pre-entry
+  recommendation is never solicited by an entry skill and never a selection — the engineer
+  selects by invocation.
+- Namespace re-cut (second re-ruling of `p-protocol-*`): the prefix marks the
+  protocol-affiliated family; the kind is declared in the description — "mini protocol"
+  (governed multi-turn session) or "protocol utility" (one-shot) — with prefix ↔ declared-kind
+  coherence enforced by the registry validator. Style contract updated accordingly.
+- Test baseline: registry 9 → 11.
+
 ## 3.3.0 — 2026-08-15
 
 The assurance interrogation: audit and paid-evaluation scheduling is settled state at planning

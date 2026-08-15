@@ -1,10 +1,11 @@
 {
-	// Families: ideation mini protocols (p-protocol-*), full prompt utilities (p-*), and
-	// composition helpers (c-*, e-*, g-*). Mechanical style: prompt-registry-style.md (same
-	// directory). These entries do not invoke or write Protodog state.
+	// Families: protocol family (p-protocol-*: ideation mini protocols and protocol utilities),
+	// full prompt utilities (p-*), and composition helpers (c-*, e-*, g-*). Mechanical style:
+	// prompt-registry-style.md (same directory). These entries do not invoke or write Protodog
+	// state.
 
 	// ============================================================
-	// MINI PROTOCOLS (p-protocol-*)
+	// PROTOCOL FAMILY (p-protocol-*)
 	// ============================================================
 	"Mini Protocol: Feature Ideation": {
 		"scope": "markdown",
@@ -108,6 +109,32 @@
 			"$0"
 		],
 		"description": "Start a multi-turn, DDD-informed domain ideation mini protocol converging on a pragmatic model"
+	},
+	"Protocol Utility: Recommend Profile": {
+		"scope": "markdown",
+		"prefix": "p-protocol-recommend-profile",
+		"body": [
+			"<task>",
+			"Recommend the Protodog execution profile — Task or Program — for the supplied intent, as a decision-ready orientation. The recommendation is a conclusion, not a selection: profile choice belongs to me, by invocation.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Describe the intended work, relevant repository surfaces and references, known scope and exclusions, constraints, and horizon.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Ground the assessment in the repository and supplied references before concluding; distinguish evidence, inference, and uncertainty.",
+			"- Weigh: bounded objective versus long-lived horizon; whether the work decomposes into streams with independent acceptance and dependencies (latent track topology); durable cross-track state, responsibility dispatch, or concurrent repository writers; progressive-planning need. Decomposability alone is not a Program signal — Task permits bounded subagent use without Program machinery, and proportionality is protected: prefer Task when one agent can credibly carry the lifecycle.",
+			"- State blast radius, rough cost, and the reversibility of the choice: a wrong Task is superseded with no automatic transfer; an under-loaded Program pays its ceremony every turn.",
+			"- Do not invoke a profile, create Protodog state, plan, or implement. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance on explicit instruction.",
+			"</instructions>",
+			"",
+			"<output>",
+			"Return in this session: the recommendation with confidence; the criteria that drove it, each with its evidence; the flip conditions — what evidence would reverse the recommendation; and the suggested invocation line with the exact context references to supply. Leave the selection to me.",
+			"</output>",
+			"$0"
+		],
+		"description": "Protocol utility: one-shot grounded Task-vs-Program recommendation ending in a decision-ready orientation; profile selection stays with the engineer"
 	},
 	// ============================================================
 	// FULL PROMPT UTILITIES (p-*)

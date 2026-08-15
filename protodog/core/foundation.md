@@ -36,7 +36,10 @@ about a validator's correctness are resolved by fixing the validator, not by ove
 
 The engineer selects Task or Program by invoking its skill from sufficient current-session or
 persisted context. The Protocol does not score the choice, select automatically, or promote a Task
-when Program-like conditions appear. Ideation happens outside the Protocol — through the external
+when Program-like conditions appear. A pre-entry recommendation may be requested — the registry
+protocol utility (`p-protocol-recommend-profile`) or feature ideation's profile orientation — and
+is advisory only: never solicited by an entry skill, never a selection; the engineer selects by
+invocation. Ideation happens outside the Protocol — through the external
 engine or a portable ideation mini protocol; inside a Claude ideation session, the
 `ideation-audit` skill may dispatch adversarial subagent audits of the session's settled
 conclusions, which remain session material. Ideation results enter the Protocol only as `inputs/`

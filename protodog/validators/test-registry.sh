@@ -17,13 +17,19 @@ printf '{ "A": { "scope": "markdown", "prefix": "p-x", "body": ["${1:a} ${2:b}"]
 ok "minimal valid registry" "$TMP/ok.code-snippets"
 
 printf '{ "A": { "scope": "markdown", "prefix": "p-protocol-x", "body": ["x"], "description": "d" } }' > "$TMP/r.code-snippets"
-no "family prefix without mini-protocol description" "$TMP/r.code-snippets"
+no "family prefix without declared kind" "$TMP/r.code-snippets"
 
 printf '{ "A": { "scope": "markdown", "prefix": "p-x", "body": ["x"], "description": "a mini protocol" } }' > "$TMP/r2.code-snippets"
 no "mini-protocol description without family prefix" "$TMP/r2.code-snippets"
 
 printf '{ "A": { "scope": "markdown", "prefix": "p-protocol-x", "body": ["x"], "description": "a mini protocol" } }' > "$TMP/r3.code-snippets"
 ok "coherent mini-protocol family entry" "$TMP/r3.code-snippets"
+
+printf '{ "A": { "scope": "markdown", "prefix": "p-protocol-x", "body": ["x"], "description": "a protocol utility" } }' > "$TMP/r4.code-snippets"
+ok "coherent protocol-utility family entry" "$TMP/r4.code-snippets"
+
+printf '{ "A": { "scope": "markdown", "prefix": "p-x", "body": ["x"], "description": "a protocol utility" } }' > "$TMP/r5.code-snippets"
+no "protocol-utility description without family prefix" "$TMP/r5.code-snippets"
 
 printf '{ "A": { "scope": "markdown", "prefix": "p-x", "body": ["x"], "description": "d" }, "B": { "scope": "markdown", "prefix": "p-x", "body": ["y"], "description": "d" } }' > "$TMP/d.code-snippets"
 no "duplicate prefix" "$TMP/d.code-snippets"

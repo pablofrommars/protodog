@@ -125,6 +125,9 @@ Ideation results enter the Protocol only as `inputs/` documents with cited prove
 
 ### One session, one profile
 
+The profile choice is yours. Entering cold — without ideation's profile orientation — expand
+`p-protocol-recommend-profile` for a grounded, decision-ready Task-vs-Program recommendation
+(advisory only; no entry skill solicits it).
 Start bounded work with `/protodog:task`, long-lived multi-track work with `/protodog:program`;
 supply intent or exact `@inputs/` / `@specs/` references. Artifacts land under `inputs/`,
 `specs/`, and `plan/<plan-id>/` of the repository you're in, per `protodog/core/foundation.md`.

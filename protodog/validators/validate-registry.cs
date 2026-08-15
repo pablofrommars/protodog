@@ -2,8 +2,9 @@
 // validate-registry.cs — deterministic validator for the prompt snippet registries.
 // Usage: dotnet validate-registry.cs <file.code-snippets> ...
 // Checks: JSONC parseability, required fields, scope, unique keys and prefixes across ALL
-// given files, tab-stop ordering and numbering, and mini-protocol family coherence
-// (p-protocol-* prefix <-> "mini protocol" description).
+// given files, tab-stop ordering and numbering, and protocol-family coherence
+// (p-protocol-* prefix <-> a declared kind, "mini protocol" or "protocol utility", in the
+// description).
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -65,12 +66,13 @@ foreach (var file in args)
 			var prefix = snippet.TryGetProperty("prefix", out var prefixElement) ? prefixElement.GetString() ?? "" : "";
 			var description = snippet.TryGetProperty("description", out var descriptionElement) ? descriptionElement.GetString() ?? "" : "";
 			var familyPrefix = prefix.StartsWith("p-protocol-");
-			var familyDescription = description.Contains("mini protocol", StringComparison.OrdinalIgnoreCase);
+			var familyDescription = description.Contains("mini protocol", StringComparison.OrdinalIgnoreCase)
+				|| description.Contains("protocol utility", StringComparison.OrdinalIgnoreCase);
 			if (familyPrefix != familyDescription)
 			{
 				Bad(file, familyPrefix
-					? $"{location} prefix \"{prefix}\" marks the mini-protocol family; description must say \"mini protocol\""
-					: $"{location} description claims a mini protocol; prefix must start with \"p-protocol-\"");
+					? $"{location} prefix \"{prefix}\" marks the protocol family; description must say \"mini protocol\" or \"protocol utility\""
+					: $"{location} description claims the protocol family; prefix must start with \"p-protocol-\"");
 			}
 
 			Track(keys, key, file);

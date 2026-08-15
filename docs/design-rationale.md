@@ -106,6 +106,19 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     question, which was the pain. The interrogation settles scheduling only: every launch keeps
     its per-instance authorization gate, and later evidence reopens the outcome as an ordinary
     material delta. Prose-level rule — no dialect, template, or validator change.
+16. **Profile choice stays engineer-owned; a recommendation may be requested — and `p-protocol-*`
+    is re-cut to carry it** (added 2026-08-15). The cold-start gap: work that skips ideation
+    reached the Task/Program fork with no orientation, and the choice is semi-costly to reverse
+    (supersession transfers nothing automatically). `p-protocol-recommend-profile` returns a
+    decision-ready orientation — recommendation with confidence, driving criteria with evidence,
+    flip conditions, and the suggested invocation line. Pull-only by design: never solicited by
+    an entry skill, never a selection, no Protocol state — the Foundation states the rule, so the
+    recommender cannot drift into scoring the choice. It is a one-shot prompt with no
+    Claude-native mechanics, so it stays registry-side per decision 3; because it is not a
+    multi-turn session, the family rule was re-cut a second time (engineer-ruled; see decision
+    3's first re-ruling): `p-protocol-*` now marks the protocol-affiliated family, with the kind
+    declared in the description — "mini protocol" (governed multi-turn session) or "protocol
+    utility" (one-shot) — and the registry validator enforces prefix ↔ declared kind.
 
 ## Accepted background rationale
 
