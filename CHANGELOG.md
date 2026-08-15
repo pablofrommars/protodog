@@ -1,5 +1,26 @@
 # Changelog
 
+## 3.3.0 — 2026-08-15
+
+The assurance interrogation: audit and paid-evaluation scheduling is settled state at planning
+entry, not lingering uncertainty. Engineer-reported pain point; rationale recorded as
+`docs/design-rationale.md` decision 15.
+
+- The assurance policy defines the interrogation: Task planning, and each track's planning in a
+  Program (Program-wide scheduling once, at Program planning), opens by interrogating the
+  scheduling of the authorization-gated instruments — audits and paid or external evaluation
+  runs — and persists exactly one outcome per instrument in the owning plan before execution
+  readiness: selected with declared placement or run bounds; a decision gate at planning entry
+  when indicators support an instrument no selecting authority has ruled on (never silently
+  selected, never silently dropped); or the explicit not-scheduled decision with its basis.
+- Task and Program readiness definitions and both profile assurance sections carry the hook; the
+  entry skills open planning with the interrogation, and an omitted `assurance:` argument no
+  longer means a silent no-assurance default — it means the interrogation settles it. Launch
+  authorization gates are unchanged; a later change reopens the outcome as an ordinary material
+  delta.
+- Prose-level rule: no artifact-dialect, template, or enforcement change. Test baseline
+  unchanged.
+
 ## 3.2.0 — 2026-08-15
 
 Working canvas: visual support for diagram-suited work, one doctrine across stations. Provenance:

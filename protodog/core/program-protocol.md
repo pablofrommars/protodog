@@ -61,7 +61,9 @@ plans are created just in time.
 
 A track is `ready` when its spec references are bound, its assigned acceptance is mapped, the known
 path appears as checkable blocks, its first eligible block is detailed into executable steps,
-required verification is identified, and material gates are visible. Do not invent step detail past
+required verification is identified — the assurance interrogation for the track's assigned scope
+settled at its planning entry and persisted per the assurance policy — and material
+gates are visible. Do not invent step detail past
 unresolved uncertainty; use an exploration step.
 
 ## Program plan
@@ -300,7 +302,11 @@ reconciliation; completion establishes acceptance against the combined integrate
 selection alone requires no additional heavyweight assurance.
 
 Audits are selected at planning time with a declared track- or Program-wide placement, appear in
-the owning plan, and are pinned to exact state by their dispatch when execution arrives. Launch
+the owning plan, and are pinned to exact state by their dispatch when execution arrives. Program
+planning runs the assurance interrogation once for Program-wide scheduling — audits and paid
+evaluation runs alike; each track's planning opens with it for its assigned scope and may
+conclude that a Program-wide placement already carries it — the outcome persists in the owning
+plan per the assurance policy. Launch
 follows the assurance policy's authorization gate and guarded launcher; cycles number within their
 scope and never overwrite. A track audit references its track plan, bound specs, and applicable
 program-plan context; a Program-wide audit names every plan in scope. The planner performs the

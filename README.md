@@ -206,7 +206,11 @@ sequenceDiagram
 
 ### Audit cycle
 
-Audits are selected at planning time. When execution reaches the declared placement, the agent
+Audits and paid evaluation runs are scheduled at planning time: Task planning — and each track's
+planning in a Program — opens with the assurance interrogation, so scheduling leaves planning as
+settled state (a selected instrument with its placement or bounds, a gate for ruling, or an
+explicit not-scheduled decision) instead of lingering uncertainty. When execution reaches the
+declared placement, the agent
 persists the self-contained dispatch pinning the exact state, and launch waits on an
 authorization gate — cost plus data egress, since repository content leaves the boundary:
 

@@ -70,6 +70,22 @@ or target-state change.
 | A planning-time selection, spec, engineer instruction, or repository policy requires a review or audit | Execute against exact scope and pinned state through the contracts below. |
 | A material verification item cannot execute or cannot support its claim | Mark it omitted or unresolved with reason, consequence, and what would settle it; open an accepted-exception request if acceptance is left unmet. |
 
+**The assurance interrogation.** Scheduling of the authorization-gated assurance instruments —
+audits and paid or external evaluation runs — is settled at the start of planning, not discovered
+downstream. Task planning, and each track's planning in a Program, opens by interrogating both
+for its scope: is one selected, by which authority, over what scope, with what placement or run
+bounds? Exactly one outcome per instrument is persisted in the owning plan before execution
+readiness: a selected audit with its declared placement, or scheduled evaluation runs with
+purpose, order, and bounds; a decision gate raised at planning entry when the indicators support
+an instrument that no selecting authority has ruled on — never silently selected, never silently
+dropped; or the explicit not-scheduled outcome, recorded as one decision with its basis. The
+negative is recorded deliberately: an absent answer is indistinguishable from an unasked
+question. Program-wide scheduling is interrogated once at Program planning; a track's
+interrogation covers its assigned scope and may conclude that a Program-wide placement already
+carries it. The interrogation settles scheduling only — each launch keeps its own authorization
+gate — and later evidence reopens the outcome as an ordinary material delta: it removes the
+uncertainty, not the ability to change.
+
 ## Test, measurement, and evaluation identity
 
 A **test case** is one defined automated check; a **test suite** is the complete collection within
@@ -97,7 +113,8 @@ the exact selection, configuration, purpose, run and retry bounds, cost bound, t
 class, result destination, and what waits. One authorization may cover a bounded series only when
 those bounds are explicit. Run before remediation for diagnosis or baseline, after for acceptance,
 both for controlled comparison; the owning plan records purpose, order, authorization, and run
-identity.
+identity. Scheduling of paid or external runs is settled at planning entry by the assurance
+interrogation; each launch keeps its authorization gate.
 
 ## Profile assurance
 
@@ -127,7 +144,8 @@ planning time** — by the engineer, spec context, repository policy, or governi
 and recorded in the owning plan with its declared placement (a lifecycle position or state, e.g.
 "post-integration of TRACK-02, blocks landing"). An emergent audit need is a material delta and
 enters through a plan update. Blast radius, uncertainty, irreversibility, or weak direct
-verification may support a recommendation; they never silently select an audit.
+verification may support a recommendation; they never silently select an audit. Selection is
+settled at planning entry by the assurance interrogation above.
 
 Every audit is independent of the audited authorship; adversarial toward claims but symmetric about
 the result; scoped to exact artifacts and pinned target state; undirected within that scope;

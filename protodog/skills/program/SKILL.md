@@ -27,10 +27,12 @@ engineer never authors XML or protocol structure.
    plan, creating from `${CLAUDE_PLUGIN_ROOT}/templates/program-plan.md` when none matches.
 3. Assume the engineer-supplied Program worktree; inspect and reconcile state without an entry
    approval stop.
-4. Ground the Program; create or refine spec context; discover the known track topology,
-   dependencies, and acceptance ownership without pre-creating empty track plans.
+4. Ground the Program; create or refine spec context; run the assurance interrogation once for
+   Program-wide audit and paid-evaluation scheduling as planning opens; discover the known track
+   topology, dependencies, and acceptance ownership without pre-creating empty track plans.
 5. Create or resume only the selected next track plans from
-   `${CLAUDE_PLUGIN_ROOT}/templates/track-plan.md`, at execution-ready detail.
+   `${CLAUDE_PLUGIN_ROOT}/templates/track-plan.md`, at execution-ready detail, each opening its
+   planning with the assurance interrogation for its assigned scope.
 6. Orchestrate under the Program Protocol: you own the program plan, the Program worktree, and
    engineer-facing HIL at all times; dispatch through native subagents (isolated worktrees for any
    concurrent writer); reconcile serially under the Git policy; stop only for Foundation gates,

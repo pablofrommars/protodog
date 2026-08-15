@@ -26,7 +26,9 @@ the invocation and only when they differ from defaults:
 - `assurance: <selected review or audit and its placement>`
 
 Omitted overrides take defaults silently: whole supplied context as grounding input, conventional
-plan location, `interactive` cadence, ordinary in-scope authority, no added assurance. Never ask
+plan location, `interactive` cadence, ordinary in-scope authority, audit and paid-evaluation
+scheduling settled by the assurance interrogation at planning entry (an omitted `assurance:`
+selects nothing by itself). Never ask
 about an omitted override; never require the engineer to author XML or protocol structure.
 
 ## Procedure
@@ -39,6 +41,7 @@ about an omitted override; never require the engineer to author XML or protocol 
 3. Assume the engineer-supplied worktree; inspect and reconcile repository state and policy without
    an entry approval stop.
 4. Ground the supplied context; create or refine the smallest sufficient spec context; plan the
-   known path end to end; bind exact specs only at execution readiness.
+   known path end to end, opening planning with the assurance interrogation (audit and
+   paid-evaluation scheduling); bind exact specs only at execution readiness.
 5. Execute under the Task Protocol — no plan-approval stop; stop only for Foundation gates,
    declared boundaries, required engineer actions, or completion.

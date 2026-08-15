@@ -44,8 +44,10 @@ content and reconciles intervening repository changes; a material conflict becom
 
 A Task is `ready` when its spec references are bound (immutable from that point, enforced); every
 applicable acceptance criterion has a stable ID and is mapped in the plan; the known path is
-planned as checkable steps; the first step is executable; required verification — including any
-planning-time-selected audit and its placement — is identified; and material gates are visible. A
+planned as checkable steps; the first step is executable; required verification is identified —
+the assurance interrogation settled at planning entry and persisted per the assurance policy, a
+selected audit or paid evaluation run carrying its declared placement or run bounds; and material
+gates are visible. A
 genuine uncertainty may remain as an exploration step; an unspecified promise to plan later does
 not make a Task ready.
 
@@ -217,7 +219,11 @@ changes leave its claim and target state unaffected; completion establishes acce
 final Task state.
 
 An audit exists only when selected at planning time (by the engineer, spec context, repository
-policy, or governing assurance policy) and appears in the plan with its declared placement. When
+policy, or governing assurance policy) and appears in the plan with its declared placement. Task
+planning opens with the assurance interrogation — audits and paid evaluation runs alike — so the
+plan carries the settled scheduling outcome: a selected instrument with its placement or bounds,
+a decision gate raised at planning entry, or the explicit not-scheduled decision, rather than an
+implicit absence. When
 execution reaches that placement, the agent persists the self-contained dispatch pinning the exact
 state, and launch follows the assurance policy's authorization gate and guarded launcher. The
 numbered cycle is `audit-NN-dispatch.md`, `audit-NN.md`, `audit-NN-challenge.md` under

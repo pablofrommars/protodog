@@ -94,6 +94,18 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     against reopening; continuity across stations is per-station seeding through the existing
     promotion rule, not one evolving file; an execution canvas retires with its plan unless
     explicitly graduated into documentation; built/verified renders purple (palette headroom).
+15. **Authorization-gated assurance is interrogated at planning entry** (added 2026-08-15).
+    Planning-time selection alone left the scheduling of audits and paid evaluation runs
+    implicitly unsettled — daily use surfaced the pain as uncertainty about whether an instrument
+    was considered, selected, or still pending. Task planning and each track's planning (Program-
+    wide scheduling once, at Program planning) now open with the assurance interrogation, and
+    exactly one outcome per instrument persists in the owning plan before readiness: selected
+    with declared placement or run bounds, a decision gate when indicators support an instrument
+    no selecting authority has ruled on, or an explicit not-scheduled decision with its basis.
+    The negative is recorded deliberately — an absent answer is indistinguishable from an unasked
+    question, which was the pain. The interrogation settles scheduling only: every launch keeps
+    its per-instance authorization gate, and later evidence reopens the outcome as an ordinary
+    material delta. Prose-level rule — no dialect, template, or validator change.
 
 ## Accepted background rationale
 
