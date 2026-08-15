@@ -1,5 +1,28 @@
 # Changelog
 
+## 3.5.0 — 2026-08-15
+
+Session retrospectives: the practice that produced the working canvas, codified.
+
+- New `p-protocol-retro` mini protocol — a retrospective run at the tail of a working session,
+  examining how the work went rather than what it concluded: items that iterated beyond their
+  substance (and what form would have settled them sooner), uncertainties that dragged along,
+  recurring misreads revealed by engineer corrections, protocol-fit friction versus session-local
+  accident, and the practices worth keeping. Observations cite concrete session moments with
+  engineer-stated versus inferred provenance; corrected misdiagnoses are recorded so they are not
+  re-proposed; remediations leave as handoffs with open points — not implementation plans —
+  naming where each belongs (session habit, method change, or a later amendment in the protocol
+  source). Exemplar: `inputs/ideation-visual-support-handoff.md`, the retro product that became
+  3.2.0.
+- README drift audit (engineer-dispatched), all findings adopted: the release-ritual sentence now
+  matches practice (engineer-reviewed release commits; Protodog plans/specs for heavier changes);
+  gates described as the HIL core rather than the only HIL interface; the install line covers all
+  shipped skills; the profile flowchart binds specs at readiness (after planning), opens planning
+  with the assurance interrogation, and shows the canvas, retro, and pre-entry orientation; the
+  denial-log note documents the `PROTOCOL_DENIAL_LOG` override; the hook-latency figure is
+  dropped (engineer-ruled), keeping the native-binary tip.
+- Rationale recorded as `docs/design-rationale.md` decision 17. Test baseline unchanged.
+
 ## 3.4.0 — 2026-08-15
 
 Profile recommendation on request; the `p-protocol-*` family re-cut to carry it. Rationale

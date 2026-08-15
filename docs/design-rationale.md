@@ -119,6 +119,17 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     3's first re-ruling): `p-protocol-*` now marks the protocol-affiliated family, with the kind
     declared in the description — "mini protocol" (governed multi-turn session) or "protocol
     utility" (one-shot) — and the registry validator enforces prefix ↔ declared kind.
+17. **Sessions retro themselves; remediations leave as handoffs** (added 2026-08-15). The
+    working-canvas amendment (decision 14) was produced by an ad-hoc retrospective at the tail of
+    an ideation session; `p-protocol-retro` codifies that practice as a mini protocol. It
+    examines how the session went, never what it concluded: churn (items that iterated beyond
+    their substance, and what form would have settled them sooner), uncertainties that dragged,
+    recurring misreads revealed by engineer corrections, protocol-fit friction distinguished from
+    session-local accident, and the practices that worked. Observations cite concrete session
+    moments and carry provenance (engineer-stated versus inferred); corrected misdiagnoses are
+    recorded so they are not re-proposed; remediations are shaped as handoffs with open points,
+    not implementation plans. Prose-side complement to the hook-denial telemetry: denial spikes
+    catch mechanical protocol-fit regression, the retro catches the judgment-side pain.
 
 ## Accepted background rationale
 

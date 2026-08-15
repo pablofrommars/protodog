@@ -136,6 +136,33 @@
 		],
 		"description": "Protocol utility: one-shot grounded Task-vs-Program recommendation ending in a decision-ready orientation; profile selection stays with the engineer"
 	},
+	"Mini Protocol: Session Retro": {
+		"scope": "markdown",
+		"prefix": "p-protocol-retro",
+		"body": [
+			"<task>",
+			"Run a retrospective of this working session: surface how the work went — not what it concluded — and shape the remediations worth carrying forward.",
+			"</task>",
+			"",
+			"<context>",
+			"${1:Name the session or portion under retro and any pain already felt; default is the whole session so far.}",
+			"</context>",
+			"",
+			"<instructions>",
+			"- Treat this as a short multi-turn working session at the tail of the session under retro. Offer your reading, and treat my corrections as retro material: record a corrected misdiagnosis explicitly so it is not re-proposed.",
+			"- Examine where applicable: items that iterated across more turns than their substance needed, and what form — a picture, an example, an experiment, an earlier question — would have settled them sooner; uncertainties that dragged along, with when each surfaced, when it settled, and what carried it; my corrections that reveal a recurring misread; friction with the operating protocol or method itself, distinguished from session-local accident; and what worked — the practices that are the evidence base worth keeping.",
+			"- Ground every observation in concrete session moments, quoting or citing the turn, and carry provenance: my statements versus your inference. Do not launder inference into engineer rulings.",
+			"- Shape each remediation as a handoff, not an implementation plan: the mitigation's shape, its open points, and where it belongs — session habit, method change, or an amendment executed later in the protocol source.",
+			"- Close only on my explicit instruction. Do not persist by default; on request, write the handoff beginning with `Why this document exists`, preserving pain points with their session evidence, mitigation shapes, open points for the implementer, and corrected misdiagnoses.",
+			"</instructions>",
+			"",
+			"<output>",
+			"Work conversationally. On explicit close, return the retro synthesis: pain points with evidence, what worked, shaped remediations with their open points, and anything examined and shelved so it is not re-proposed.",
+			"</output>",
+			"$0"
+		],
+		"description": "Start a session retrospective mini protocol at the tail of a working session; surfaces churn and dragged uncertainties, and shapes remediation handoffs"
+	},
 	// ============================================================
 	// FULL PROMPT UTILITIES (p-*)
 	// ============================================================

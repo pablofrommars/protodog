@@ -14,7 +14,7 @@ objective, one agent) or Program (multi-track, dispatched) — never the protoco
 moves through a provenance chain: `inputs/` (unvalidated material, including anything an external
 model produced), `specs/` (reconciled intent, immutable once a plan binds it), `plan/` (live
 state — steps, acceptance criteria, gates, decisions, all under stable IDs). **Gates** are the
-only human-in-the-loop interface — decision, authorization, evidence — and authority is explicit:
+human-in-the-loop core — decision, authorization, evidence — and authority is explicit:
 model capability, tool access, and prior success never create permission. **Cadence** —
 `interactive` by default, `continuous` by explicit override — sets how often the engineer is
 consulted, and changes nothing else. **Assurance** scales
@@ -66,7 +66,7 @@ plugin marketplace (`kennel`) serving the `protodog` plugin. In Claude Code:
 /plugin install protodog@kennel
 ```
 
-That single install gives every repository you open the entry skills and the enforcement hooks —
+That single install gives every repository you open the skills and the enforcement hooks —
 no per-repo copies, no settings merges. Per-repo opt-out: `/plugin disable protodog@kennel` in
 that project. (`protodog/hooks/settings-fragment.json` remains only as the wiring fallback for a
 repository that vendors `protodog/` directly.)
@@ -87,8 +87,9 @@ repositories that use it, nowhere else.
 
 Change → full sweep green → bump `protodog/.claude-plugin/plugin.json` version → `CHANGELOG.md`
 entry → commit. Consumers pull with `/plugin marketplace update kennel` and
-`/plugin update protodog`. Protocol changes to this repository run under Protodog itself (plans
-under `plan/`, specs under `specs/`).
+`/plugin update protodog`. Protocol changes to this repository land as engineer-reviewed release
+commits; a heavier change may run under Protodog itself (plans under `plan/`, specs under
+`specs/`).
 
 ## Verify
 
@@ -121,6 +122,8 @@ comparison, recolored at settlement and audit reconciliation, promotable at clos
 doctrine follows work into the profiles — a gate in a diagram-suited domain presents its options
 drawn in context, and execution recolors built work — with the canvas always a working view,
 never state.
+A heavy session can close with `p-protocol-retro` — a retrospective surfacing churn and dragged
+uncertainties while they are fresh, shaping remediations as handoffs.
 Ideation results enter the Protocol only as `inputs/` documents with cited provenance.
 
 ### One session, one profile
@@ -139,14 +142,17 @@ flowchart TD
     subgraph ideation[Optional ideation — outside the Protocol]
         mini[Ideation mini protocol session] -.-> contest[ideation-audit: grounded and<br>conceptual subagent auditors]
         contest -.-> mini
+        mini -.-> canvas[Working canvas: master model +<br>one-question zooms]
+        canvas -.-> mini
+        mini -.-> retro[Session retro at close:<br>remediation handoffs]
         mini --> inputsDoc[(inputs/ with cited provenance)]
     end
 
     subgraph profile[Profile session — Task or Program]
         invoke(["/protodog:task or /protodog:program"]):::engineer --> ground[Grounding: repository state,<br>policy, supplied inputs]
-        ground --> bind[Spec context curated and bound<br>— immutable from ready]
-        bind --> planning[Plan to execution readiness]
-        planning --> execute[Step execution and verification,<br>checkpoint commits]
+        ground --> planning[Plan to execution readiness —<br>opens with the assurance interrogation]
+        planning --> bind[Exact specs bound at readiness<br>— immutable from that point]
+        bind --> execute[Step execution and verification,<br>checkpoint commits]
         execute -.->|blocking gate| hil[Engineer rules: decision ·<br>authorization · evidence]:::engineer
         hil -.->|outcome persisted in the plan| execute
         execute -.->|if selected at planning| auditCycle[[Audit cycle]]
@@ -161,6 +167,7 @@ flowchart TD
     end
 
     inputsDoc --> invoke
+    orient[p-protocol-recommend-profile:<br>advisory Task-vs-Program orientation] -.-> invoke
     completed --> landing
 
     classDef engineer fill:#facc151a,stroke:#facc1533,color:#eab308
@@ -294,13 +301,13 @@ index artifact to maintain.
 
 ## Notes
 
-- Warm hook latency is ~190 ms per invocation. If that matters,
-  `dotnet publish protodog/hooks/protodog-hooks.cs` produces a native binary — point the hook
-  commands at its output.
+- If hook invocation overhead matters, `dotnet publish protodog/hooks/protodog-hooks.cs`
+  produces a native binary — point the hook commands at its output.
 - Git boundary: the agent commits checkpoints inside its managed worktree; fetch/sync, rebase onto
   `main`, squash, landing, cleanup, and plan retirement remain engineer-owned
   (`protodog/core/git-policy.md`).
-- Hook denials log to the plugin data directory (`CLAUDE_PLUGIN_DATA/protocol-denials.log`;
+- Hook denials log to `PROTOCOL_DENIAL_LOG` when set, else the plugin data directory
+  (`CLAUDE_PLUGIN_DATA/protocol-denials.log`;
   repo-local fallback `protodog/logs/hook-denials.log`) — spikes after a model update signal
   protocol-fit regression; a hook that never fires is a deletion candidate.
 - Provenance: extracted at v1.0.0 from the prototype workspace
