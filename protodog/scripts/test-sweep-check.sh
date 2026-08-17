@@ -29,10 +29,10 @@ mkdir -p "$R/plan/new-task"; plan "$R/plan/new-task/task-plan.md" "completed" "x
 G add -A; G commit -q -m branch
 
 OUT="$($V "$R" 2>&1)"
-has "landed terminal plan is sweepable"  "done-task/: sweepable"
+has "committed terminal plan is sweepable" "done-task/: sweepable"
 has "live plan reported live"            "live-task/: live"
 has "unlifted terminal plan blocked"     "old-task/: blocked — 1 unlifted"
-has "branch-only terminal plan blocked"  "new-task/: blocked — not landed (branch-only)"
+has "branch-only terminal plan blocked"  "new-task/: blocked — not committed (branch-only)"
 has "register recognized with counts"    "deferred.md: register — 1 parked"
 has "foreign file flagged"               "notes.md: foreign"
 has "summary counts one sweepable"       "survey complete: 1 mechanically sweepable"

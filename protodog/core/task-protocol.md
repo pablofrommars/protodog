@@ -42,14 +42,23 @@ content and reconciles intervening repository changes; a material conflict becom
 
 ### Execution readiness
 
-A Task is `ready` when its spec references are bound (immutable from that point, enforced); every
-applicable acceptance criterion has a stable ID and is mapped in the plan; the known path is
+A Task is `ready` when its spec references are bound — material premises about current repository
+state verified against the repository per the Foundation, immutable from that point (enforced);
+every applicable acceptance criterion has a stable ID and is mapped in the plan; the known path is
 planned as checkable steps; the first step is executable; required verification is identified —
 the assurance interrogation settled at planning entry and persisted per the assurance policy, a
 selected audit or paid evaluation run carrying its declared placement or run bounds; and material
 gates are visible. A
 genuine uncertainty may remain as an exploration step; an unspecified promise to plan later does
 not make a Task ready.
+
+Execution readiness is a declared boundary in every cadence: planning ran on the session model the
+engineer selected at entry, and the first step is where execution may downshift. The readiness
+report declares planning complete and presents the model handoff — the exact invocation to paste
+into a fresh session on the intended execution model, normally
+`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any cadence override — and proceeding in
+the current session is released by the ordinary `go`. Execution never starts STEP-01 on its own
+momentum out of planning.
 
 ## Task plan
 
@@ -205,11 +214,17 @@ engineer-approved `accepted exception`; required verification has evidence; mate
 verification is disclosed; no open gate blocks completion; and the plan's outward state is
 settled under the Foundation's lift rule — deferred issues, accepted gaps, and still-unresolved
 open questions lift to `plan/deferred.md` as self-sufficient rows or carry their stated closure
-through the disposition arrows (enforced). The final response summarizes acceptance, material
-evidence, omissions, retained issues or gaps, and landing state when material — it is not
-persisted as a separate report. Completion is not landing; when landing occurs, the whole Task is
-one commit on `main` through the engineer-triggered mechanism, and the terminal plan directory
-then awaits the engineer-triggered retirement sweep.
+through the disposition arrows (enforced) — a judgment call per the Foundation's lift rule, never
+a reflex move to the register. The final response opens by declaring the Task completed, then
+summarizes acceptance, material evidence, omissions, and retained issues or gaps — it is not
+persisted as a separate report — and closes with the engineer-owned actions that remain: the
+commit to main through the guarded workflow, the retirement sweep that follows it, and the
+standing offer of a deferred-register review against the finished work. The review is offered,
+never run unprompted — an end-of-session context may be too degraded for a quality review, so the
+engineer invokes `deferred-review`, often in a fresh session, when the register is worth the
+look. Completion is not the commit to main; when the engineer triggers it, the whole Task reaches
+`main` as one commit, and the terminal plan directory then awaits the engineer-triggered
+retirement sweep.
 
 ## Assurance and audit
 
@@ -231,7 +246,8 @@ numbered cycle is `audit-NN-dispatch.md`, `audit-NN.md`, `audit-NN-challenge.md`
 
 **Challenge ownership.** In a Task, the coordinating Task agent owns the audit challenge and all
 resulting remediation, executing on the top-model configuration — routed through the pinned
-challenge agent type when the session model is not that tier. The auditor never challenges its own
+challenge agent type (shipped in the plugin's `agents/`) when the session model is not that tier.
+The auditor never challenges its own
 audit. Confirmed findings become ordinary task-plan steps with affected verification; no separate
 fix plan exists.
 

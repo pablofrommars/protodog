@@ -32,7 +32,9 @@ engineer never authors XML or protocol structure.
    topology, dependencies, and acceptance ownership without pre-creating empty track plans.
 5. Create or resume only the selected next track plans from
    `${CLAUDE_PLUGIN_ROOT}/templates/track-plan.md`, at execution-ready detail, each opening its
-   planning with the assurance interrogation for its assigned scope.
+   planning with the assurance interrogation for its assigned scope. Program and track execution
+   readiness are declared boundaries: report planning complete with the Foundation's model
+   handoff before the first step of that scope executes.
 6. Orchestrate under the Program Protocol: you own the program plan, the Program worktree, and
    engineer-facing HIL at all times; dispatch through native subagents (isolated worktrees for any
    concurrent writer); reconcile serially under the Git policy; stop only for Foundation gates,

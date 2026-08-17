@@ -29,8 +29,10 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
    manifest hashes, runs read-only with pinned model, and writes only the next unused report,
    immutable once written.
 5. **Git delegation**: the agent owns stage/commit/internal branches/merges inside its managed
-   worktree, hook-enforced; fetch/sync, rebase onto `main`, squash, landing, cleanup remain
-   engineer-owned via guarded scripts. One Task or whole Program lands as one commit.
+   worktree, hook-enforced; fetch/sync, rebase onto `main`, squash, the commit to main, cleanup
+   remain engineer-owned via guarded scripts. One Task or whole Program reaches `main` as one
+   commit. (Re-termed 2026-08-17: the act formerly called "landing" is the **commit to main** —
+   explicit about the intent; bare "commit" stays with the delegated checkpoint commits.)
 6. **Markdown-in-repo artifacts are the sole state authority**; harness task lists are one-way
    mirrors; harness IDs never enter canonical artifacts. Templates + write-time validators own
    the shape; enum drift, ID reuse, unmapped acceptance, and empty sections are mechanically
@@ -66,13 +68,13 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     holds only plan-id directories and the deferred register (`plan/deferred.md`). A plan may not
     go terminal as the sole carrier of a live obligation — every deferred issue and accepted gap
     lifts to the register or records its closure via disposition arrows (enforced). Lifted rows
-    are self-sufficient because retirement — engineer-triggered, land-then-sweep — deletes
-    terminal plan directories; Git history on `main` is the archive, which one-commit landing
+    are self-sufficient because retirement — engineer-triggered, commit-then-sweep — deletes
+    terminal plan directories; Git history on `main` is the archive, which the one-commit rule
     guarantees. `plan/` is never an ADR store: durable rationale moves to specs or repository
     documentation.
 13. **Plan maintenance is proof-then-judgment, engineer-confirmed** (added 2026-08-13). The
     `plan-sweep` skill deletes nothing that the deterministic checker (`scripts/sweep-check.cs`:
-    every plan terminal, obligations lifted, content landed) has not proven and the engineer has
+    every plan terminal, obligations lifted, content committed) has not proven and the engineer has
     not confirmed; citation liveness is the one judgment step in between. The `deferred-review`
     skill proposes register transitions with evidence and applies only what the engineer
     ratifies — a fired trigger proposes activation, never silent closure. The survey is a
@@ -130,6 +132,50 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     recorded so they are not re-proposed; remediations are shaped as handoffs with open points,
     not implementation plans. Prose-side complement to the hook-denial telemetry: denial spikes
     catch mechanical protocol-fit regression, the retro catches the judgment-side pain.
+18. **Planning runs on the top model; execution readiness is the downshift boundary** (added
+    2026-08-17; provenance: `inputs/protocol-cost.md` plus engineer retro observations). The
+    costliest failure observed in daily use was planning-tier judgment: a spec premise a code
+    read would have falsified was bound into an immutable spec, forcing a superseding spec and a
+    sixteen-step rebuild. Binding immutability amplifies planning error by design — the same
+    rationale that already pinned audit challenge to the top model. The session model is
+    engineer-held, so the rule is a boundary, not a self-switch: the engineer starts the session
+    on the planning model, and execution readiness is a declared boundary in every cadence —
+    STEP-01 never starts on planning's momentum. The readiness report declares planning complete
+    and hands the exact resumption invocation for a fresh session on the intended execution
+    model; proceeding in place is the engineer's ordinary release. Material replanning and spec
+    supersession are planning work and surface the same handoff. The pinned challenge agent type
+    now ships in the plugin (`agents/challenge.md`) — previously referenced by the Task protocol
+    but defined nowhere, so the top-model pin could not execute; that file is deliberately the
+    one place current model identity is written down.
+19. **Spec premises are verified before binding** (added 2026-08-17). Every material claim a spec
+    makes about current repository state is verified against the repository before the spec
+    binds; a claim that cannot be verified there is recorded as an assumption with the evidence
+    that would settle it. Immutability locks only what grounding has checked — the cheapest
+    change preventing the most expensive observed failure (see decision 18's provenance).
+20. **Completion closes declaratively; the register review is offered, never automatic** (added
+    2026-08-17). Two retro pains: completion and the commit to main blurred ("not always clear we
+    were done"), and deferred items moved to the register clerically because the validator can
+    force a disposition arrow but not judgment. Completion now opens by declaring the profile
+    completed and closes with the engineer-owned actions that remain — the commit to main, the
+    retirement sweep, and the offered deferred-register review against the finished work. The
+    lift rule states the choice is judgment, not reflex: what the work resolved closes with its
+    reason. The review is never run unprompted — engineer-ruled: an end-of-session context may be
+    too degraded for a quality review, so completion names the opportunity and the engineer takes
+    it, often in a fresh session. Exit-side symmetry with decision 15's entry interrogation.
+21. **Assurance meets reality early and audits a frozen target** (added 2026-08-17). Six of seven
+    runtime defects in the provenance task were configuration — missing environment, port
+    collision, wrong stack — observable only by running, so the assurance triggers now schedule
+    the thinnest executable end-to-end run when work changes runtime composition, configuration,
+    environment, or external wiring, early rather than after structural green. And the protocol
+    had generated one of its own audit findings: under continuous cadence, "keep the plan
+    current" and "freeze the audit manifest" were in direct conflict with nothing naming it — the
+    manifested artifacts are now frozen from launch to report capture, queued transitions flush
+    after, and the Foundation names this as the plan-currency rule's one exception. Validator
+    cadence was deliberately not moved to step boundaries (report recommendation declined):
+    write-time validation is the enforcement spine per decisions 6 and 8, and the observed cost
+    was three clerical rejections — one expensive only because the arrow rule's message
+    misdescribed where the arrow must sit. The rule now reads wrapped items whole, and enum
+    messages list their values.
 
 ## Accepted background rationale
 

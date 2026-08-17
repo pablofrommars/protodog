@@ -6,13 +6,14 @@ Protodog is an execution protocol for agent-assisted engineering: one engineer's
 methodology encoded as installable machinery for Claude Code — skills as entry points, hooks and
 validators as enforcement, Markdown artifacts in the repository as the only execution state. It
 does not orchestrate models or generate code; it constrains how delegated work enters,
-progresses, and lands, so every session runs under the same contract instead of whatever the
-model woke up believing.
+progresses, and reaches `main`, so every session runs under the same contract instead of whatever
+the model woke up believing.
 
 The concepts, in one pass. The engineer selects one of two **profiles** — Task (bounded
 objective, one agent) or Program (multi-track, dispatched) — never the protocol itself. Context
 moves through a provenance chain: `inputs/` (unvalidated material, including anything an external
-model produced), `specs/` (reconciled intent, immutable once a plan binds it), `plan/` (live
+model produced), `specs/` (reconciled intent, premises verified against the repository, immutable
+once a plan binds it), `plan/` (live
 state — steps, acceptance criteria, gates, decisions, all under stable IDs). **Gates** are the
 human-in-the-loop core — decision, authorization, evidence — and authority is explicit:
 model capability, tool access, and prior success never create permission. **Cadence** —
@@ -26,9 +27,9 @@ The discipline is mechanical wherever it can be: hooks deny engineer-owned Git (
 rebase, history rewrites, `main`); validators reject malformed plans, marker/status drift,
 unmapped acceptance, edits to bound specs or audit reports, and terminal plans still carrying
 live obligations. Prose is reserved for judgment. Git is a split contract — the agent checkpoints
-freely inside its managed worktree, the engineer owns landing, and one Task or whole Program
-reaches `main` as exactly one commit. Plans die on schedule: obligations lift to a register,
-landed directories are swept, Git history is the archive.
+freely inside its managed worktree, the engineer owns the commit to main, and one Task or whole
+Program reaches `main` as exactly one commit. Plans die on schedule: obligations close or lift to
+a register, committed directories are swept, Git history is the archive.
 
 What that buys: no per-session variance in how delegation works; no silent agent overreach; no
 state rotting in chat scrollback — resumption is the plan plus the repository, nothing else; no
@@ -66,8 +67,8 @@ plugin marketplace (`kennel`) serving the `protodog` plugin. In Claude Code:
 /plugin install protodog@kennel
 ```
 
-That single install gives every repository you open the skills and the enforcement hooks —
-no per-repo copies, no settings merges. Per-repo opt-out: `/plugin disable protodog@kennel` in
+That single install gives every repository you open the skills, the pinned challenge agent type,
+and the enforcement hooks — no per-repo copies, no settings merges. Per-repo opt-out: `/plugin disable protodog@kennel` in
 that project. (`protodog/hooks/settings-fragment.json` remains only as the wiring fallback for a
 repository that vendors `protodog/` directly.)
 
@@ -87,7 +88,7 @@ repositories that use it, nowhere else.
 
 Change → full sweep green → bump `protodog/.claude-plugin/plugin.json` version → `CHANGELOG.md`
 entry → commit. Consumers pull with `/plugin marketplace update kennel` and
-`/plugin update protodog`. Protocol changes to this repository land as engineer-reviewed release
+`/plugin update protodog`. Protocol changes to this repository ship as engineer-reviewed release
 commits; a heavier change may run under Protodog itself (plans under `plan/`, specs under
 `specs/`).
 
@@ -132,8 +133,12 @@ The profile choice is yours. Entering cold — without ideation's profile orient
 `p-protocol-recommend-profile` for a grounded, decision-ready Task-vs-Program recommendation
 (advisory only; no entry skill solicits it).
 Start bounded work with `/protodog:task`, long-lived multi-track work with `/protodog:program`;
-supply intent or exact `@inputs/` / `@specs/` references. Artifacts land under `inputs/`,
+supply intent or exact `@inputs/` / `@specs/` references. Artifacts live under `inputs/`,
 `specs/`, and `plan/<plan-id>/` of the repository you're in, per `protodog/core/foundation.md`.
+Start the session on the model you want planning to run on — planning through execution readiness
+belongs on the top tier, where binding immutability amplifies judgment error — and the readiness
+boundary pauses in every cadence: it hands you the exact invocation to resume execution in a
+fresh session on a cheaper model, or `go` continues in place.
 Yellow below marks the engineer-owned moments; everything else is delegated agent work.
 
 ```mermaid
@@ -151,24 +156,25 @@ flowchart TD
     subgraph profile[Profile session — Task or Program]
         invoke(["/protodog:task or /protodog:program"]):::engineer --> ground[Grounding: repository state,<br>policy, supplied inputs]
         ground --> planning[Plan to execution readiness —<br>opens with the assurance interrogation]
-        planning --> bind[Exact specs bound at readiness<br>— immutable from that point]
-        bind --> execute[Step execution and verification,<br>checkpoint commits]
+        planning --> bind[Premises verified, exact specs bound<br>at readiness — immutable from that point]
+        bind --> readyGate([Readiness boundary: go here, or resume<br>on the execution model in a fresh session]):::engineer
+        readyGate --> execute[Step execution and verification,<br>checkpoint commits]
         execute -.->|blocking gate| hil[Engineer rules: decision ·<br>authorization · evidence]:::engineer
         hil -.->|outcome persisted in the plan| execute
         execute -.->|if selected at planning| auditCycle[[Audit cycle]]
         auditCycle -.-> execute
-        execute --> lift[Deferred items lifted<br>to plan/deferred.md]
-        lift --> completed([Profile completed]):::done
+        execute --> lift[Deferred items closed or lifted<br>to plan/deferred.md]
+        lift --> completed([Profile completed — remaining<br>engineer actions named]):::done
     end
 
     subgraph closure[Engineer-owned closure]
-        landing[Landing: rebase onto main,<br>squash, one commit]:::engineer
-        landing -->|later, on main| retire[Retirement sweep deletes<br>terminal plan directories]:::engineer
+        commit[Commit to main: rebase,<br>squash, one commit]:::engineer
+        commit -->|later, on main| retire[Retirement sweep deletes<br>terminal plan directories]:::engineer
     end
 
     inputsDoc --> invoke
     orient[p-protocol-recommend-profile:<br>advisory Task-vs-Program orientation] -.-> invoke
-    completed --> landing
+    completed --> commit
 
     classDef engineer fill:#facc151a,stroke:#facc1533,color:#eab308
     classDef done fill:#4ade801a,stroke:#22c55e33,color:#4ade80
@@ -229,7 +235,9 @@ dotnet protodog/scripts/audit-launch.cs plan/<plan-id>/audits/audit-NN-dispatch.
 ```
 
 `--dry-run` verifies every gate without contacting Codex. Reports are immutable; a re-launch is a
-new numbered cycle, and the challenge must address every report on file.
+new numbered cycle, and the challenge must address every report on file. Between launch and
+report capture the manifested files are frozen — plan updates that would touch them queue and
+flush after capture.
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
@@ -259,9 +267,10 @@ sequenceDiagram
 
 A plan cannot go terminal while it is the sole carrier of a live obligation: deferred issues and
 accepted gaps lift to `plan/deferred.md` (template `protodog/templates/deferred-register.md`,
-validated on write) or record their closure through disposition arrows (enforced). Terminal,
-landed plan directories are then deleted by the engineer-triggered retirement sweep — Git history
-on `main` is the archive, which one-commit landing guarantees.
+validated on write) or record their closure through disposition arrows (enforced) — a judgment
+call, never a reflex move to the register. Terminal plan directories already on `main` are then
+deleted by the engineer-triggered retirement sweep — Git history on `main` is the archive, which
+the one-commit rule guarantees.
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
@@ -277,7 +286,7 @@ stateDiagram-v2
     inprogress --> completed: acceptance satisfied, deferred items lifted
     inprogress --> superseded: exact successor adopted
     inprogress --> cancelled: engineer cancels
-    completed --> [*]: engineer lands, then sweeps on main
+    completed --> [*]: engineer commits to main, then sweeps
     superseded --> [*]
     cancelled --> [*]
     classDef done fill:#4ade801a,stroke:#22c55e33,color:#4ade80
@@ -291,20 +300,22 @@ stateDiagram-v2
 ### Maintenance
 
 Two engineer-invoked skills keep `plan/` honest. `/protodog:plan-sweep` is the retirement sweep:
-a deterministic checker proves terminal + lifted + landed for every entry
+a deterministic checker proves terminal + lifted + committed for every entry
 (`dotnet protodog/scripts/sweep-check.cs`, usable standalone as the plan-tree survey), the skill
 adds the one judgment step — citation liveness — and deletes only what you confirm, as one sweep
 commit. `/protodog:deferred-review` hunts register drift: it verifies every parked row against
 current repository state (closed by later work? trigger fired? claim still reproduces?) and
-applies only the transitions you ratify. The survey is a command, not a document — there is no
-index artifact to maintain.
+applies only the transitions you ratify. Profile completion offers this review against
+just-finished work but never runs it unprompted — take the offer in a fresh session when the
+closing context is degraded. The survey is a command, not a document — there is no index artifact
+to maintain.
 
 ## Notes
 
 - If hook invocation overhead matters, `dotnet publish protodog/hooks/protodog-hooks.cs`
   produces a native binary — point the hook commands at its output.
 - Git boundary: the agent commits checkpoints inside its managed worktree; fetch/sync, rebase onto
-  `main`, squash, landing, cleanup, and plan retirement remain engineer-owned
+  `main`, squash, the commit to main, cleanup, and plan retirement remain engineer-owned
   (`protodog/core/git-policy.md`).
 - Hook denials log to `PROTOCOL_DENIAL_LOG` when set, else the plugin data directory
   (`CLAUDE_PLUGIN_DATA/protocol-denials.log`;

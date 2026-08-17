@@ -42,6 +42,11 @@ about an omitted override; never require the engineer to author XML or protocol 
    an entry approval stop.
 4. Ground the supplied context; create or refine the smallest sufficient spec context; plan the
    known path end to end, opening planning with the assurance interrogation (audit and
-   paid-evaluation scheduling); bind exact specs only at execution readiness.
-5. Execute under the Task Protocol — no plan-approval stop; stop only for Foundation gates,
+   paid-evaluation scheduling); verify spec premises against the repository and bind exact specs
+   only at execution readiness.
+5. Stop at the readiness boundary in every cadence: report planning complete and present the
+   model handoff — the exact invocation to resume in a fresh session on the intended execution
+   model (`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any overrides); `go` proceeds
+   in this session.
+6. Execute under the Task Protocol — no plan-approval stop; stop only for Foundation gates,
    declared boundaries, required engineer actions, or completion.

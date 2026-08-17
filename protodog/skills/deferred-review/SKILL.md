@@ -1,6 +1,6 @@
 ---
 name: deferred-review
-description: Review plan/deferred.md against current repository state — find rows closed by later work, fired triggers, and claims that no longer hold — and apply only engineer-ratified transitions. Use when the register may have drifted.
+description: Review plan/deferred.md against current repository state — find rows closed by later work, fired triggers, and claims that no longer hold — and apply only engineer-ratified transitions. Use when the register may have drifted, including when a completed profile offered this review.
 ---
 
 # Deferred register review
@@ -8,7 +8,9 @@ description: Review plan/deferred.md against current repository state — find r
 You are reviewing the deferred register for drift. This is a review, not an audit: per-row
 verification is directed by nature and claims no independence. The register's founding defect was
 silent closure — items done or obsoleted with nobody reconciling the row — and that is what this
-review hunts.
+review hunts. Profile completion offers this review against just-finished work but never runs it
+unprompted; when the offer is taken, start from the rows that work plausibly closed, unblocked,
+or amended — a fresh session serves the review better than a degraded closing context.
 
 ## Procedure
 

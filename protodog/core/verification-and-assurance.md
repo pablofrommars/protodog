@@ -65,6 +65,7 @@ or target-state change.
 | A new or changed check claims new or changed behavior | Fail-first, then pass against the implementation; record both with the affected step. |
 | A change can affect an existing invariant, public contract, compatibility surface, data shape, security boundary, or downstream consumer | Run the relevant existing cases and broaden across the affected propagation path; a selection remains a run, not a suite. |
 | Static checks cannot establish a claimed runtime, performance, reliability, or operational effect | Use an executable check or controlled measurement; pin baseline, window, and comparability conditions when comparison matters. |
+| Work introduces or changes runtime composition, configuration, environment, or external wiring | Schedule the thinnest executable end-to-end run early in execution — before feature work builds on the composition, not after structural green. Configuration-class defects are observable only by running, and one deliberately trivial run reaches them while they are cheap. |
 | The outcome depends on model behavior or a governed quality rubric | Use an evaluation run pinned to system/model/configuration state; paid or external execution follows its authorization gate. |
 | Independently produced work reconciles, or a result crosses a concurrency or integration seam | Verify each bounded result before reconciliation and the combined state after, for interactions isolation cannot detect. |
 | A planning-time selection, spec, engineer instruction, or repository policy requires a review or audit | Execute against exact scope and pinned state through the contracts below. |
@@ -142,7 +143,8 @@ assurance; it creates no artifact or HIL unless another actor needs the result.
 An **audit** adds independence and an adversarial posture, and exists only when selected **at
 planning time** — by the engineer, spec context, repository policy, or governing assurance policy —
 and recorded in the owning plan with its declared placement (a lifecycle position or state, e.g.
-"post-integration of TRACK-02, blocks landing"). An emergent audit need is a material delta and
+"post-integration of TRACK-02, blocks the commit to main"). An emergent audit need is a material
+delta and
 enters through a plan update. Blast radius, uncertainty, irreversibility, or weak direct
 verification may support a recommendation; they never silently select an audit. Selection is
 settled at planning entry by the assurance interrogation above.
@@ -175,9 +177,13 @@ pinned state, auditor configuration, cost bound, and transmitted data class (rep
 leaves the boundary). On approval, the guarded launcher — taking exactly the dispatch path as its
 only argument — re-verifies the manifest hashes and refuses on mismatch, invokes the external
 engine read-only in the background with the pinned configuration, and captures the report to the
-next unused `audit-NN.md`, immutable once written (enforced). A re-launch is a new numbered cycle;
-the challenge must address every report on file. The engineer-driven manual launch path remains as
-fallback with the same dispatch contract.
+next unused `audit-NN.md`, immutable once written (enforced). From launch to report capture, the
+artifacts pinned in the dispatch manifest are frozen: no write touches a manifested file while
+the auditor reads, and a plan transition that would is queued and flushed immediately after
+capture. This is the named exception to the Foundation's plan-currency rule — a current plan and
+a pinned audit target are otherwise in direct conflict, and the pin wins for exactly that window.
+A re-launch is a new numbered cycle; the challenge must address every report on file. The
+engineer-driven manual launch path remains as fallback with the same dispatch contract.
 
 **Standard dimensions** (considered where applicable, never a scorecard): outcome and acceptance
 correctness and completeness; internal and cross-artifact consistency including state and

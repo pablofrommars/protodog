@@ -63,7 +63,7 @@ do not appear as empty Task fields.
 5. **Consolidate purpose and persistence.** One term names an activity and its durable artifact
    when separating them changes no semantics.
 6. **Ground claims.** Availability is not truth; capability is not authority; completion is not
-   landing.
+   the commit to main.
 7. **Preserve profile proportionality.** Task must remain usable by one agent without Program
    machinery.
 8. **Enforce over specify.** When an invariant is mechanically decidable, implement it as a hook or
@@ -81,9 +81,12 @@ do not appear as empty Task fields.
 - A **plan** contains intended execution and live execution state. It references its bound specs
   rather than copying them.
 
-When an execution-ready plan binds a spec and becomes `ready`, that spec is immutable (enforced).
-Changed intent or a falsified premise creates a superseding spec; affected work adopts it
-explicitly and is re-evaluated before execution.
+Binding is preceded by premise verification: every material claim a spec makes about current
+repository state is verified against the repository before the spec binds, and a claim that
+cannot be verified there is recorded as an assumption with the evidence that would settle it —
+immutability locks only what grounding has checked. When an execution-ready plan binds a spec and
+becomes `ready`, that spec is immutable (enforced). Changed intent or a falsified premise creates
+a superseding spec; affected work adopts it explicitly and is re-evaluated before execution.
 
 ### Artifact paths and the plan id
 
@@ -122,15 +125,17 @@ A plan may not go terminal while it is the sole carrier of a live obligation. Be
 `superseded`, or `cancelled` is recorded, every deferred issue and accepted gap — and any open
 question still unresolved, which becomes a deferred issue at that moment — either lifts to the
 deferred register or records its closure through the owning profile's disposition-arrow grammar
-(enforced). A lifted row is self-sufficient: it carries the condensed claim, why it matters, and
+(enforced). The choice is a judgment, not a reflex: an obligation the finished work resolved or
+obsoleted records its closure with the reason rather than parking in the register. A lifted row
+is self-sufficient: it carries the condensed claim, why it matters, and
 its revisit condition, because the source plan will be retired; its provenance cell points into
 history, not at required reading.
 
-Retirement deletes terminal, landed plan directories from the working tree. Git history on `main`
-is the archive — one-commit landing guarantees the provenance — and a terminal plan is delete-safe
-by construction: after the lift, nothing may cite it as ongoing authority. Retirement is
-engineer-triggered, land-then-sweep; an agent never retires a plan directory on its own
-initiative. Audit-report immutability forbids edits while the plan lives; it does not survive the
+Retirement deletes terminal plan directories already committed to `main` from the working tree.
+Git history on `main` is the archive — the one-commit rule guarantees the provenance — and a
+terminal plan is delete-safe by construction: after the lift, nothing may cite it as ongoing
+authority. Retirement is engineer-triggered, commit-then-sweep; an agent never retires a plan
+directory on its own initiative. Audit-report immutability forbids edits while the plan lives; it does not survive the
 plan — retirement removes the directory whole.
 
 ### Canonical state and working views
@@ -205,13 +210,14 @@ optional external ideation → engineer invokes Task or Program
   → execute and verify planned work
   → optional review or audit when selected at planning
   → satisfy acceptance or obtain an accepted exception
-  → complete the profile → engineer-triggered landing
+  → complete the profile → engineer-triggered commit to main
 ```
 
 Work status at every level is one of: `pending planning`, `ready`, `in progress`, `blocked`,
 `completed`, `superseded`, `cancelled`. `Completed`, `superseded`, and `cancelled` are terminal and
 change only to correct explicit state error. Supersession and cancellation do not establish
-acceptance; completion does not establish integration, landing, or shipping. A blocked descendant
+acceptance; completion does not establish integration, the commit to main, or shipping. A blocked
+descendant
 does not block its parent while independent work remains eligible.
 
 Grounding, plan creation, plan revision, successful verification, review, and status reporting are
@@ -226,12 +232,21 @@ create it.
 
 Profile invocation authorizes ordinary, reversible, in-scope local work allowed by repository
 policy, including delegated Git operations exactly as bounded by the Git policy. It does not
-authorize destructive, external, paid, difficult-to-reverse, or sensitive-data effects, nor
-landing; those follow their gates.
+authorize destructive, external, paid, difficult-to-reverse, or sensitive-data effects, nor the
+commit to main; those follow their gates.
 
 **Model routing** lives in agent-type definitions, which own current model identities and effort
-tiers. Select the lowest-cost configuration demonstrated capable of the assignment. Audit challenge
-and every resulting remediation step use the top-model configuration. Routing to a more capable
+tiers. Select the lowest-cost configuration demonstrated capable of the assignment, with two
+standing exceptions. Planning — profile entry through execution readiness, where binding
+immutability amplifies judgment error — belongs on the top-model configuration; it is carried by
+the session model the engineer selects at entry, so the Protocol implements it as a boundary:
+execution readiness is a declared boundary in every cadence, reporting planning complete and
+presenting the model handoff — the exact resumption invocation for a fresh session on the
+intended execution model — while proceeding in the current session remains the engineer's release.
+Audit challenge and every resulting remediation step likewise use the top-model configuration,
+routed through the pinned challenge agent type when the session model is not that tier. Material
+replanning and spec supersession are planning work: where the session model is below the planning
+tier, surface the same handoff before the new plan is adopted. Routing to a more capable
 model is a capability escalation: it preserves scope and authority and creates no permission. An
 engineer escalation transfers a blocking material choice, authorization, or engineer-held evidence
 through the matching gate.
@@ -247,7 +262,7 @@ An agent asks the engineer only for:
 | Authorization gate | An understood action needs permission — including every audit launch (cost and data egress) and any external, paid, or hard-to-reverse effect. | The action and dependent work. |
 | Engineer-held evidence | Required evidence or access only the engineer has. | Only dependent work. |
 | Accepted exception | Completion is requested with unmet acceptance. | Completion. |
-| Engineer-executed action | The Protocol assigns an action, such as landing. | Only dependent work. |
+| Engineer-executed action | The Protocol assigns an action, such as the commit to main. | Only dependent work. |
 | Declared interaction boundary | The engineer selected a feedback point. | The next declared transition or unit. |
 
 A material contradiction, spec change, or failure beyond recovery routes through a decision,
@@ -286,7 +301,9 @@ every acceptance, gate, or decision outcome that transition settles — update t
 the persisted artifact reflects the new state before dependent work proceeds. A transition whose
 plan write cannot be verified is a failure to triage under the recovery policy, not a step to
 continue past. This is a prose rule: no validator can see a transition, only the artifact it left
-behind.
+behind. One exception is named: while an audit is in flight, artifacts pinned in its dispatch
+manifest are frozen from launch to report capture — a transition that would touch one queues and
+flushes immediately after capture (see the assurance policy).
 
 Execution is sequential by default. A plan selects concurrency only when it names the exact work,
 dependency independence, write surfaces, independent verification, and reconciliation. Every
@@ -334,7 +351,7 @@ independence; an **audit** is independent, adversarial, and scoped. Automated te
 evaluation use the case / suite / run identity defined in the assurance policy; a selection of
 cases is never called a suite.
 
-## Handoffs, checkpoints, integration, and landing
+## Handoffs, checkpoints, integration, and the commit to main
 
 A **handoff** transfers scoped context, state, or responsibility, and when persisted is the
 artifact carrying that transfer; it references canonical state instead of copying it. Program
@@ -346,8 +363,10 @@ A **checkpoint** is verified recoverable state — durable plan state, repositor
 and verification evidence — normally represented by a delegated local commit under the Git policy.
 **Integration reconciliation** follows any internal integration: verify the combined state and
 update affected plan state, acceptance, baselines, and ledgers; it creates no parallel log.
-**Landing** is engineer-triggered incorporation of one complete Task or whole Program into `main`
-as one commit, per the Git policy. Completion, landing, shipping, and deployment remain distinct.
+The **commit to main** (formerly "landing") is engineer-triggered incorporation of one complete
+Task or whole Program into `main` as one commit, per the Git policy; bare "commit" stays with the
+delegated checkpoint commits. Completion, the commit to main, shipping, and deployment remain
+distinct.
 
 ## External engine boundary
 

@@ -250,7 +250,7 @@ WorkCell? CheckWorkCell(string file, string cell, string idPattern, Dictionary<s
 
 	if (!allowed.TryGetValue(parsed.Status, out var expected))
 	{
-		Bad(file, $"status \"{parsed.Status}\" not in enum for \"{parsed.Id}\"");
+		Bad(file, $"status \"{parsed.Status}\" not in enum for \"{parsed.Id}\" (expected one of: {string.Join(", ", allowed.Keys)})");
 		return parsed;
 	}
 
@@ -363,7 +363,7 @@ void CheckHeaderCommon(string file, Dictionary<string, List<string>> header, str
 	var status = First(header, "Status");
 	if (status is null || !statuses.Contains(status))
 	{
-		Bad(file, $"Status \"{status ?? ""}\" not in status enum");
+		Bad(file, $"Status \"{status ?? ""}\" not in status enum ({string.Join(" | ", statuses)})");
 	}
 
 	if (First(header, "Spec context") is null && First(header, "Grounding source") is null)
@@ -473,11 +473,23 @@ void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool
 			continue;
 		}
 
-		if (!Regex.IsMatch(lines[i], arrowPattern))
+		// An item may wrap: its continuation is every following non-blank line up to the next
+		// top-level bullet. The arrow closes either the lead line (sub-bulleted ledger items) or
+		// the item as a whole (wrapped text).
+		var end = i + 1;
+		while (end < section.End && !mask[end] && lines[end].Trim().Length > 0 && !lines[end].StartsWith("- "))
+		{
+			end++;
+		}
+
+		var joined = string.Join(" ", lines[i..end].Select(l => l.Trim()));
+		if (!Regex.IsMatch(lines[i], arrowPattern) && !Regex.IsMatch(joined, arrowPattern))
 		{
 			var item = lines[i][2..];
-			Bad(file, $"terminal plan: \"{(item.Length > 60 ? item[..60] + "…" : item)}\" in \"## {sectionTitle}\" must end with {expectation}");
+			Bad(file, $"terminal plan: \"{(item.Length > 60 ? item[..60] + "…" : item)}\" in \"## {sectionTitle}\" must close with {expectation} at the end of its lead line or of the whole wrapped item");
 		}
+
+		i = end - 1;
 	}
 }
 
@@ -576,7 +588,7 @@ void ValidateTaskPlan(string file)
 	var cadence = First(header, "Cadence");
 	if (cadence is null || !cadences.Contains(cadence))
 	{
-		Bad(file, $"Cadence \"{cadence ?? ""}\" not in enum");
+		Bad(file, $"Cadence \"{cadence ?? ""}\" not in enum ({string.Join(" | ", cadences)})");
 	}
 
 	CheckEmptySections(file, lines, mask);
@@ -618,7 +630,7 @@ void ValidateProgramPlan(string file, string? planDir)
 	var cadence = First(header, "Cadence");
 	if (cadence is null || !cadences.Contains(cadence))
 	{
-		Bad(file, $"Cadence \"{cadence ?? ""}\" not in enum");
+		Bad(file, $"Cadence \"{cadence ?? ""}\" not in enum ({string.Join(" | ", cadences)})");
 	}
 
 	CheckEmptySections(file, lines, mask);

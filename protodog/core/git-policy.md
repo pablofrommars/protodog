@@ -5,7 +5,7 @@
 Git conflicts have been among the most expensive failure modes in agent-assisted engineering. This
 policy makes conflict-risk reduction a first-class constraint while making checkpoint commits a
 normal, delegated part of execution. It supersedes `bundle/git-worktree-and-integration.md`: the
-landing invariants are unchanged; what changed is that execution-phase Git inside a managed
+commit-to-main invariants are unchanged; what changed is that execution-phase Git inside a managed
 worktree is now the agent's job, with the boundary enforced by hooks rather than described in
 prose.
 
@@ -24,8 +24,9 @@ delegation is part of profile invocation and is cadence-independent — cadence 
 engineer is consulted, not who commits.
 
 **Engineer-owned, always**: fetch and synchronization with `main`; publishing any ref; rebase onto
-`main`; history rewrites; squash; landing; worktree cleanup and branch deletion; retirement of
-terminal plan directories (the land-then-sweep rule in the Foundation). Where guarded
+`main`; history rewrites; squash; the commit to main; worktree cleanup and branch deletion;
+retirement of terminal plan directories (the commit-then-sweep rule in the Foundation). Where
+guarded
 repository scripts exist, they are the only path for these operations; where they do not, these
 operations happen only by the engineer's hand.
 
@@ -35,18 +36,18 @@ fit regression; a hook that never fires is a candidate for deletion.
 
 ## Committed invariants
 
-1. A Task or Program landing branch reconciles with `main` by rebasing onto it, never by merging
+1. A Task or Program profile branch reconciles with `main` by rebasing onto it, never by merging
    `main` into it. Ordinary branches and merges remain valid inside the Task or Program.
-2. One Task or one whole Program is one landing unit and appears on `main` as one commit. Program
-   tracks do not land independently.
-3. Final landing is engineer-triggered. A guarded script performs the authorized mechanics after
-   that trigger; an agent never infers landing from Protocol completion.
+2. One Task or one whole Program is one commit unit and appears on `main` as one commit. Program
+   tracks never reach `main` independently.
+3. The final commit to main is engineer-triggered. A guarded script performs the authorized
+   mechanics after that trigger; an agent never infers it from Protocol completion.
 4. Concurrent repository writers never share a worktree. Each writer gets its own isolated
    worktree; provisioning follows repository authority with a defined reconciliation path.
 5. The initial profile worktree is supplied by the engineer and may be assumed; entry inspects and
    reconciles it without provisioning ceremony.
 
-Completion, landing, shipping, and deployment remain distinct.
+Completion, the commit to main, shipping, and deployment remain distinct.
 
 ## Checkpoint commits
 
@@ -57,7 +58,8 @@ provisional subject describing the verified result. Do not commit merely because
 split one coherent change to mimic plan granularity, or hide unresolved failure in a nominal
 checkpoint.
 
-Checkpoints are provisional history: the engineer reviews the final diff and title at landing, and
+Checkpoints are provisional history: the engineer reviews the final diff and title at the commit
+to main, and
 squashing rewrites them — preserve a reported recovery reference before any rewrite. A checkpoint
 is recorded in the owning plan only when its identity matters for resumption, integration, audit,
 or recovery; prefer an exact SHA as repository-state provenance. Plans never copy Git status, and
@@ -81,7 +83,7 @@ baseline, write surfaces, verification, and return path. Returned results reconc
 branch one at a time; affected verification runs against each combined state.
 
 **Program.** The engineer-supplied Program worktree and branch are the coordination state and
-landing unit; the coordinating agent is its only writer and never transfers that role. Sequential
+commit unit; the coordinating agent is its only writer and never transfers that role. Sequential
 track work changes it directly. Prefer concurrent read-only or non-interfering work over concurrent
 writers; when writers are needed, the execution topology and dispatch record assignment, baseline,
 worktree and branch identity, disjoint write surfaces, required child verification, and the
@@ -97,17 +99,18 @@ result as the next child's baseline. Two children are never integrated as though
 moved. If isolated writers cannot be provisioned and reconciled predictably, concurrent writers are
 unavailable; concurrent non-writing assignments remain possible.
 
-## Refresh, conflicts, and landing
+## Refresh, conflicts, and the commit to main
 
 Refresh at coherent clean states often enough that divergence is discovered before it contaminates
-dependent work — especially before an audit or evaluation tied to pre-landing state and before
-landing; no fixed cadence is imposed. A conflict is an integration failure: preserve or abort per
+dependent work — especially before an audit or evaluation tied to pre-commit state and before the
+commit to main; no fixed cadence is imposed. A conflict is an integration failure: preserve or
+abort per
 repository policy, report the exact states and files, and re-evaluate independence, ordering, and
 verification. Never weaken acceptance to make a conflict resolve.
 
 ```text
 verified profile state
-  → engineer triggers the guarded landing workflow
+  → engineer triggers the guarded commit-to-main workflow
   → rebase onto fetched origin/main
   → rerun affected final-state verification
   → squash all profile commits to one
@@ -132,8 +135,9 @@ Where a firm repository provides guarded Git scripts and tasks, they are the ada
 engineer-owned operations, and this policy's delegated window must be reflected in repository
 authority, host permissions, guarded scripts, and their behavioral tests as one coordinated change
 — worktrees provisioned from a Program baseline, recovery states preserved, serialized child
-integration, engineer-owned one-commit landing. Do not work around a repository that has not yet
-enabled delegation: no landing tracks separately, no children from stale baselines, no unguarded
+integration, the engineer-owned one-commit path to `main`. Do not work around a repository that
+has not yet enabled delegation: no track committed to `main` separately, no children from stale
+baselines, no unguarded
 commands where guarded ones are mandated. Existing exposed tasks are a strict compatibility
 boundary — a new Protocol capability uses a new guarded command, or an existing one changes only
 through a reviewed, engineer-approved workflow change. Where a read-only repository-state

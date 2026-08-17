@@ -97,7 +97,7 @@ void PreBash()
 {
 	(string Pattern, string Why)[] denied =
 	[
-		(@"\bgit\b[^\n|;&]*\bpush\b", "publishing refs is engineer-owned (guarded landing/backup only)"),
+		(@"\bgit\b[^\n|;&]*\bpush\b", "publishing refs is engineer-owned (guarded commit-to-main/backup only)"),
 		(@"\bgit\b[^\n|;&]*\bfetch\b", "synchronization with the remote is engineer-owned"),
 		(@"\bgit\b[^\n|;&]*\bpull\b", "synchronization with the remote is engineer-owned"),
 		(@"\bgit\b[^\n|;&]*\brebase\b", "rebase (including onto main) is engineer-owned"),
@@ -106,7 +106,7 @@ void PreBash()
 		(@"\bgit\b[^\n|;&]*\breset\b[^\n|;&]*--hard", "hard resets are engineer-owned recovery actions"),
 		(@"\bgit\b[^\n|;&]*\bbranch\b[^\n|;&]*\s-[dD]\b", "branch deletion is engineer-owned cleanup"),
 		(@"\bgit\b[^\n|;&]*\b(checkout|switch)\s+(origin/)?main\b", "the main branch is not an agent workspace"),
-		(@"\bgit\b[^\n|;&]*\bmerge\s+(origin/)?main\b", "never merge main into a landing branch; landing sync is rebase, engineer-owned"),
+		(@"\bgit\b[^\n|;&]*\bmerge\s+(origin/)?main\b", "never merge main into a profile branch; syncing for the commit to main is rebase, engineer-owned"),
 		(@"\bgit\b[^\n|;&]*\bworktree\s+(remove|prune)\b", "worktree cleanup is engineer-owned"),
 	];
 

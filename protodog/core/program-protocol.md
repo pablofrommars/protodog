@@ -178,9 +178,12 @@ plans; performs audit challenge), **executor** (implements and verifies bounded 
 produces findings). One agent may combine planner, orchestrator, and executor; audit independence
 is mandatory — an auditor neither audits its own work nor performs its own challenge.
 
-Model routing follows the Foundation: agent-type definitions own identities and tiers; select the
-lowest-cost configuration demonstrated capable; audit challenge and every resulting remediation
-step use the top-model configuration. Capability escalation without HIL requires existing resource
+Model routing follows the Foundation: agent-type definitions own identities and tiers.
+Planner-responsibility work — Program planning and each track's planning, through its scope's
+execution readiness — belongs on the top-model configuration, and Program and track readiness are
+declared boundaries presenting the Foundation's model handoff; audit challenge and every
+resulting remediation step use the top-model configuration; otherwise select the lowest-cost
+configuration demonstrated capable. Capability escalation without HIL requires existing resource
 and cost authority; otherwise it becomes an authorization gate.
 
 ## Dispatch
@@ -278,7 +281,8 @@ does not claim repository integration.
 
 ## Repository integration and completion
 
-The engineer-supplied Program branch is the coordination state and the landing unit. Sequential
+The engineer-supplied Program branch is the coordination state and the unit committed to `main`.
+Sequential
 track work changes it directly through the coordinating agent; isolated-writer results integrate
 into it serially under the Git policy's reconciliation sequence. After each relevant combined state
 exists, integration reconciliation verifies it, records provenance, updates cross-track
@@ -291,8 +295,12 @@ issue ledger is settled outward under the Foundation's lift rule — every top-l
 still unresolved lifts to `plan/deferred.md` as a self-sufficient row or carries its stated
 closure (`→ D-NN` / `→ closed: <reason>`, enforced). Cancelling a track does not discard its
 acceptance ownership — affected criteria are reassigned, removed through superseding spec context,
-or closed by accepted exception. The whole Program lands as one commit on `main` through the
-engineer-triggered mechanism; completion does not imply landing.
+or closed by accepted exception. The final response declares the Program completed and closes
+with the engineer-owned actions that remain — the commit to main, the retirement sweep that
+follows it, and the standing offer of a deferred-register review against the finished work,
+offered and never run unprompted (a fresh session may serve the review better than a degraded
+closing context). The whole Program reaches `main` as one commit through the engineer-triggered
+mechanism; completion does not imply the commit to main.
 
 ## Assurance and audit
 

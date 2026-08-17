@@ -1,5 +1,45 @@
 # Changelog
 
+## 3.6.0 — 2026-08-17
+
+Retro-driven remediations from the first heavyweight deployed Task (provenance:
+`inputs/protocol-cost.md` plus engineer observations — ignored cadence, unclear doneness, model
+choice reopened, clerical deferred moves). Rationale recorded as `docs/design-rationale.md`
+decisions 18–21.
+
+- **Planning on the top model; readiness is the downshift boundary.** Profile entry through
+  execution readiness belongs on the top-model configuration, carried by the session model the
+  engineer selects at entry. Execution readiness is now a declared boundary in every cadence —
+  STEP-01 never starts on planning's momentum: the report declares planning complete and hands
+  the exact resumption invocation for a fresh session on the intended execution model;
+  proceeding in place is the ordinary release. Material replanning and spec supersession surface
+  the same handoff. The pinned challenge agent type the Task protocol referenced now actually
+  ships (`protodog/agents/challenge.md`, `model: fable`) — the one place model identity is
+  written down; previously the top-model challenge pin could not execute.
+- **Spec premises verified before binding.** Material claims about current repository state are
+  checked against the repository before a spec binds; unverifiable claims become assumptions.
+  Immutability locks only what grounding has checked.
+- **Completion closes declaratively.** The final response opens by declaring the profile
+  completed and closes with the remaining engineer-owned actions: the commit to main, the
+  retirement sweep, and the offered deferred-register review against the finished work — offered,
+  never run unprompted (a degraded closing context is the engineer-ruled reason; a fresh session
+  serves the review better). The lift rule now states lifting is judgment, not reflex.
+- **Assurance timing.** New trigger: changed runtime composition, configuration, environment, or
+  external wiring schedules the thinnest executable end-to-end run early — configuration-class
+  defects are observable only by running. And the audit freeze window: manifested artifacts are
+  frozen from launch to report capture, queued plan transitions flush after; the Foundation names
+  this as the plan-currency rule's one exception (previously the two rules conflicted silently).
+- **Vocabulary: "landing" → the commit to main** (engineer-ruled — explicit about the intent;
+  bare "commit" stays with checkpoint commits). Propagated across core, skills, hooks messages,
+  sweep-check output ("commit-then-sweep", "terminal, lifted, committed"), and README. Historical
+  changelog entries keep the old term.
+- **Validator diagnostics** (write-time validation deliberately kept; the report's
+  step-boundary recommendation declined): the terminal-lift arrow rule now reads wrapped items
+  whole — the disposition arrow may close the lead line or the item's final line — and its
+  message says where the arrow sits; status and cadence enum rejections list the valid values.
+- Test baseline: plan-validator 61 → 63 (wrapped-item cases); sweep-check 8 with re-termed
+  expectations; registry 11, hooks 38, launcher 8 unchanged.
+
 ## 3.5.0 — 2026-08-15
 
 Session retrospectives: the practice that produced the working canvas, codified.

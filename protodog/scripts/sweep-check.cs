@@ -3,7 +3,7 @@
 // Usage: dotnet sweep-check.cs [<repo-root>] [--base <ref>]   (defaults: cwd, main)
 // Classifies every top-level plan/ entry and, for plan directories, proves the mechanically
 // decidable retirement conditions: every plan file terminal, every obligation lifted
-// (disposition arrows), and content landed (identical to the base ref). Citation liveness is
+// (disposition arrows), and content committed to the base ref (identical to it). Citation liveness is
 // judgment and is not checked here; the plan-sweep skill owns it.
 // Exit 0: survey completed. Exit 2: usage or environment failure.
 using System.Text.RegularExpressions;
@@ -41,7 +41,7 @@ var arrow = new Regex(@"→ (D-\d{2,}|ISSUE-\d{2,}|closed: )");
 var baseAvailable = Git("rev-parse", "--verify", "--quiet", $"{baseRef}^{{commit}}") is not null;
 if (!baseAvailable)
 {
-	Console.WriteLine($"note: ref \"{baseRef}\" not found — landed state reported as unknown");
+	Console.WriteLine($"note: ref \"{baseRef}\" not found — committed state reported as unknown");
 }
 
 var sweepable = 0;
@@ -95,22 +95,22 @@ foreach (var entry in Directory.EnumerateFileSystemEntries(planRoot).Order())
 		continue;
 	}
 
-	var landed = baseAvailable ? Landed($"plan/{name}") : "unknown";
+	var committed = baseAvailable ? Committed($"plan/{name}") : "unknown";
 	var problems = new List<string>();
 	if (unlifted > 0)
 	{
 		problems.Add($"{unlifted} unlifted item(s); legacy pre-3.0 plans record their lift in the register — engineer override required");
 	}
 
-	if (landed != "landed")
+	if (committed != "committed")
 	{
-		problems.Add(landed == "unknown" ? "landed state unknown" : $"not landed ({landed})");
+		problems.Add(committed == "unknown" ? "committed state unknown" : $"not committed ({committed})");
 	}
 
 	if (problems.Count == 0)
 	{
 		sweepable++;
-		Console.WriteLine($"{name}/: sweepable — terminal, lifted, landed; pending citation review");
+		Console.WriteLine($"{name}/: sweepable — terminal, lifted, committed; pending citation review");
 	}
 	else
 	{
@@ -153,14 +153,14 @@ int Unlifted(string[] lines)
 	return count;
 }
 
-string Landed(string path)
+string Committed(string path)
 {
 	if (Git("ls-tree", "-d", baseRef, "--", path) is not { Length: > 0 })
 	{
 		return "branch-only";
 	}
 
-	return GitExit("diff", "--quiet", baseRef, "--", path) == 0 ? "landed" : $"diverged from {baseRef}";
+	return GitExit("diff", "--quiet", baseRef, "--", path) == 0 ? "committed" : $"diverged from {baseRef}";
 }
 
 string? Git(params string[] arguments)

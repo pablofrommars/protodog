@@ -1,23 +1,23 @@
 ---
 name: plan-sweep
-description: Engineer-triggered retirement sweep of the plan/ tree — proves terminal, lifted, and landed with the deterministic checker, reviews citation liveness, and deletes only engineer-confirmed directories. Use after landing, normally on main.
+description: Engineer-triggered retirement sweep of the plan/ tree — proves terminal, lifted, and committed with the deterministic checker, reviews citation liveness, and deletes only engineer-confirmed directories. Use after the commit to main, normally on main.
 ---
 
 # Plan retirement sweep
 
 You are executing the engineer-triggered retirement sweep the Foundation's plan lifecycle
 defines. Invocation is the engineer trigger; nothing is deleted before the confirmation step
-below. The protocol expects sweeps on `main` after landing (land-then-sweep) — name the current
-branch in the report and flag a sweep anywhere else.
+below. The protocol expects sweeps on `main` after the commit to main (commit-then-sweep) — name
+the current branch in the report and flag a sweep anywhere else.
 
 ## Procedure
 
 1. **Prove.** Run `dotnet ${CLAUDE_PLUGIN_ROOT}/scripts/sweep-check.cs` (in the protocol home
-   repository: `protodog/scripts/sweep-check.cs`; pass `--base <ref>` when the landing base is
+   repository: `protodog/scripts/sweep-check.cs`; pass `--base <ref>` when the commit base is
    not `main`). It classifies every `plan/` entry and proves the mechanically decidable
    retirement conditions: every plan file terminal, every obligation lifted (disposition
-   arrows), content landed (identical to the base ref). Do not re-derive these by hand, and do
-   not soften a failed proof.
+   arrows), content committed (identical to the base ref). Do not re-derive these by hand, and
+   do not soften a failed proof.
 2. **Review citations.** For each mechanically sweepable directory, search the repository for
    references to it and judge liveness: a citation from a live plan, spec, brief, or repository
    instruction blocks the sweep; a citation from another terminal plan, or one that is purely

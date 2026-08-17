@@ -243,6 +243,15 @@ expect_bad "cancelled plan with un-lifted deferred item" "$TMP/task-plan.md"
 lifted 'in progress' 'retry backoff tuning'
 expect_ok "live plan carries deferred item without arrow" "$TMP/task-plan.md"
 
+# A wrapped item may carry its arrow on the final line — the item closes with it, not the lead line.
+lifted 'completed' 'retry backoff tuning, with a rationale long enough that the bullet wraps
+  onto a continuation line → D-59'
+expect_ok "terminal plan with wrapped item, arrow on final line" "$TMP/task-plan.md"
+
+lifted 'completed' 'retry backoff tuning, with a rationale long enough that the bullet wraps
+  onto a continuation line and never records a disposition'
+expect_bad "terminal plan with wrapped un-lifted item" "$TMP/task-plan.md"
+
 # --- deferred register --------------------------------------------------------
 reg() { # parked id cell, disposition -> a register carrying one parked and one closed row
   cat > "$TMP/deferred.md" <<EOF
