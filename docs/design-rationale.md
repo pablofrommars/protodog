@@ -176,6 +176,24 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     was three clerical rejections — one expensive only because the arrow rule's message
     misdescribed where the arrow must sit. The rule now reads wrapped items whole, and enum
     messages list their values.
+22. **The readiness handoff recommends its execution model** (added 2026-08-22;
+    engineer-reported friction). Decision 18 made readiness the downshift boundary but left the
+    destination unnamed: at nearly every handoff the engineer asked which model the planned work
+    actually needs — a per-plan question the agent that just wrote the plan is best placed to
+    answer, and one the routing rule already decides in principle. The Foundation's model handoff
+    now opens with the execution-model recommendation: "lowest-cost configuration demonstrated
+    capable" applied to the plan just written, naming the concrete model with the demand signals
+    that drive it — remaining exploration or design judgment, blast radius and reversibility of
+    the riskiest steps, how reliably the selected verification would catch a weaker model's
+    errors — plus confidence and flip conditions, the decision-ready shape of decision 16's
+    profile recommendation. A step already known to exceed the recommended configuration is
+    named with its capability escalation rather than raising the whole session's tier. Advisory
+    by the same construction as decision 16: the engineer holds the session model and selects by
+    launching the fresh session; the concrete model name is report output, so agent-type
+    definitions remain the only Protocol source pinning model identity (decision 18). Task prose
+    and the Task entry skill restate the contract; Program and track readiness — and the
+    replanning and supersession handoffs — inherit it through the Foundation's handoff
+    definition unchanged.
 
 ## Accepted background rationale
 

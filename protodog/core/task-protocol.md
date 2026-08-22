@@ -54,11 +54,12 @@ not make a Task ready.
 
 Execution readiness is a declared boundary in every cadence: planning ran on the session model the
 engineer selected at entry, and the first step is where execution may downshift. The readiness
-report declares planning complete and presents the model handoff — the exact invocation to paste
-into a fresh session on the intended execution model, normally
-`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any cadence override — and proceeding in
-the current session is released by the ordinary `go`. Execution never starts STEP-01 on its own
-momentum out of planning.
+report declares planning complete and presents the model handoff — the Foundation's
+execution-model recommendation for the planned steps (recommended model, driving demand signals,
+confidence, flip conditions) and the exact invocation to paste into a fresh session on that
+model, normally `/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any cadence override —
+and proceeding in the current session is released by the ordinary `go`. Execution never starts
+STEP-01 on its own momentum out of planning.
 
 ## Task plan
 

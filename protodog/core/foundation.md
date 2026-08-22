@@ -243,6 +243,15 @@ the session model the engineer selects at entry, so the Protocol implements it a
 execution readiness is a declared boundary in every cadence, reporting planning complete and
 presenting the model handoff — the exact resumption invocation for a fresh session on the
 intended execution model — while proceeding in the current session remains the engineer's release.
+The handoff opens with the **execution-model recommendation**: this routing rule applied to the
+plan just written — the lowest-cost configuration judged capable of the planned steps, named
+concretely, with the demand signals driving it (remaining exploration or design judgment, blast
+radius and reversibility of the riskiest steps, how reliably the selected verification would
+catch a weaker model's errors), confidence, and the conditions that would change the tier; a
+planned step already known to exceed that configuration is named with its capability escalation
+rather than raising the whole session's tier. The recommendation is advisory — the engineer
+selects the execution model by launching the fresh session — and names the model as report
+output: agent-type definitions remain the only Protocol source pinning model identity.
 Audit challenge and every resulting remediation step likewise use the top-model configuration,
 routed through the pinned challenge agent type when the session model is not that tier. Material
 replanning and spec supersession are planning work: where the session model is below the planning

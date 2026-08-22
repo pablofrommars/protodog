@@ -137,8 +137,9 @@ supply intent or exact `@inputs/` / `@specs/` references. Artifacts live under `
 `specs/`, and `plan/<plan-id>/` of the repository you're in, per `protodog/core/foundation.md`.
 Start the session on the model you want planning to run on — planning through execution readiness
 belongs on the top tier, where binding immutability amplifies judgment error — and the readiness
-boundary pauses in every cadence: it hands you the exact invocation to resume execution in a
-fresh session on a cheaper model, or `go` continues in place.
+boundary pauses in every cadence: it recommends the execution model the planned steps actually
+need (driving signals, confidence, what would flip the tier) and hands you the exact invocation
+to resume in a fresh session on it, or `go` continues in place.
 Yellow below marks the engineer-owned moments; everything else is delegated agent work.
 
 ```mermaid
@@ -157,7 +158,7 @@ flowchart TD
         invoke(["/protodog:task or /protodog:program"]):::engineer --> ground[Grounding: repository state,<br>policy, supplied inputs]
         ground --> planning[Plan to execution readiness —<br>opens with the assurance interrogation]
         planning --> bind[Premises verified, exact specs bound<br>at readiness — immutable from that point]
-        bind --> readyGate([Readiness boundary: go here, or resume<br>on the execution model in a fresh session]):::engineer
+        bind --> readyGate([Readiness boundary: go here, or resume<br>on the recommended model in a fresh session]):::engineer
         readyGate --> execute[Step execution and verification,<br>checkpoint commits]
         execute -.->|blocking gate| hil[Engineer rules: decision ·<br>authorization · evidence]:::engineer
         hil -.->|outcome persisted in the plan| execute

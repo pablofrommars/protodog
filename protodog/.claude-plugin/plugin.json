@@ -2,7 +2,7 @@
   "name": "protodog",
   "displayName": "Protodog",
   "description": "Protodog, the Claude-native agentic execution protocol: Task/Program entry skills, ideation audit dispatch, working-canvas and plan maintenance skills, the pinned challenge agent, enforcement hooks, validators, templates, and the guarded external-audit launcher.",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "author": { "name": "Pablo Belin" },
   "license": "Proprietary"
 }

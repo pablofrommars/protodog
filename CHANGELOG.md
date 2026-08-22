@@ -1,5 +1,28 @@
 # Changelog
 
+## 3.7.0 — 2026-08-22
+
+The readiness model handoff recommends its execution model. Engineer-reported friction: the
+downshift boundary (3.6.0) handed over the resumption invocation but left "which model?" to be
+asked at nearly every handoff. Rationale recorded as `docs/design-rationale.md` decision 22.
+
+- The Foundation's model handoff now opens with the **execution-model recommendation** — the
+  routing rule ("lowest-cost configuration demonstrated capable") applied to the plan just
+  written: the concrete recommended model, the demand signals driving it (remaining exploration
+  or design judgment, blast radius and reversibility of the riskiest steps, how reliably the
+  selected verification would catch a weaker model's errors), confidence, and flip conditions —
+  the decision-ready shape of 3.4.0's profile recommendation. A step already known to exceed the
+  recommended configuration is named with its capability escalation rather than raising the whole
+  session's tier.
+- Advisory only: the engineer selects the execution model by launching the fresh session, and the
+  concrete model name is report output — agent-type definitions remain the only Protocol source
+  pinning model identity.
+- Task readiness prose and the Task entry skill restate the contract; Program and track readiness,
+  material replanning, and spec supersession inherit it through the Foundation's handoff
+  definition unchanged. README updated (readiness paragraph and flowchart).
+- Prose-level rule: no artifact-dialect, template, or enforcement change. Test baseline
+  unchanged.
+
 ## 3.6.0 — 2026-08-17
 
 Retro-driven remediations from the first heavyweight deployed Task (provenance:

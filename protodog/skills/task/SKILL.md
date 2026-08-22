@@ -45,8 +45,10 @@ about an omitted override; never require the engineer to author XML or protocol 
    paid-evaluation scheduling); verify spec premises against the repository and bind exact specs
    only at execution readiness.
 5. Stop at the readiness boundary in every cadence: report planning complete and present the
-   model handoff — the exact invocation to resume in a fresh session on the intended execution
-   model (`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any overrides); `go` proceeds
-   in this session.
+   model handoff — the Foundation's execution-model recommendation for the planned steps
+   (recommended model, driving demand signals, confidence, flip conditions) and the exact
+   invocation to resume in a fresh session on that model
+   (`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any overrides); `go` proceeds in
+   this session.
 6. Execute under the Task Protocol — no plan-approval stop; stop only for Foundation gates,
    declared boundaries, required engineer actions, or completion.
