@@ -24,7 +24,8 @@ engineer never authors XML or protocol structure.
 
 1. Record Program as the engineer-selected profile.
 2. Resolve the program plan in the current repository exactly as the Task entry resolves a task
-   plan, creating from `${CLAUDE_PLUGIN_ROOT}/templates/program-plan.md` when none matches.
+   plan — validating a resumed plan directory first, exactly as the Task entry does — creating
+   from `${CLAUDE_PLUGIN_ROOT}/templates/program-plan.md` when none matches.
 3. Assume the engineer-supplied Program worktree; inspect and reconcile state without an entry
    approval stop.
 4. Ground the Program; create or refine spec context; run the assurance interrogation once for

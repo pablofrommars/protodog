@@ -7,7 +7,9 @@
 // hash row in the dispatch re-verifies against the target repository → auditor CLI
 // launches (skipped in --dry-run). Then: codex exec, read-only sandbox, pinned model,
 // final message captured to audit-NN.md, provenance stamp prepended, report made
-// read-only, launch logged.
+// read-only, launch logged. A nonzero auditor exit refuses and parks partial output beside
+// the launch log; the manifest is re-verified after capture and any drift is stamped into
+// the report (the freeze window is a prose rule — drift is detected, not prevented).
 // Resolution: repository root from CLAUDE_PROJECT_DIR, else cwd — invoke from the audited
 // repository's root. Launch log honors PROTOCOL_AUDIT_LOG, then CLAUDE_PLUGIN_DATA, then
 // the repo-local logs directory. Exit: 0 ok, 2 usage, 3 gate refusal.
@@ -65,31 +67,26 @@ if (File.Exists(output))
 }
 
 var manifestRow = new Regex("`([0-9a-f]{64})`[^`]*`([^`]+)`");
-var verifiedRows = 0;
-foreach (var line in File.ReadLines(dispatch))
+var manifest = File.ReadLines(dispatch)
+	.Select(line => manifestRow.Match(line))
+	.Where(match => match.Success)
+	.Select(match => (Hash: match.Groups[1].Value, File: match.Groups[2].Value))
+	.ToList();
+foreach (var (expected, file) in manifest)
 {
-	var match = manifestRow.Match(line);
-	if (!match.Success)
-	{
-		continue;
-	}
-
-	var expected = match.Groups[1].Value;
-	var file = match.Groups[2].Value;
 	var target = Path.Combine(root, file);
 	if (!File.Exists(target))
 	{
 		Refuse($"manifest file missing: {file}");
 	}
 
-	var actual = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(target)));
-	if (actual != expected)
+	if (Sha256(target) != expected)
 	{
 		Refuse($"manifest hash mismatch: {file}");
 	}
-
-	verifiedRows++;
 }
+
+var verifiedRows = manifest.Count;
 
 if (verifiedRows == 0)
 {
@@ -142,12 +139,38 @@ using (process)
 		Refuse($"auditor timed out after {configuration.TimeoutSeconds}s");
 	}
 
+	if (process.ExitCode != 0)
+	{
+		// A failed auditor never becomes an immutable report; partial output is parked beside
+		// the launch log as rejected material, never under audits/.
+		var note = "";
+		if (File.Exists(output))
+		{
+			var rejected = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(log))!, $"audit-{number}.rejected.{DateTime.UtcNow:yyyyMMdd'T'HHmmss'Z'}.md");
+			File.Move(output, rejected, overwrite: true);
+			note = $" — partial output moved to {rejected}";
+		}
+
+		Refuse($"auditor exited {process.ExitCode}; no report captured{note}");
+	}
+
 	if (!File.Exists(output) || new FileInfo(output).Length == 0)
 	{
 		Refuse("auditor produced no report");
 	}
 
-	var stamp = $"<!-- launched by audit-launch.cs: dispatch {baseName} sha256={dispatchSha} model={configuration.Model} sandbox={configuration.Sandbox} -->";
+	var drifted = manifest
+		.Where(row => !File.Exists(Path.Combine(root, row.File)) || Sha256(Path.Combine(root, row.File)) != row.Hash)
+		.Select(row => row.File)
+		.ToList();
+	var drift = drifted.Count == 0 ? "" : $" DRIFT={string.Join(",", drifted)}";
+	if (drifted.Count > 0)
+	{
+		Log($"DRIFT {baseName}: {string.Join(", ", drifted)}");
+		Console.Error.WriteLine($"WARNING: manifested files changed during the audit ({string.Join(", ", drifted)}); the report is stamped and the challenge treats it as a limitation");
+	}
+
+	var stamp = $"<!-- launched by audit-launch.cs: dispatch {baseName} sha256={dispatchSha} model={configuration.Model} sandbox={configuration.Sandbox}{drift} -->";
 	File.WriteAllText(output, $"{stamp}\n{File.ReadAllText(output)}");
 	if (!OperatingSystem.IsWindows())
 	{
@@ -156,6 +179,11 @@ using (process)
 
 	Log($"DONE {baseName} -> {Path.GetFileName(output)} exit={process.ExitCode}");
 	Console.WriteLine($"audit report written: {output}");
+}
+
+static string Sha256(string path)
+{
+	return Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(path)));
 }
 
 static string Quote(string value)

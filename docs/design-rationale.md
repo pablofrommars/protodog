@@ -35,14 +35,16 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
    explicit about the intent; bare "commit" stays with the delegated checkpoint commits.)
 6. **Markdown-in-repo artifacts are the sole state authority**; harness task lists are one-way
    mirrors; harness IDs never enter canonical artifacts. Templates + write-time validators own
-   the shape; enum drift, ID reuse, unmapped acceptance, and empty sections are mechanically
-   rejected. Status lives in the identifier cell beside a status marker rather than in its own
+   the shape; enum drift, duplicate IDs, unmapped acceptance, and empty sections are mechanically
+   rejected; reuse across revisions is the hook's check against HEAD, since the validator sees
+   one artifact (decision 24). Status lives in the identifier cell beside a status marker rather than in its own
    column, so the scannable glyph and the authoritative enum cannot drift apart. The marker set is
    five meanings reused across every row kind — not one glyph per status — because a reader should
    learn it once, and it is restricted to single codepoints since a variation selector is invisible
-   in an editor and lost on copy-paste. Strikethrough is reserved for settled gates, and
-   `## Contents` is validated against the actual sections, which makes the index an enforced
-   invariant instead of decoration that rots.
+   in an editor and lost on copy-paste. Strikethrough is accepted only on settled gates and never
+   required, and `## Contents`, when a plan carries one, is validated against the actual
+   sections — an exact index or none, never decoration that rots (both relaxed 2026-10-19,
+   decision 24).
 7. **Program profile mechanics are inherited from native subagent worktree isolation**; the
    coordinator never cedes plan-write ownership or the Program worktree (this resolves the
    coordination-writer seam AUDIT-01 found in the predecessor). Concurrent writers remain gated
@@ -194,6 +196,38 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     and the Task entry skill restate the contract; Program and track readiness — and the
     replanning and supersession handoffs — inherit it through the Foundation's handoff
     definition unchanged.
+23. **Deferral is classified, never residual** (added 2026-10-19; provenance: engineer
+    observation that low-hanging findings on surfaces already under edit were parked rather than
+    fixed). The protocol defined a deferred issue but had no rule for when deferring was right:
+    at every intake — audit challenge, failure triage, incidental discovery, completion — it was
+    the only outcome needing no gate, no step, and no verification rerun, and spec immutability
+    made any scope doubt resolve toward it. The Foundation's finding triage inverts the default:
+    a finding passing the fix-now test (in-scope surface, understood repair, not material and no
+    write-surface extension, one reversible checked step) is a step on authority the profile
+    already grants; a failing one carries the tag naming the failed condition. The validator
+    enforces the tag only where it already enforces the arrow — lifted items on terminal plans —
+    because the judgment is prose and the artifact is the only thing a validator can see
+    (decision 20). The `deferred-review` residue report feeds back: rows later work closed at
+    trivial cost mean the test ran too tight at the source.
+24. **Enforcement claims match what the hook can see** (added 2026-10-19; provenance:
+    `inputs/protocol-review/audits/` — two external cycles, audit-01 ceremony-scoped and audit-02
+    undirected, challenged in `audit-0N-challenge.md`). The ceremony audit found the protocol
+    mostly lean, with its real duplication in the plan dialect and in restated contracts; the
+    undirected audit found no ceremony and ten gaps between "(enforced)" and the validator's
+    inputs. Rule adopted: a claim of enforcement names its boundary (the host's Write, Edit, and
+    Bash tools) and is corrected rather than defended where the code cannot fire — renumbering
+    across revisions, the freeze window — while the cheap mechanical closures are taken
+    (completed-plan consistency, lift destinations, block acceptance, untracked content, auditor
+    exit code, drift stamping). The two dialect simplifications the ceremony audit argued for —
+    strikethrough on settled gates, the mandatory Contents index — were not taken by the
+    challenge but parked as `needs-decision` rows; the engineer ruled both the same day
+    (accepted-not-required; optional-exact-when-present), closing D-04 and D-05. The parked row
+    plus a direct interrogation was the whole mechanism — no plan, no gate artifact. The three
+    `cost` rows followed the same day on the engineer's call once the register made their size
+    visible: the post-Bash check (snapshot before, compare after; immutables denied, plan
+    artifacts validated; deletions unflagged because the sweep deletes through that path), id
+    stability against HEAD from `in progress` onward (D-ids from the first row), and Program
+    track rows resolving their acceptance into the owning track plan.
 
 ## Accepted background rationale
 

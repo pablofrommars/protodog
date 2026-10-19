@@ -37,18 +37,19 @@ about an omitted override; never require the engineer to author XML or protocol 
 2. Resolve the plan in the current repository: an explicit `plan:` reference resumes it; otherwise
    exactly one matching plan under `plan/` resumes, none creates from
    `${CLAUDE_PLUGIN_ROOT}/templates/task-plan.md` (plan id = kebab-case slug of the Task label,
-   unique under `plan/`), multiple plausible matches become a Foundation HIL request.
+   unique under `plan/`), multiple plausible matches become a Foundation HIL request. A resumed
+   plan is validated first (`dotnet ${CLAUDE_PLUGIN_ROOT}/validators/validate-plan.cs
+   plan/<plan-id>`) and a rejected artifact is repaired before any other work — a write the hook
+   denied may have been left on disk by a session that ended before repairing it.
 3. Assume the engineer-supplied worktree; inspect and reconcile repository state and policy without
    an entry approval stop.
 4. Ground the supplied context; create or refine the smallest sufficient spec context; plan the
    known path end to end, opening planning with the assurance interrogation (audit and
    paid-evaluation scheduling); verify spec premises against the repository and bind exact specs
    only at execution readiness.
-5. Stop at the readiness boundary in every cadence: report planning complete and present the
-   model handoff — the Foundation's execution-model recommendation for the planned steps
-   (recommended model, driving demand signals, confidence, flip conditions) and the exact
-   invocation to resume in a fresh session on that model
-   (`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any overrides); `go` proceeds in
+5. Stop at the readiness boundary in every cadence: report planning complete with the
+   Foundation's model handoff; the resumption invocation it carries is
+   `/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any overrides; `go` proceeds in
    this session.
 6. Execute under the Task Protocol — no plan-approval stop; stop only for Foundation gates,
    declared boundaries, required engineer actions, or completion.

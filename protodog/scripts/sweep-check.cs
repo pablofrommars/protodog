@@ -160,6 +160,12 @@ string Committed(string path)
 		return "branch-only";
 	}
 
+	// git diff cannot see untracked files; the working tree may carry nothing the base ref lacks.
+	if (Git("status", "--porcelain", "--untracked-files=all", "--", path) is { Length: > 0 })
+	{
+		return "uncommitted working-tree content";
+	}
+
 	return GitExit("diff", "--quiet", baseRef, "--", path) == 0 ? "committed" : $"diverged from {baseRef}";
 }
 

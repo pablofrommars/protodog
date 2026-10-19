@@ -16,9 +16,9 @@ or amended — a fresh session serves the review better than a degraded closing 
 
 1. **Verify each parked row** against current repository state; fan out subagent verifiers when
    the register is large. Per row: Has later work closed it — the defect fixed, the question
-   ruled, the debt paid? Has a trigger-blocked row's trigger fired? Does an actionable claim
-   still reproduce as written? Is an engineer's-call row's stated default still the behavior in
-   force? Ground every answer in current evidence — code, tests, plans, history — never in the
+   ruled, the debt paid? Has a `blocked-by` row's trigger fired? Does an `out-of-scope` or
+   `cost` claim still reproduce as written? Is a `needs-decision` row's stated default still the
+   behavior in force? Does an `accepted gap` still hold its reopening condition? Ground every answer in current evidence — code, tests, plans, history — never in the
    row's own text.
 2. **Propose transitions.** Per row, one of: **keep** (still true, evidence current); **close**
    (done or obsoleted — with the closing evidence); **activate** (a fired trigger proposes
@@ -31,4 +31,5 @@ or amended — a fresh session serves the review better than a degraded closing 
    amendments rewrite the row in place, D-ids are never reused or renumbered. The write is
    validated on save by the register validator.
 4. **Report residue.** Close with what was verified and kept, with the evidence that supports
-   each survivor, so the next review knows what was already checked and when.
+   each survivor, so the next review knows what was already checked and when. Name any row later
+   work closed at trivial cost — evidence the fix-now test was applied too tightly at its source.

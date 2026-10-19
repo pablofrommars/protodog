@@ -25,8 +25,10 @@ grading itself.
 
 The discipline is mechanical wherever it can be: hooks deny engineer-owned Git (push, fetch,
 rebase, history rewrites, `main`); validators reject malformed plans, marker/status drift,
-unmapped acceptance, edits to bound specs or audit reports, and terminal plans still carrying
-live obligations. Prose is reserved for judgment. Git is a split contract — the agent checkpoints
+unmapped acceptance, edits to bound specs or audit reports, terminal plans still carrying live
+obligations or unsettled acceptance, and lifts whose destination row does not exist. Enforcement
+sits at the host's Write, Edit, and Bash tools: shell commands are checked after they run against
+a snapshot of `plan/` and `specs/`, and ids are held stable against HEAD once execution begins. Prose is reserved for judgment. Git is a split contract — the agent checkpoints
 freely inside its managed worktree, the engineer owns the commit to main, and one Task or whole
 Program reaches `main` as exactly one commit. Plans die on schedule: obligations close or lift to
 a register, committed directories are swept, Git history is the archive.
@@ -237,7 +239,8 @@ dotnet protodog/scripts/audit-launch.cs plan/<plan-id>/audits/audit-NN-dispatch.
 
 `--dry-run` verifies every gate without contacting Codex. Reports are immutable; a re-launch is a
 new numbered cycle, and the challenge must address every report on file. Between launch and
-report capture the manifested files are frozen — plan updates that would touch them queue and
+report capture the manifested files are frozen (a prose rule: the launcher re-verifies the
+manifest after capture and stamps any drift into the report) — plan updates that would touch them queue and
 flush after capture.
 
 ```mermaid
@@ -269,7 +272,9 @@ sequenceDiagram
 A plan cannot go terminal while it is the sole carrier of a live obligation: deferred issues and
 accepted gaps lift to `plan/deferred.md` (template `protodog/templates/deferred-register.md`,
 validated on write) or record their closure through disposition arrows (enforced) — a judgment
-call, never a reflex move to the register. Terminal plan directories already on `main` are then
+call, never a reflex move to the register. Deferral is itself classified, not residual: a finding
+that passes the Foundation's fix-now test becomes a step, and a lifted deferred issue carries the
+reason tag it failed on (`defer: out-of-scope | needs-decision | cost | blocked-by`, enforced). Terminal plan directories already on `main` are then
 deleted by the engineer-triggered retirement sweep — Git history on `main` is the archive, which
 the one-commit rule guarantees.
 

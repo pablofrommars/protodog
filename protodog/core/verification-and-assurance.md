@@ -41,8 +41,9 @@ Foundation interface only when the selection requires engineer authority or judg
    unchanged checks, builds, lints, observational measurements, or test-only restructuring; when
    fail-first would be unsafe or uninformative, disclose the omission and rationale.
 7. **Failures are classified before remediation.** `new / pre-existing / environmental /
-   unresolved`, with intermittence recorded separately. Change the implementation only when cause
-   and repair are understood and in scope; rerun affected verification.
+   unresolved`, with intermittence recorded separately. Remediate when the Foundation's fix-now
+   test passes; otherwise record a deferred issue with its reason tag. Rerun affected
+   verification.
 8. **Retries require information.** Another attempt requires remediation, a new hypothesis, new
    evidence, or a relevant state change.
 9. **Evidence remains concise and inspectable.** Identify results and link retained output; keep
@@ -204,7 +205,8 @@ a Program cycle — challenges every finding against the pinned state on the top
 and writes `audit-NN-challenge.md`: per finding, a disposition
 (`confirmed / overstated / false positive / deliberate design / unverifiable here`), exact
 challenge evidence and corrected claim where applicable, material consequence and required gate if
-any, and resulting owning-plan steps, verification, or no-action rationale. The challenge also
+any, and per confirmed finding the resulting action under the Foundation's finding triage —
+`remediate → STEP-NN`, `defer: <tag>`, or `accepted gap → <gate>` — with its verification. The challenge also
 performs a bounded search for material misses within the declared scope, recorded under the next
 unused `FINDING-NN`. The auditor never performs its own challenge. Confirmed work becomes ordinary
 plan steps; all remediation uses the top-model configuration; a disposition changing outcome,

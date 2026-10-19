@@ -31,6 +31,11 @@ Status: committed normative Foundation, Claude-native line.
 This table is the complete normative closure; nothing outside it carries Protocol authority. A
 validator rejection outranks a prose interpretation for whatever the validator decides; disputes
 about a validator's correctness are resolved by fixing the validator, not by overriding it ad hoc.
+"Enforced" names a boundary: hooks run at the host's Write, Edit, and Bash tools. A shell command
+is checked after it runs against a snapshot of `plan/` and `specs/` — an immutable artifact it
+changed is denied, a plan artifact it changed is validated — and a write that drops a durable id
+present at HEAD is denied once execution has begun. Anything outside those tools is a prose
+prohibition, binding as every prose rule is.
 
 ## Profiles and selection
 
@@ -131,6 +136,26 @@ is self-sufficient: it carries the condensed claim, why it matters, and
 its revisit condition, because the source plan will be retired; its provenance cell points into
 history, not at required reading.
 
+### Finding triage
+
+Deferral is a classification, not a residual. Whatever intake a finding arrives through — a
+confirmed audit finding, a non-blocking failure, a defect noticed on a surface under edit, an open
+question — it is remediated as an ordinary step when it passes the **fix-now test**: its surface
+is already within the plan's scope or write surfaces; cause and repair are understood; the repair
+is not material — it changes no outcome, scope, acceptance, authority, or architecture and extends
+no write surface; and it is one reversible step with a check that proves it. Such a step records
+its origin (`from FINDING-NN`, `from <failed check>`). Fix-now work is the ordinary, reversible,
+in-scope work profile invocation already authorizes; it creates no permission and waits for none.
+A finding that fails the test is recorded as a deferred issue carrying the tag that names the
+failed condition: `defer: out-of-scope` (names the surface; the superseding-spec path if it must
+land now), `defer: needs-decision` (material — routed to its gate), `defer: cost` (exceeds one
+bounded step), `defer: blocked-by` (names the trigger). The tag travels: it is the register row's disposition
+when the item lifts, with `accepted gap` as the fifth value — one taxonomy from plan to register.
+A lifted item without its tag — unless it is an accepted gap — is rejected on a terminal plan, and
+its arrow must resolve to an existing register or ledger row (both enforced). Under `interactive` cadence the
+next report lists the triage so the engineer can flip either way; under `continuous`, fix-now
+steps proceed and deferrals are visible in the plan.
+
 Retirement deletes terminal plan directories already committed to `main` from the working tree.
 Git history on `main` is the archive — the one-commit rule guarantees the provenance — and a
 terminal plan is delete-safe by construction: after the lift, nothing may cite it as ongoing
@@ -189,17 +214,19 @@ Markers are single codepoints requiring no variation selector. This is a constra
 an aesthetic: a marker needing U+FE0F is invisible in most editors, silently dropped by ordinary
 copy-paste, and would fail validation against a row that looks identical to a correct one.
 
-Strikethrough marks a settled gate identifier and appears nowhere else. Work that ends `superseded`
+Strikethrough may mark a settled gate identifier and appears nowhere else; it is accepted, never
+required — ✅ and `settled` already say it. Work that ends `superseded`
 or `cancelled`, and a criterion closed by `accepted exception`, say so through ⬛ and the status
 label rather than by striking a durable identifier.
 
 A spec's acceptance-criteria table is unaffected by this grammar: it defines criteria and assigns
 their IDs, carries no status, and is immutable once bound.
 
-Every plan opens with a `## Contents` section listing every other section as a link, in document
-order (enforced). It is the plan's section index, so which optional live state a plan actually
-carries is visible without reading it. Anchors follow the host's ordinary heading-slug convention
-and are not themselves enforced.
+A plan may open with a `## Contents` section; when it does, the index lists every other section
+as a link, in document order (enforced) — an exact index or none. It earns its place on a plan
+long enough that which optional live state it carries is worth seeing without reading it; a
+two-section plan carries none. Anchors follow the host's ordinary heading-slug convention and are
+not themselves enforced.
 
 ## Shared lifecycle and work status
 
@@ -341,7 +368,8 @@ policy. Topology changes neither cadence nor authority.
 - **Decision** — a settled material choice with owner, rationale, and evidence.
 - **Decision / authorization / evidence gate** — a blocking choice, permission, or fact, with
   owner, affected work, and closure condition.
-- **Deferred issue** — postponed work with reason and revisit condition.
+- **Deferred issue** — postponed work with its reason tag (`defer: out-of-scope | needs-decision |
+  cost | blocked-by`) and revisit condition; a finding that passes the fix-now test is a step.
 - **Accepted gap** — a retained limitation with rationale, consequence, and reopening condition.
 - **Blast radius** — affected surfaces, contracts, data, users, and downstream propagation.
 - **Reversibility** — `straightforward / costly / irreversible`, with the recovery path.

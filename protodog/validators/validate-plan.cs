@@ -42,7 +42,9 @@ Dictionary<string, string> registerMarkers = new()
 	["closed"] = "✅",
 	["dropped"] = "⬛",
 };
-string[] dispositions = ["actionable", "engineer's call", "trigger-blocked", "standing debt"];
+string[] dispositions = ["out-of-scope", "needs-decision", "cost", "blocked-by", "accepted gap"];
+string[] settledAcceptance = ["satisfied", "accepted exception"];
+string[] terminalWork = ["completed", "superseded", "cancelled"];
 
 // Alternation, never a character class: 🟡 and 🔴 are surrogate pairs in UTF-16, and a class
 // would match their halves independently.
@@ -233,7 +235,7 @@ WorkCell? ParseWorkCell(string cell)
 }
 
 // The marker map's keys are the row kind's status enum; its values are the required marker.
-// strikeStatus names the one status whose identifier is struck, or null when none is.
+// strikeStatus names the one status whose identifier may be struck, or null when none may.
 WorkCell? CheckWorkCell(string file, string cell, string idPattern, Dictionary<string, string> allowed, string? strikeStatus)
 {
 	var parsed = ParseWorkCell(cell);
@@ -260,11 +262,10 @@ WorkCell? CheckWorkCell(string file, string cell, string idPattern, Dictionary<s
 	}
 
 	// Strikethrough marks a settled gate and nothing else.
-	if (parsed.Struck != (strikeStatus is not null && parsed.Status == strikeStatus))
+	// Strikethrough is accepted on a settled gate and nowhere else; it is never required.
+	if (parsed.Struck && (strikeStatus is null || parsed.Status != strikeStatus))
 	{
-		Bad(file, parsed.Struck
-			? $"\"{parsed.Id}\" must not strike its id"
-			: $"settled gate \"{parsed.Id}\" must strike its id (~~{parsed.Id}~~)");
+		Bad(file, $"\"{parsed.Id}\" must not strike its id");
 	}
 
 	return parsed;
@@ -272,10 +273,10 @@ WorkCell? CheckWorkCell(string file, string cell, string idPattern, Dictionary<s
 
 void CheckContents(string file, string[] lines, List<Section> sections, bool[] mask)
 {
+	// The index is optional; when a plan carries one it must be exact, so a stale index still fails.
 	var contents = sections.FirstOrDefault(s => s.Title == "Contents");
 	if (contents is null)
 	{
-		Bad(file, "missing \"## Contents\" section");
 		return;
 	}
 
@@ -453,7 +454,39 @@ void CheckStepRows(string file, Table table, string idPattern, HashSet<string>? 
 
 // A terminal plan may not be the sole carrier of a live obligation: every top-level item in the
 // section lifts to the deferred register or records its closure inline.
-void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool[] mask, string? status, string sectionTitle, string arrowPattern, string expectation)
+// The completion rule is prose ("every bound criterion satisfied or excepted, no open gate");
+// this is the part of it an artifact can show: a plan declaring itself completed may not carry
+// a pending or unmet criterion, an open gate, or unfinished work. Superseded and cancelled plans
+// legitimately carry unmet rows and are not checked.
+void CheckCompletedRows(string file, string[] lines, List<Section> sections, bool[] mask, string? status, string sectionTitle, string[] allowed, bool titleIsPattern = false)
+{
+	if (status != "completed")
+	{
+		return;
+	}
+
+	foreach (var section in sections.Where(s => titleIsPattern ? Regex.IsMatch(s.Title, sectionTitle) : s.Title == sectionTitle))
+	{
+		var table = ParseTable(lines, section.Start, section.End, mask);
+		if (table is null)
+		{
+			continue;
+		}
+
+		foreach (var row in table.Rows)
+		{
+			var cell = row.Count > 0 ? ParseWorkCell(row[0]) : null;
+			if (cell is not null && !allowed.Contains(cell.Status))
+			{
+				Bad(file, $"completed plan: \"{cell.Id}\" in \"## {section.Title}\" is \"{cell.Status}\" — a completed plan carries only {string.Join(" / ", allowed)} rows there");
+			}
+		}
+	}
+}
+
+const string DeferTagPattern = @"\bdefer: (out-of-scope|needs-decision|cost|blocked-by)\b|\baccepted gap\b";
+
+void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool[] mask, string? status, string sectionTitle, string arrowPattern, string expectation, string? registerPath, string? ledgerPath)
 {
 	if (status is not ("completed" or "superseded" or "cancelled"))
 	{
@@ -483,10 +516,34 @@ void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool
 		}
 
 		var joined = string.Join(" ", lines[i..end].Select(l => l.Trim()));
+		var item = lines[i][2..];
+		var label = item.Length > 60 ? item[..60] + "…" : item;
 		if (!Regex.IsMatch(lines[i], arrowPattern) && !Regex.IsMatch(joined, arrowPattern))
 		{
-			var item = lines[i][2..];
-			Bad(file, $"terminal plan: \"{(item.Length > 60 ? item[..60] + "…" : item)}\" in \"## {sectionTitle}\" must close with {expectation} at the end of its lead line or of the whole wrapped item");
+			Bad(file, $"terminal plan: \"{label}\" in \"## {sectionTitle}\" must close with {expectation} at the end of its lead line or of the whole wrapped item");
+		}
+		else if (Regex.Match(joined, @"→ ((D|ISSUE)-\d{2,})$") is { Success: true } lift)
+		{
+			// A lifted item is a classified deferral, not a residual: it names the fix-now
+			// condition it failed on, or it is an accepted gap.
+			if (!Regex.IsMatch(joined, DeferTagPattern))
+			{
+				Bad(file, $"terminal plan: lifted item \"{label}\" in \"## {sectionTitle}\" must carry its reason tag — \"defer: out-of-scope | needs-decision | cost | blocked-by\" — or be an \"accepted gap\"");
+			}
+
+			// The arrow is a claim that the obligation lives elsewhere; the destination row must exist.
+			var id = lift.Groups[1].Value;
+			var (path, kind, rowPattern) = id.StartsWith("D-")
+				? (registerPath, "plan/deferred.md", $@"\b{id} · (parked|closed|dropped)\b")
+				: (ledgerPath, "the program issue ledger", $@"^- {id} —");
+			if (path is null || !File.Exists(path))
+			{
+				Bad(file, $"terminal plan: \"{label}\" lifts to {id} but {kind} was not found at {path ?? "(no path)"}");
+			}
+			else if (!Regex.IsMatch(File.ReadAllText(path), rowPattern, RegexOptions.Multiline))
+			{
+				Bad(file, $"terminal plan: \"{label}\" lifts to {id} but no such row exists in {kind}");
+			}
 		}
 
 		i = end - 1;
@@ -594,8 +651,13 @@ void ValidateTaskPlan(string file)
 	CheckEmptySections(file, lines, mask);
 	CheckContents(file, lines, sections, mask);
 	CheckGates(file, lines, sections, mask);
+	var planDirectory = Path.GetDirectoryName(Path.GetFullPath(file))!;
 	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Deferred issues and accepted gaps",
-		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"");
+		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"",
+		Path.Combine(planDirectory, "..", "deferred.md"), null);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Acceptance", settledAcceptance);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Gates", ["settled"]);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Steps", terminalWork);
 	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
 	var stepsSection = sections.FirstOrDefault(s => s.Title == "Steps");
 	if (stepsSection is null)
@@ -636,8 +698,13 @@ void ValidateProgramPlan(string file, string? planDir)
 	CheckEmptySections(file, lines, mask);
 	CheckContents(file, lines, sections, mask);
 	CheckGates(file, lines, sections, mask);
+	var programDirectory = Path.GetDirectoryName(Path.GetFullPath(file))!;
 	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Program issue ledger",
-		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"");
+		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"",
+		Path.Combine(programDirectory, "..", "deferred.md"), null);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Program acceptance", settledAcceptance);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Gates", ["settled"]);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Tracks", terminalWork);
 	var tracksSection = sections.FirstOrDefault(s => s.Title == "Tracks");
 	if (tracksSection is null)
 	{
@@ -669,12 +736,26 @@ void ValidateProgramPlan(string file, string? planDir)
 				Bad(file, $"\"{label}\" Track plan cell must be \"not created\" or an @reference");
 			}
 
-			if (planDir is not null && row[2].StartsWith("@plan/"))
+			if (row[2].StartsWith("@plan/"))
 			{
-				var root = Path.GetFullPath(Path.Combine(planDir, "..", ".."));
-				if (!File.Exists(Path.Combine(root, row[2][1..])))
+				var trackPlan = Path.GetFullPath(Path.Combine(programDirectory, "..", "..", row[2][1..]));
+				if (!File.Exists(trackPlan))
 				{
 					Bad(file, $"\"{label}\" track plan {row[2]} does not exist");
+				}
+				else
+				{
+					// Acceptance ids are owned by the track plan's own table; the row's assignment must resolve there.
+					var owned = Regex.Matches(File.ReadAllText(trackPlan), @"^\| (?:⬜|🟡|✅|🔴|⬛) (ACCEPTANCE-\d{2,}) ·", RegexOptions.Multiline)
+						.Select(m => m.Groups[1].Value)
+						.ToHashSet();
+					foreach (var reference in Refs(row[4], @"ACCEPTANCE-\d{2,}"))
+					{
+						if (!owned.Contains(reference))
+						{
+							Bad(file, $"\"{label}\" assigns {reference} but {row[2]} does not own it");
+						}
+					}
 				}
 			}
 		}
@@ -733,8 +814,14 @@ void ValidateTrackPlan(string file)
 	CheckEmptySections(file, lines, mask);
 	CheckContents(file, lines, sections, mask);
 	CheckGates(file, lines, sections, mask);
+	var trackDirectory = Path.GetDirectoryName(Path.GetFullPath(file))!;
 	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Deferred issues and accepted gaps",
-		@"→ (ISSUE-\d{2,}|D-\d{2,}|closed: .+)$", "\"→ ISSUE-NN\" (deduplicated into the ledger), \"→ D-NN\", or \"→ closed: <reason>\"");
+		@"→ (ISSUE-\d{2,}|D-\d{2,}|closed: .+)$", "\"→ ISSUE-NN\" (deduplicated into the ledger), \"→ D-NN\", or \"→ closed: <reason>\"",
+		Path.Combine(trackDirectory, "..", "..", "..", "deferred.md"), Path.Combine(trackDirectory, "..", "..", "program-plan.md"));
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Acceptance", settledAcceptance);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Gates", ["settled"]);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Blocks", terminalWork);
+	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), @"^BLOCK-\d{2,} — ", terminalWork, titleIsPattern: true);
 	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
 	var blocksSection = sections.FirstOrDefault(s => s.Title == "Blocks");
 	if (blocksSection is null)
@@ -759,6 +846,14 @@ void ValidateTrackPlan(string file)
 			if (cell is not null && !blockIds.Add(cell.Id))
 			{
 				Bad(file, $"duplicate block \"{cell.Id}\"");
+			}
+
+			foreach (var reference in Refs(row[3], @"ACCEPTANCE-\d{2,}"))
+			{
+				if (!accIds.Contains(reference))
+				{
+					Bad(file, $"\"{cell?.Id ?? row[0]}\" references unmapped {reference}");
+				}
 			}
 		}
 

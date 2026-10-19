@@ -54,19 +54,18 @@ not make a Task ready.
 
 Execution readiness is a declared boundary in every cadence: planning ran on the session model the
 engineer selected at entry, and the first step is where execution may downshift. The readiness
-report declares planning complete and presents the model handoff — the Foundation's
-execution-model recommendation for the planned steps (recommended model, driving demand signals,
-confidence, flip conditions) and the exact invocation to paste into a fresh session on that
-model, normally `/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any cadence override —
-and proceeding in the current session is released by the ordinary `go`. Execution never starts
-STEP-01 on its own momentum out of planning.
+report declares planning complete and presents the Foundation's model handoff for the planned
+steps — its contents are defined there, not restated here — and proceeding in the current session
+is released by the ordinary `go`. Execution never starts STEP-01 on its own momentum out of
+planning.
 
 ## Task plan
 
 One Markdown format at every Task size: a one-step Task is one row; a larger Task adds rows and
 only the optional sections it needs. The canonical shape is `protodog/templates/task-plan.md`,
 scaffolded at creation and enforced on write by the plan validator — empty placeholder sections,
-unknown statuses, unmapped acceptance references, and renumbered IDs are rejected mechanically.
+unknown statuses, unmapped acceptance references, and duplicate IDs are rejected mechanically,
+and once execution has begun the hook rejects a write that drops an ID present at HEAD.
 
 ### Kernel semantics
 
@@ -100,8 +99,8 @@ Rows follow the Foundation's plan row grammar: `⬜ STEP-01 · ready` carries st
 identifier, and status label in the `ID` cell, so there is no separate status column. Acceptance
 rows use the same markers against their own enum — `✅ ACCEPTANCE-01 · satisfied`,
 `🔴 ACCEPTANCE-02 · unmet` — so a criterion that failed is visibly distinct from one still
-`pending`. `## Contents` lists every other section in document order and is updated whenever a
-section is added or removed.
+`pending`. A `## Contents` index is optional; when present it lists every other section in
+document order and is updated whenever a section is added or removed.
 
 While `pending planning`, `Grounding source` may temporarily replace `Spec context` with exact
 input references and the concise invocation context needed for resumption; it is removed once spec
@@ -120,7 +119,8 @@ engineer grants not carried by enforced configuration), **Assumptions and open q
 audit). There is no event log, attempt log, or completion-report artifact. On a terminal plan,
 every top-level item under **Deferred issues and accepted gaps** ends with a disposition arrow —
 `→ D-NN` once lifted to the deferred register, or `→ closed: <reason>` when it does not outlive
-the Task (enforced). Keep evidence concise
+the Task — and a lifted item carries its `defer: <tag>` or is an accepted gap (enforced). Keep
+evidence concise
 and referential: the command or check, material result, repository-state provenance when material,
 and a link to retained larger output.
 
@@ -169,9 +169,9 @@ adopts it and is re-evaluated.
 
 **Failure recovery.** Apply the common evidence-driven recovery policy: another attempt requires
 remediation, new evidence, a new hypothesis, or a relevant state change. Triage every material
-failure — remediate in scope, escalate capability, route an engineer escalation through its gate,
-or record and continue when non-blocking. The Task has no issue ledger; deferred issues and
-accepted gaps live in the plan.
+failure — remediate when the Foundation's fix-now test passes, escalate capability, route an
+engineer escalation through its gate, or record a tagged deferred issue and continue when
+non-blocking. The Task has no issue ledger; deferred issues and accepted gaps live in the plan.
 
 ## HIL and cadence
 
@@ -264,11 +264,6 @@ fix plan exists.
   - @specs/retry-example.md
 - Next boundary: STEP-01
 
-## Contents
-
-- [Steps](#steps)
-- [Acceptance](#acceptance)
-
 ## Steps
 
 | ID | Checkable result | Affected surfaces | Acceptance | Verification |
@@ -282,7 +277,8 @@ fix plan exists.
 | ⬜ ACCEPTANCE-01 · pending | — |
 ```
 
-Nothing else is required — no gates, decisions, topology, or completion-report sections, and the
-contents index stays two entries long because the plan has two sections. A Task needing optional
-machinery adds exactly the sections that carry state and lists them in `## Contents`, as in the
-gates example above; features appear because the Task needs them, not as a checklist.
+Nothing else is required — no gates, decisions, topology, completion-report sections, or a
+contents index for a plan with two sections. A Task needing optional machinery adds exactly the
+sections that carry state, indexing them in `## Contents` once the plan is long enough to want
+one, as in the gates example above; features appear because the Task needs them, not as a
+checklist.

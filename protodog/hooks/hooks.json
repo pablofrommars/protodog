@@ -12,6 +12,10 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "dotnet \"${CLAUDE_PLUGIN_ROOT}\"/hooks/protodog-hooks.cs post-bash" }]
+      },
+      {
         "matcher": "Write|Edit",
         "hooks": [{ "type": "command", "command": "dotnet \"${CLAUDE_PLUGIN_ROOT}\"/hooks/protodog-hooks.cs post-plan-write" }]
       }

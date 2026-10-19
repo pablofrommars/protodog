@@ -1,5 +1,77 @@
 # Changelog
 
+## 3.8.0 — 2026-10-19
+
+Two things landed together: deferral became a classification, and the protocol took its first
+full external review of itself — two Codex cycles under `inputs/protocol-review/audits/`
+(audit-01 scoped to ceremony and duplication, audit-02 undirected), each challenged on the pinned
+top-model configuration. Rationale in `docs/design-rationale.md` decisions 23 and 24.
+
+**Deferral is classified, never residual** (decision 23; engineer-reported: low-hanging findings
+on surfaces already under edit were parked instead of fixed, because deferral needed no gate, no
+step, and no verification rerun at any intake).
+
+- **Finding triage in the Foundation.** One rule across every intake — confirmed audit finding,
+  non-blocking failure, defect noticed on a surface under edit, open question. A finding that
+  passes the **fix-now test** (surface already within scope or write surfaces; cause and repair
+  understood; not material and extends no write surface; one reversible step with a check)
+  becomes an ordinary step recording its origin, on the authority profile invocation already
+  grants. A finding that fails is a deferred issue tagged with the failed condition:
+  `defer: out-of-scope | needs-decision | cost | blocked-by`. Under `interactive` the next report
+  lists the triage for the engineer to flip; under `continuous` fix-now proceeds.
+- **One taxonomy from plan to register.** The tag is the register row's `Disposition`, with
+  `accepted gap` as the fifth value; the old enum (`actionable | engineer's call |
+  trigger-blocked | standing debt`) is retired from template, validator, tests, and the
+  `deferred-review` skill.
+- **Enforced on terminal plans.** A top-level item lifting to `→ D-NN` or `→ ISSUE-NN` must carry
+  its tag or be an accepted gap, and the arrow must resolve to an existing register or ledger row.
+  Closed items need no tag; live plans are unaffected until they complete.
+- Assurance rule 7 remediates on the fix-now test; the audit challenge records a resulting action
+  per confirmed finding (`remediate → STEP-NN`, `defer: <tag>`, `accepted gap → <gate>`); Task
+  failure recovery and the Program ledger's classification line carry the tag.
+
+**Protocol review remediations** (decision 24; provenance `inputs/protocol-review/audits/`).
+
+- Program template no longer scaffolds `Program acceptance`, which the profile says to add only
+  for cross-track criteria. [audit-01 F03]
+- The readiness handoff is stated once, in the Foundation; the Task protocol and skill point at
+  it. The challenge agent loads the policy's challenge contract by reference. [audit-01 F10, F11]
+- Claims corrected to what enforcement can see: duplicate ids are rejected, renumbering across
+  revisions is prose; the enforcement boundary (the host's Write, Edit, and Bash tools) is named
+  in the Foundation and README. [audit-01 F07, audit-02 F01, F04]
+- Validator: a `completed` plan may carry only satisfied or excepted acceptance, settled gates,
+  and terminal work rows (Task, Program, track); track block rows reference mapped acceptance.
+  [audit-02 F05, F08]
+- Hooks deny `git remote update` and `git reset --soft`. Entry skills validate a resumed plan
+  before any other work, catching a rejected write left behind by a dead session. [audit-02 F02,
+  F03]
+- Sweep checker: untracked content under a plan directory blocks "committed". [audit-02 F07]
+- Launcher: a nonzero auditor exit refuses and parks partial output beside the launch log; the
+  manifest is re-verified after capture and drift is stamped into the report. The launcher suite
+  now exercises the live path with a fake auditor on PATH. [audit-02 F09, F10]
+- Rebutted or already ruled: the register's Closed table (reserves ids, records reconciled
+  closure), marker plus label (decision 6), validation on every write (decision 21), canvas
+  stations (decision 14, optional), the assurance negative's form (a Decisions row).
+- Two dialect simplifications, ruled by the engineer at the needs-decision interrogation:
+  settled-gate strikethrough is accepted on a settled gate, never required; the `## Contents`
+  index is optional and exact when present, so a stale index still fails. Templates drop the
+  index; every existing plan stays valid. [audit-01 F04, F05; D-04, D-05 closed]
+- Shell-side mutation is now checked: `pre-bash` snapshots `plan/` and `specs/`, and a new
+  `post-bash` hook compares after the command — an audit report or bound spec changed through
+  the shell is denied, a plan artifact changed or created through the shell is validated.
+  Deletions are not flagged, because the retirement sweep deletes through that path. [audit-02
+  F01; D-01 closed]
+- Ids are stable against HEAD: a post-write (or post-bash) that drops a durable id present in
+  the last committed version is denied once the committed plan is past `ready`; register D-ids
+  from the first row. [audit-01 F07, audit-02 F04; D-02 closed]
+- Program track rows resolve their acceptance ids into the referenced track plan's own table,
+  and a referenced track plan must exist, for single-file validation too. [audit-02 F08; D-03
+  closed]
+- `plan/deferred.md` is created with the register's first rows; all five are closed by this
+  release and remain as the reconciled record.
+- Test baseline: plan-validator 61 → 80, hooks 38 → 53, sweep 8 → 9, launcher 8 → 16, registry
+  unchanged.
+
 ## 3.7.0 — 2026-08-22
 
 The readiness model handoff recommends its execution model. Engineer-reported friction: the

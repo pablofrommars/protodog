@@ -7,12 +7,6 @@
   - @specs/<document>.md
 - Next boundary: STEP-01
 
-## Contents
-
-- [Blocks](#blocks)
-- [BLOCK-01 — <label>](#block-01--label)
-- [Acceptance](#acceptance)
-
 ## Blocks
 
 | Block | Checkable result | Dependencies | Acceptance |

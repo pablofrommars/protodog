@@ -92,9 +92,9 @@ A lean index and live cross-track state authority; canonical shape in
 ```
 
 Rows follow the Foundation's plan row grammar — `⬜ TRACK-01 · pending planning` in the `Track`
-cell, no separate status column — and `## Contents` indexes every other section in document order.
-It lists exactly the sections the plan has: the kernel above carries only `## Tracks`, so adding
-**Program acceptance** or any optional live state below adds its entry at the same time.
+cell, no separate status column — and an optional `## Contents` indexes every other section in
+document order. When present it lists exactly the sections the plan has, so adding **Program
+acceptance** or any optional live state below adds its entry at the same time.
 
 `Next` names one selected track or an explicit release set — a resume pointer and interaction
 selection, not a queue or concurrency declaration; omitted when nothing is eligible. The track
@@ -147,8 +147,9 @@ Canonical shape in `protodog/templates/track-plan.md`:
 
 Tracks are Program-scoped; blocks and steps are track-scoped; identifiers are stable after
 execution starts. Block and step rows use the same identifier-cell grammar, and each block detail
-section appears in `## Contents` as it is added. Track plans use the Task plan's optional state
-forms where applicable — including the gates table, whose settled rows strike their identifiers —
+section appears in `## Contents`, if the plan carries one, as it is added. Track plans use the
+Task plan's optional state forms where applicable — including the gates table, whose settled
+rows may strike their identifiers —
 and never copy Program-level state. Plans are live state, not transcripts.
 
 ## Status and progressive planning
@@ -267,7 +268,7 @@ closure; and unresolved Program-relevant items are deduplicated into the program
 ## Program issue ledger
 
 - ISSUE-NN — <concern>
-  - classification: deferred issue | accepted gap   (only when meaningful)
+  - classification: defer: <out-of-scope | needs-decision | cost | blocked-by> | accepted gap
   - origin: TRACK-NN, <evidence reference>
   - consequence: ...
   - revisit or reopening condition: ...
@@ -276,8 +277,9 @@ closure; and unresolved Program-relevant items are deduplicated into the program
 Resolved findings remain linked track evidence and are not copied into the ledger. On a terminal
 track plan, every top-level item under **Deferred issues and accepted gaps** ends with a
 disposition arrow — `→ ISSUE-NN` when deduplicated into the program issue ledger, `→ D-NN` when
-lifted directly to the deferred register, or `→ closed: <reason>` (enforced). Track completion
-does not claim repository integration.
+lifted directly to the deferred register, or `→ closed: <reason>` — and a lifted item carries its
+`defer: <tag>` or is an accepted gap (enforced). Track completion does not claim repository
+integration.
 
 ## Repository integration and completion
 
@@ -293,7 +295,8 @@ every relevant track is terminal; required cross-track verification and integrat
 have evidence; materially omitted verification is disclosed; no gate blocks completion; and the
 issue ledger is settled outward under the Foundation's lift rule — every top-level `ISSUE-NN`
 still unresolved lifts to `plan/deferred.md` as a self-sufficient row or carries its stated
-closure (`→ D-NN` / `→ closed: <reason>`, enforced). Cancelling a track does not discard its
+closure (`→ D-NN` / `→ closed: <reason>`; a lifted item carries its `defer: <tag>` or is an
+accepted gap — enforced). Cancelling a track does not discard its
 acceptance ownership — affected criteria are reassigned, removed through superseding spec context,
 or closed by accepted exception. The final response declares the Program completed and closes
 with the engineer-owned actions that remain — the commit to main, the retirement sweep that
