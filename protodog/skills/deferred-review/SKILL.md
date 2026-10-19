@@ -26,9 +26,11 @@ or amended — a fresh session serves the review better than a degraded closing 
    supply the corrected wording). Flag a row as a **drop** candidate only when evidence says the
    work is no longer worth doing; that call is the engineer's. Never apply a transition on your
    own judgment.
-3. **Ratify and apply.** Present the proposals with evidence; apply exactly what the engineer
-   ratifies — closed and dropped rows move to the Closed table with a one-line outcome and date,
-   amendments rewrite the row in place, D-ids are never reused or renumbered. The write is
+3. **Ratify and apply.** Present the proposals with evidence, and present every surviving
+   `needs-decision` row as a decision interrogation — the structured question tool, recommendation
+   and current default per row — so the engineer can rule it there; apply exactly what the
+   engineer ratifies — closed and dropped rows move to the Closed table with a one-line outcome
+   and date, amendments rewrite the row in place, D-ids are never reused or renumbered. The write is
    validated on save by the register validator.
 4. **Report residue.** Close with what was verified and kept, with the evidence that supports
    each survivor, so the next review knows what was already checked and when. Name any row later

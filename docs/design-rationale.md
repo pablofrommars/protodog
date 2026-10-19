@@ -228,6 +228,21 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     artifacts validated; deletions unflagged because the sweep deletes through that path), id
     stability against HEAD from `in progress` onward (D-ids from the first row), and Program
     track rows resolving their acceptance into the owning track plan.
+25. **Position is computed; decisions are asked where they surface** (added 2026-10-19;
+    provenance: engineer observation after the 3.8.0 session — "not always easy to know where we
+    are at in the steps", and "I often end up writing *interrogate me* when decisions have to be
+    made"). Both had one cause: the boundary report and the decision request existed as prose
+    obligations with no fixed shape, so position was composed differently each time and buried
+    in paragraphs, and a material choice could exit through the register as a `needs-decision`
+    row with "engineer rules; default is the current grammar" — exactly what happened to D-04
+    and D-05 in the same session. The position line is derived from the plan by the validator,
+    which already parses every row, so it cannot drift from the artifact and costs the agent one
+    paste; a hook `systemMessage` after each plan write was rejected as noise on intermediate
+    edits. The decision interrogation generalizes the assurance interrogation (decision 21): the
+    report that raises a `needs-decision` finding ends by asking it, batched, with the
+    recommendation and the default, and the register holds only rulings the engineer chose to
+    postpone. The negative is the same as decision 21's: an unasked question is
+    indistinguishable from a deferred one.
 
 ## Accepted background rationale
 

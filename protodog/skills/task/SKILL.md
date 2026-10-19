@@ -52,4 +52,9 @@ about an omitted override; never require the engineer to author XML or protocol 
    `/protodog:task plan: @plan/<plan-id>/task-plan.md` plus any overrides; `go` proceeds in
    this session.
 6. Execute under the Task Protocol — no plan-approval stop; stop only for Foundation gates,
-   declared boundaries, required engineer actions, or completion.
+   declared boundaries, required engineer actions, or completion. Open every boundary report,
+   gate request, and the completion response with the position line, printed by
+   `dotnet ${CLAUDE_PLUGIN_ROOT}/validators/validate-plan.cs --position plan/<plan-id>` and
+   pasted verbatim. Close a report that raised `needs-decision` findings with the decision
+   interrogation — the structured question tool, one batch, recommendation and default per
+   item — before parking anything as a register row.

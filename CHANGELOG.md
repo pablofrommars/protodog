@@ -1,5 +1,25 @@
 # Changelog
 
+## 3.9.0 — 2026-10-19
+
+Two engineer-reported frictions, both the same shape: the protocol said what to report and when
+to ask, but gave neither a fixed form, so the agent composed position from memory and took the
+softest exit on decisions. Rationale in `docs/design-rationale.md` decision 25.
+
+- **The position line.** `validate-plan.cs --position <plan-dir-or-file>` validates, then prints
+  one computed line per plan — `<plan> · <status> · steps 3/7 done · active STEP-04 · blocked
+  STEP-06 · gates open GATE-02 · acceptance 2/5 · next STEP-05` (tracks count blocks, Programs
+  count tracks; empty fields are omitted). Every boundary report, gate request, and completion
+  response opens with it verbatim; under `continuous`, each checkpoint commit body carries it so
+  `git log` reads as progress. Never composed by hand.
+- **`needs-decision` asks before it parks.** A finding tagged `needs-decision` is a decision
+  request first: the report that raises it closes with the decision interrogation — one batch,
+  recommendation and default per item, through the host's structured question tool — and the
+  finding becomes a register row only when the engineer defers the ruling. Under `continuous`
+  the batch is held to the terminal report. The `deferred-review` skill re-presents surviving
+  `needs-decision` rows the same way.
+- Test baseline: plan-validator 80 → 85; hooks, sweep, launcher, registry unchanged.
+
 ## 3.8.0 — 2026-10-19
 
 Two things landed together: deferral became a classification, and the protocol took its first

@@ -39,4 +39,8 @@ engineer never authors XML or protocol structure.
 6. Orchestrate under the Program Protocol: you own the program plan, the Program worktree, and
    engineer-facing HIL at all times; dispatch through native subagents (isolated worktrees for any
    concurrent writer); reconcile serially under the Git policy; stop only for Foundation gates,
-   declared boundaries, required engineer actions, or declared Program completion.
+   declared boundaries, required engineer actions, or declared Program completion. Open every
+   boundary report and gate request with the position lines printed by
+   `dotnet ${CLAUDE_PLUGIN_ROOT}/validators/validate-plan.cs --position plan/<plan-id>`, pasted
+   verbatim; close a report that raised `needs-decision` findings with the decision
+   interrogation before parking anything as a ledger or register row.

@@ -227,9 +227,10 @@ normally follows a small, reversible, independently verified execution unit unle
 selects Program planning, track planning, audit, integration, or another transition. A
 Program-level boundary may release one track or an explicit set and proceed through their planned
 descendants until members complete and reconcile; gates and stop conditions always interrupt. The
-coordinating agent owns engineer-facing HIL, batches related requests, and continues independent
-authorized work while a gate blocks only dependent work. Checkpoint commits inside managed
-worktrees follow the Git policy regardless of cadence.
+coordinating agent owns engineer-facing HIL, opens every boundary report with the Foundation's
+position line for the program plan and each track it releases, batches related requests, and
+continues independent authorized work while a gate blocks only dependent work. Checkpoint commits
+inside managed worktrees follow the Git policy regardless of cadence.
 
 **Gate presentation on the working canvas.** A Program in a diagram-suited domain may maintain a
 working canvas — the Foundation's session-scoped rendered working view, mirrored to and never

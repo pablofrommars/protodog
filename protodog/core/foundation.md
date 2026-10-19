@@ -149,7 +149,13 @@ in-scope work profile invocation already authorizes; it creates no permission an
 A finding that fails the test is recorded as a deferred issue carrying the tag that names the
 failed condition: `defer: out-of-scope` (names the surface; the superseding-spec path if it must
 land now), `defer: needs-decision` (material — routed to its gate), `defer: cost` (exceeds one
-bounded step), `defer: blocked-by` (names the trigger). The tag travels: it is the register row's disposition
+bounded step), `defer: blocked-by` (names the trigger). A `needs-decision` finding is a decision
+request before it is a deferral: the report that raises it closes with the **decision
+interrogation** — the batch of decision-ready requests, each with its recommendation and the
+default that holds if unruled — and the finding becomes a register row only when the engineer
+defers the ruling. Under `continuous` the batch is held to the terminal report, never skipped.
+The register's `needs-decision` rows are decisions the engineer chose to postpone, not decisions
+nobody asked. The tag travels: it is the register row's disposition
 when the item lifts, with `accepted gap` as the fifth value — one taxonomy from plan to register.
 A lifted item without its tag — unless it is an accepted gap — is rejected on a terminal plan, and
 its arrow must resolve to an existing register or ledger row (both enforced). Under `interactive` cadence the
@@ -309,8 +315,8 @@ sound request states: the exact need; why it requires the engineer; the supporte
 unless evidence cannot distinguish choices; concise evidence, alternatives, and consequences; what
 is blocked and what continues; and the shortest unambiguous response shape. Authorization requests
 add the exact action and target, external and data effects, cost bound, recovery path, and grant
-scope. Batch up to five related, independently answerable requests; continue independent authorized
-work while a gate is open.
+scope. Batch up to five related, independently answerable requests, through the host's structured
+question tool where one exists; continue independent authorized work while a gate is open.
 
 **Persistence and response.** Persist a blocking gate in its owning plan before requesting the
 engineer — plan-write ownership is arranged so this is always possible (see the Program topology
@@ -322,7 +328,12 @@ cost, reversibility, or consequences invalidates the corresponding part of a pri
 ## Execution cadence and topology
 
 Both profiles start `interactive`: proceed to the declared boundary, report completed work,
-material evidence, and the next unit, then wait. `Continuous` is an explicit override that proceeds
+material evidence, and the next unit, then wait. Every boundary report, gate request, and
+completion response opens with the **position line** — the output of the plan validator's
+`--position` mode on the owning plan, verbatim: plan, status, work done over total, active and
+blocked rows, open gates, acceptance satisfied over total, next boundary. It is computed from the
+validated artifact and never composed, so the engineer reads where the work stands before
+reading what happened. `Continuous` is an explicit override that proceeds
 through unambiguous planned work until a gate, stop condition, required engineer action,
 completion, or engineer intervention. Cadence changes interaction frequency only. A Program has a
 Program default with track and block overrides; the most-specific active setting wins and expires

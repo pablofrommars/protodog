@@ -190,11 +190,15 @@ verification, or who commits; checkpoints happen at coherent verified units in e
 
 - **`interactive`** (default): proceed to the declared boundary — the first one normally a small,
   reversible, independently verified unit — report completed work, material evidence, and the
-  next unit, then wait. `go` releases exactly the declared boundary and changes nothing else.
+  next unit, then wait. Every report opens with the position line the validator computes from
+  the plan (`validate-plan.cs --position`): status, work done over total, active and blocked
+  rows, open gates, acceptance, next boundary. `go` releases exactly the declared boundary and
+  changes nothing else.
 - **`continuous`** (explicit override, at invocation or any time): proceed through unambiguous
   planned work until a gate, a stop condition, a required engineer action, or completion. With no
   boundary reports, the plan is the engineer's only window — every status transition writes the
-  owning plan and verifies the persisted state before dependent work proceeds.
+  owning plan and verifies the persisted state before dependent work proceeds, and each
+  checkpoint commit carries the position line so the log reads as progress.
 - Cadence is profile-wide in a Task; a Program has a default with track and block overrides — the
   most specific active setting wins and expires with its scope. The engineer may intervene at any
   time, and in neither cadence are grounding, planning, or plan revision approval stops.

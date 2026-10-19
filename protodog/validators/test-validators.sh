@@ -423,6 +423,59 @@ cat > "$TMP/task-plan.md" <<'EOF'
 EOF
 expect_ok "fenced content is opaque to section/table scanning" "$TMP/task-plan.md"
 
+# --- position line: computed from the validated plan ---------------------------
+expect_line() { # name, expected, args...
+  local name="$1" want="$2"; shift 2
+  local got; got="$($V --position "$@" 2>&1)"
+  if [ "$got" = "$want" ]; then pass=$((pass+1)); else
+    fail=$((fail+1)); echo "FAIL (position): $name"; echo "    want: $want"; echo "    got:  $got"; fi
+}
+mkdir -p "$TMP/plan/retry-docs"; PP="$TMP/plan/retry-docs/task-plan.md"
+cat > "$PP" <<EOF
+# Position fixture
+
+- Profile: Task
+- Status: in progress
+- Cadence: interactive
+- Spec context:
+  - @specs/x.md
+- Next boundary: STEP-03
+
+## Steps
+
+| ID | Checkable result | Affected surfaces | Acceptance | Verification |
+|---|---|---|---|---|
+| ✅ STEP-01 · completed | a | b | ACCEPTANCE-01 | c |
+| 🟡 STEP-02 · in progress | a | b | ACCEPTANCE-01 | c |
+| ⬜ STEP-03 · ready | a | b | ACCEPTANCE-02 | c |
+| 🔴 STEP-04 · blocked | a | b | ACCEPTANCE-02 | c |
+| ⬛ STEP-05 · superseded | a | b | — | c |
+
+## Gates
+
+| ID | Gate | Owner | Blocked work | Closure |
+|---|---|---|---|---|
+| ✅ ~~GATE-01~~ · settled | authorization — x | engineer | STEP-01 | granted |
+| 🔴 GATE-02 · open | decision — y | engineer | STEP-04 | engineer rules |
+
+## Acceptance
+
+| Criterion | Evidence |
+|---|---|
+| ✅ ACCEPTANCE-01 · satisfied | e |
+| ⬜ ACCEPTANCE-02 · pending | — |
+EOF
+expect_line "task position line, every field" \
+  "retry-docs · in progress · steps 2/5 done · active STEP-02 · blocked STEP-04 · gates open GATE-02 · acceptance 1/2 · next STEP-03" "$PP"
+expect_line "position of a plan directory" \
+  "retry-docs · in progress · steps 2/5 done · active STEP-02 · blocked STEP-04 · gates open GATE-02 · acceptance 1/2 · next STEP-03" "$TMP/plan/retry-docs"
+sed -i '' -e '/^- Next boundary/d' -e '/GATE-02/d' -e 's/🟡 STEP-02 · in progress/✅ STEP-02 · completed/' -e '/STEP-04/d' "$PP"
+expect_line "position omits empty fields" "retry-docs · in progress · steps 3/4 done · acceptance 1/2" "$PP"
+sed -i '' 's/- Status: in progress/- Status: nowhere/' "$PP"
+if $V --position "$PP" >/dev/null 2>&1; then fail=$((fail+1)); echo "FAIL: position of an invalid plan must be refused"; else pass=$((pass+1)); fi
+cp "$T/program-plan.md" "$TMP/plan/retry-docs/program-plan.md"; rm "$PP"
+expect_line "program position line" "retry-docs · pending planning · tracks 0/1 done · next TRACK-01" "$TMP/plan/retry-docs/program-plan.md"
+
 # ----------------------------------------------------------------------------
 echo "validator tests: $pass passed, $fail failed"
 [ "$fail" -eq 0 ]

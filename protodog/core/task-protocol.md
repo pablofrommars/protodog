@@ -178,8 +178,10 @@ non-blocking. The Task has no issue ledger; deferred issues and accepted gaps li
 Every Task starts `interactive` unless invocation selects `continuous`. The first interactive
 boundary normally follows a deliberately small, reversible, independently verified execution unit;
 the engineer may instead select grounding, planning, review, or another meaningful transition. An
-ordinary boundary report states completed work, material evidence, and the next declared unit; an
-actual gate uses the fuller decision-ready Foundation request. Cadence is Task-wide; the engineer
+ordinary boundary report opens with the Foundation's position line and states completed work,
+material evidence, and the next declared unit; an actual gate uses the fuller decision-ready
+Foundation request, and a report raising `needs-decision` findings closes with the decision
+interrogation. Cadence is Task-wide; the engineer
 may switch it explicitly at any time, and `go` releases one declared boundary without changing
 cadence or authority.
 
@@ -196,7 +198,8 @@ surface it, the task plan is the engineer's only view of progress. Each step tra
 the acceptance, gate, and decision outcomes it settles — updates the task plan, and that update is
 verified against the persisted artifact before the next step starts. Checkpoint commits already
 happen at coherent verified units regardless of cadence; plan currency is the state half of the
-same discipline.
+same discipline, and each checkpoint's commit body carries the position line so the log reads as
+progress without opening the plan.
 
 ## Resumption and profile replacement
 
@@ -216,9 +219,10 @@ verification is disclosed; no open gate blocks completion; and the plan's outwar
 settled under the Foundation's lift rule — deferred issues, accepted gaps, and still-unresolved
 open questions lift to `plan/deferred.md` as self-sufficient rows or carry their stated closure
 through the disposition arrows (enforced) — a judgment call per the Foundation's lift rule, never
-a reflex move to the register. The final response opens by declaring the Task completed, then
-summarizes acceptance, material evidence, omissions, and retained issues or gaps — it is not
-persisted as a separate report — and closes with the engineer-owned actions that remain: the
+a reflex move to the register. The final response opens with the position line and the
+declaration that the Task is completed, then summarizes acceptance, material evidence,
+omissions, and retained issues or gaps — it is not persisted as a separate report — presents any
+decision interrogation still held, and closes with the engineer-owned actions that remain: the
 commit to main through the guarded workflow, the retirement sweep that follows it, and the
 standing offer of a deferred-register review against the finished work. The review is offered,
 never run unprompted — an end-of-session context may be too degraded for a quality review, so the

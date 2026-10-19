@@ -4,6 +4,8 @@
 // (whole tree, cross-references, audit-cycle filenames), an individual artifact file, or the
 // deferred register (plan/deferred.md).
 // Exit 0: valid. Exit 1: violations, one per line as "<file>: <message>". Exit 2: usage.
+// --position: validate as above, then print one position line per plan file — the computed
+// "where are we" an agent opens its boundary reports with, never composed by hand.
 using System.Text.RegularExpressions;
 
 string[] statuses = ["pending planning", "ready", "in progress", "blocked", "completed", "superseded", "cancelled"];
@@ -52,9 +54,15 @@ var workCell = new Regex($@"^({string.Join("|", markers)}) (~~)?([A-Z]+-\d{{2,}}
 var auditFileName = new Regex(@"^audit-\d{2,}(-dispatch|-challenge)?\.md$");
 var problems = new List<string>();
 
+var position = args.Length > 0 && args[0] == "--position";
+if (position)
+{
+	args = args[1..];
+}
+
 if (args.Length == 0)
 {
-	Console.Error.WriteLine("usage: validate-plan.cs <plan-dir-or-file> ...");
+	Console.Error.WriteLine("usage: validate-plan.cs [--position] <plan-dir-or-file> ...");
 	Environment.Exit(2);
 	return;
 }
@@ -88,7 +96,94 @@ if (problems.Count > 0)
 	Environment.Exit(1);
 }
 
+if (position)
+{
+	foreach (var arg in args)
+	{
+		var path = Path.GetFullPath(arg);
+		IEnumerable<string> files = Directory.Exists(path)
+			? Directory.EnumerateFiles(path, "*-plan.md", SearchOption.AllDirectories).Order()
+			: [path];
+		foreach (var file in files)
+		{
+			if (Path.GetFileName(file) is "task-plan.md" or "program-plan.md" or "track-plan.md")
+			{
+				Console.WriteLine(Position(file));
+			}
+		}
+	}
+
+	return;
+}
+
 Console.WriteLine($"valid: {string.Join(", ", args)}");
+
+// The position line: plan, status, work done over total, the active and blocked rows, open
+// gates, acceptance satisfied over total, and the declared next boundary. Fields with nothing
+// to say are omitted. It is computed from the validated artifact so a report cannot drift from
+// the plan it claims to summarize.
+string Position(string file)
+{
+	var lines = File.ReadAllLines(file);
+	var mask = FenceMask(lines);
+	var header = ParseHeader(lines);
+	var sections = Sections(lines, mask);
+	var directory = Path.GetDirectoryName(Path.GetFullPath(file))!;
+	var kind = Path.GetFileName(file);
+	var (workTitle, noun, label) = kind switch
+	{
+		"program-plan.md" => ("Tracks", "tracks", Path.GetFileName(directory)),
+		"track-plan.md" => ("Blocks", "blocks", $"{Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(directory))!)}/{First(header, "Track") ?? Path.GetFileName(directory)}"),
+		_ => ("Steps", "steps", Path.GetFileName(directory)),
+	};
+
+	var parts = new List<string> { label, First(header, "Status") ?? "?" };
+	var work = Rows(lines, sections, mask, workTitle);
+	var active = work.Where(w => w.Status == "in progress").Select(w => w.Id).ToList();
+	var blocked = work.Where(w => w.Status == "blocked").Select(w => w.Id).ToList();
+	parts.Add($"{noun} {work.Count(w => terminalWork.Contains(w.Status))}/{work.Count} done");
+	if (active.Count > 0)
+	{
+		parts.Add($"active {string.Join(" ", active)}");
+	}
+
+	if (blocked.Count > 0)
+	{
+		parts.Add($"blocked {string.Join(" ", blocked)}");
+	}
+
+	var gates = Rows(lines, sections, mask, "Gates").Where(g => g.Status == "open").Select(g => g.Id).ToList();
+	if (gates.Count > 0)
+	{
+		parts.Add($"gates open {string.Join(" ", gates)}");
+	}
+
+	var acceptance = Rows(lines, sections, mask, kind == "program-plan.md" ? "Program acceptance" : "Acceptance");
+	if (acceptance.Count > 0)
+	{
+		parts.Add($"acceptance {acceptance.Count(a => settledAcceptance.Contains(a.Status))}/{acceptance.Count}");
+	}
+
+	var next = First(header, kind == "program-plan.md" ? "Next" : "Next boundary");
+	if (!string.IsNullOrWhiteSpace(next))
+	{
+		parts.Add($"next {next}");
+	}
+
+	return string.Join(" · ", parts);
+}
+
+List<WorkCell> Rows(string[] lines, List<Section> sections, bool[] mask, string title)
+{
+	var section = sections.FirstOrDefault(s => s.Title == title);
+	if (section is null)
+	{
+		return [];
+	}
+
+	var table = ParseTable(lines, section.Start, section.End, mask);
+	return table is null ? [] : table.Rows.Select(r => ParseWorkCell(r[0])).OfType<WorkCell>().ToList();
+}
 
 void Bad(string file, string message)
 {
