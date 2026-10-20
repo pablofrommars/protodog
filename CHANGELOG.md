@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.11.0 — 2026-10-21
+
+- Deferred review adds opt-in `triage` and `verify <handoff-path>` modes in Claude Code and
+  Codex. A bounded first pass saves per-row evidence and an explicit investigation queue under
+  `inputs/`, leaving the register unchanged. Verification reconciles repository drift, checks
+  transition candidates, spot-checks keeps, and retains engineer ratification. Model selection
+  is manual between stages; the ordinary full review remains the default.
+
 ## 3.10.0 — 2026-10-20
 
 - Codex Task support shares the core protocol, Markdown state, validators, and maintenance

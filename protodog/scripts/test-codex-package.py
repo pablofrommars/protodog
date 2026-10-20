@@ -37,6 +37,14 @@ class CodexPackage(unittest.TestCase):
             self.assertFalse((package / "agents/challenge.md").exists())
             for filename in ("core/task-protocol.md", "core/host-runtime.md", "validators/validate-plan.cs"):
                 self.assertEqual((package / filename).read_bytes(), (PACKAGE / filename).read_bytes())
+            # Maintenance handoffs must survive packaging, including mode-specific references.
+            shared_skill = PACKAGE / "skills/deferred-review"
+            installed_skill = package / "skills/deferred-review"
+            source_files = {p.relative_to(shared_skill) for p in shared_skill.rglob("*") if p.is_file()}
+            installed_files = {p.relative_to(installed_skill) for p in installed_skill.rglob("*") if p.is_file()}
+            self.assertEqual(installed_files, source_files)
+            for filename in source_files:
+                self.assertEqual((installed_skill / filename).read_bytes(), (shared_skill / filename).read_bytes())
 
             target = root / "target"
             target.mkdir()

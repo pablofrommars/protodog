@@ -70,5 +70,8 @@ $protodog:task plan: @plan/retry-fix/task-plan.md
 
 `plan-sweep`, `deferred-review`, and `working-canvas` use the same artifact contracts in both
 hosts. Resolve their package root relative to their loaded skill directory as above. In Codex use
-`$protodog:plan-sweep`, `$protodog:deferred-review`, and `$protodog:working-canvas`. Maintenance never implies a grant to
-commit when the engineer has withheld it.
+`$protodog:plan-sweep`, `$protodog:deferred-review`, and `$protodog:working-canvas`.
+Deferred review supports `triage` and `verify <handoff-path>` in both hosts; the engineer selects
+the model before each invocation. The handoff is portable evidence under `inputs/`, not a model
+launcher or an independent audit. Maintenance never implies a grant to commit when the engineer
+has withheld it.

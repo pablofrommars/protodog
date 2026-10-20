@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-3.10.0
-codex plugin marketplace add ./dist/codex-3.10.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-3.11.0
+codex plugin marketplace add ./dist/codex-3.11.0
 codex plugin add protodog@kennel-codex
 ```
 
@@ -381,6 +381,32 @@ applies only the transitions you ratify. Profile completion offers this review a
 just-finished work but never runs it unprompted — take the offer in a fresh session when the
 closing context is degraded. The survey is a command, not a document — there is no index artifact
 to maintain.
+
+For a large register, use a cheaper model for a bounded first pass, then select a stronger model
+in a fresh session for focused verification. Both hosts use the same skill and handoff format:
+
+| Stage | Claude Code | Codex |
+|---|---|---|
+| Triage | `/protodog:deferred-review triage` | `$protodog:deferred-review triage` |
+| Verify | `/protodog:deferred-review verify <handoff-path>` | `$protodog:deferred-review verify <handoff-path>` |
+
+Triage accounts for every parked row as supported keep, possible transition, deeper investigation,
+engineer/external evidence needed, or not assessed. It saves evidence and remaining questions to
+`inputs/deferred-review/<unique-review-id>/triage.md`, leaves the register unchanged, and stops.
+You can supply a destination and a time, token, or row budget; unfinished rows remain explicit.
+The skill does not switch models or launch another host for you. No model family is pinned.
+
+Verification checks the handoff against current repository state, investigates unresolved rows,
+verifies transition candidates, and spot-checks supported keeps. It reports which evidence was
+reused and what remains unresolved, then asks you to ratify proposed register changes. Saved
+progress supports resumption without repeating still-current checks. These stages are directed
+review, not an independent audit. Invoking `deferred-review` without a mode still performs the
+ordinary full review. The staged procedure lives in
+[the shared skill reference](protodog/skills/deferred-review/references/staged-review.md).
+
+The change reaches Claude through a plugin update and Codex through a rebuilt and reinstalled
+package using the installation steps above; existing installed copies do not change just because
+the source was edited.
 
 ## Notes
 
