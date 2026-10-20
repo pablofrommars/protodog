@@ -27,3 +27,5 @@ jobs:
         run: ./protodog/scripts/test-sweep-check.sh
       - name: Enforcement fences
         run: ./protodog/hooks/test-hooks.sh
+      - name: Codex Task adapter, Claude auditor, and relocated package
+        run: bash ./protodog/scripts/test-codex.sh

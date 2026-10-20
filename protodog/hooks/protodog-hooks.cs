@@ -6,16 +6,17 @@
 // the log. pre-bash snapshots canonical state (plan/, specs/) and post-bash compares: an
 // immutable artifact mutated through the shell is denied, a plan artifact changed through the
 // shell is validated. Post-write paths also hold ids stable against HEAD once execution began.
-// Resolution: repo state comes from CLAUDE_PROJECT_DIR (else cwd); plugin files from
-// CLAUDE_PLUGIN_ROOT (else repo-local protodog/); the denial log honors
-// PROTOCOL_DENIAL_LOG, then CLAUDE_PLUGIN_DATA, then the repo-local logs directory.
+// Codex patches carry multiple paths in tool_input.command. Hook cwd identifies the worktree;
+// tool_use_id pairs shell snapshots even when identical commands overlap.
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
-var repoRoot = Environment.GetEnvironmentVariable("CLAUDE_PROJECT_DIR") ?? Environment.CurrentDirectory;
-var pluginRoot = Environment.GetEnvironmentVariable("CLAUDE_PLUGIN_ROOT") ?? Path.Combine(repoRoot, "protodog");
-var pluginData = Environment.GetEnvironmentVariable("CLAUDE_PLUGIN_DATA");
+var cwd = Environment.CurrentDirectory;
+var repoRoot = Environment.GetEnvironmentVariable("CLAUDE_PROJECT_DIR") ?? cwd;
+var pluginRoot = Environment.GetEnvironmentVariable("PLUGIN_ROOT")
+	?? Environment.GetEnvironmentVariable("CLAUDE_PLUGIN_ROOT") ?? Path.Combine(repoRoot, "protodog");
+var pluginData = Environment.GetEnvironmentVariable("PLUGIN_DATA") ?? Environment.GetEnvironmentVariable("CLAUDE_PLUGIN_DATA");
 var denialLog = Environment.GetEnvironmentVariable("PROTOCOL_DENIAL_LOG")
 	?? (pluginData is not null
 		? Path.Combine(pluginData, "protocol-denials.log")
@@ -31,9 +32,28 @@ if (args is not [var hook] || hook is not ("pre-bash" or "post-bash" or "pre-wri
 var command = "";
 var filePath = "";
 var sessionId = "nosession";
+var toolUseId = "";
+var toolName = "";
+var hasEventCwd = false;
+var filePaths = new List<string>();
 try
 {
 	using var doc = JsonDocument.Parse(Console.In.ReadToEnd());
+	if (doc.RootElement.TryGetProperty("cwd", out var cwdElement))
+	{
+		cwd = Path.GetFullPath(cwdElement.GetString() ?? cwd);
+		hasEventCwd = true;
+	}
+
+	if (doc.RootElement.TryGetProperty("tool_name", out var nameElement))
+	{
+		toolName = nameElement.GetString() ?? "";
+	}
+
+	if (doc.RootElement.TryGetProperty("tool_use_id", out var idElement))
+	{
+		toolUseId = idElement.GetString() ?? "";
+	}
 	if (doc.RootElement.TryGetProperty("session_id", out var sessionElement))
 	{
 		sessionId = sessionElement.GetString() ?? sessionId;
@@ -52,9 +72,47 @@ try
 		}
 	}
 }
-catch (JsonException)
+catch (Exception error) when (error is JsonException or InvalidOperationException or ArgumentException)
 {
-	// Unparseable input allows: enforcement must not break unrelated tools.
+	Deny("invalid hook JSON — cannot check the operation");
+}
+
+repoRoot = hasEventCwd ? FindRepository(cwd) : Environment.GetEnvironmentVariable("CLAUDE_PROJECT_DIR") ?? FindRepository(cwd);
+repoRoot = ResolvePath(repoRoot);
+if (Environment.GetEnvironmentVariable("PLUGIN_ROOT") is null && Environment.GetEnvironmentVariable("CLAUDE_PLUGIN_ROOT") is null)
+{
+	pluginRoot = Path.Combine(repoRoot, "protodog");
+}
+
+denialLog = Environment.GetEnvironmentVariable("PROTOCOL_DENIAL_LOG")
+	?? (pluginData is not null
+		? Path.Combine(pluginData, "protocol-denials.log")
+		: Path.Combine(repoRoot, "protodog", "logs", "hook-denials.log"));
+
+try
+{
+	if (toolName == "apply_patch")
+	{
+		filePaths = PatchPaths(command);
+	}
+	else if (filePath.Length > 0)
+	{
+		filePaths.Add(ResolvePath(Path.GetFullPath(filePath, cwd)));
+	}
+}
+catch (Exception error) when (error is ArgumentException or IOException or UnauthorizedAccessException)
+{
+	Deny($"cannot resolve affected paths: {error.Message}");
+}
+
+if ((hook is "pre-write" or "post-plan-write") && filePaths.Count == 0)
+{
+	Deny("file hook has no affected paths — cannot check the operation");
+}
+
+if ((hook is "pre-bash" or "post-bash") && string.IsNullOrWhiteSpace(command))
+{
+	Deny("shell hook has no command — cannot check the operation");
 }
 
 switch (hook)
@@ -71,12 +129,20 @@ switch (hook)
 	}
 	case "pre-write":
 	{
-		PreWrite();
+		foreach (var path in filePaths)
+		{
+			filePath = path;
+			PreWrite();
+		}
 		break;
 	}
 	case "post-plan-write":
 	{
-		PostPlanWrite();
+		foreach (var path in filePaths)
+		{
+			filePath = path;
+			PostPlanWrite();
+		}
 		break;
 	}
 }
@@ -201,8 +267,89 @@ void PostBash()
 
 string SnapshotPath()
 {
-	var key = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(repoRoot + "\n" + command)))[..16];
-	return Path.Combine(Path.GetTempPath(), "protodog-snapshots", $"{sessionId}-{key}.txt");
+	var identity = toolUseId.Length > 0 ? toolUseId : command;
+	var key = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(repoRoot + "\n" + sessionId + "\n" + identity)));
+	return Path.Combine(Path.GetTempPath(), "protodog-snapshots", $"{key}.txt");
+}
+
+List<string> PatchPaths(string patch)
+{
+	var lines = patch.Replace("\r\n", "\n").Trim().Split('\n');
+	if (lines.Length < 3 || lines[0] != "*** Begin Patch" || lines[^1] != "*** End Patch")
+	{
+		Deny("unrecognized apply_patch input — cannot check affected paths");
+	}
+
+	var paths = new List<string>();
+	var canMove = false;
+	foreach (var line in lines.Skip(1).SkipLast(1))
+	{
+		var match = Regex.Match(line, @"^\*\*\* (Add File|Update File|Delete File|Move to): (.+)$");
+		if (match.Success)
+		{
+			var operation = match.Groups[1].Value;
+			if (operation == "Move to" && !canMove)
+			{
+				Deny("apply_patch move without an update");
+			}
+
+			canMove = operation == "Update File";
+			var path = ResolvePath(Path.GetFullPath(match.Groups[2].Value, cwd));
+			if (hook == "pre-write" && (operation is "Delete File" or "Move to") && IsPlanArtifact(Path.GetRelativePath(repoRoot, path).Replace('\\', '/')))
+			{
+				Deny("plan deletion or relocation must use the engineer-triggered retirement workflow");
+			}
+
+			if (hook == "pre-write" && operation == "Move to" && IsPlanArtifact(Path.GetRelativePath(repoRoot, paths[^1]).Replace('\\', '/')))
+			{
+				Deny("plan relocation is not a plan update");
+			}
+
+			paths.Add(path);
+		}
+		else if (line.StartsWith("*** ") && line != "*** End of File")
+		{
+			Deny("unrecognized apply_patch header — cannot check affected paths");
+		}
+	}
+
+	if (paths.Count == 0)
+	{
+		Deny("apply_patch contains no affected paths");
+	}
+
+	return paths.Distinct().ToList();
+}
+
+string FindRepository(string directory)
+{
+	var info = new System.Diagnostics.ProcessStartInfo("git")
+	{
+		WorkingDirectory = directory,
+		RedirectStandardOutput = true,
+		RedirectStandardError = true,
+	};
+	info.ArgumentList.Add("rev-parse");
+	info.ArgumentList.Add("--show-toplevel");
+	using var process = System.Diagnostics.Process.Start(info)!;
+	var output = process.StandardOutput.ReadToEnd().Trim();
+	process.StandardError.ReadToEnd();
+	process.WaitForExit();
+	return process.ExitCode == 0 ? output : directory;
+}
+
+string ResolvePath(string path)
+{
+	path = Path.GetFullPath(path);
+	var parent = Path.GetDirectoryName(path);
+	if (parent is null)
+	{
+		return path;
+	}
+
+	var resolved = Path.Combine(ResolvePath(parent), Path.GetFileName(path));
+	FileSystemInfo entry = Directory.Exists(resolved) ? new DirectoryInfo(resolved) : new FileInfo(resolved);
+	return entry.LinkTarget is null ? resolved : entry.ResolveLinkTarget(true)!.FullName;
 }
 
 Dictionary<string, string> Canonical()
@@ -312,6 +459,7 @@ string? Validate(IReadOnlyList<string> paths)
 	var validator = Path.Combine(pluginRoot, "validators", "validate-plan.cs");
 	var startInfo = new System.Diagnostics.ProcessStartInfo("dotnet")
 	{
+		WorkingDirectory = repoRoot,
 		RedirectStandardError = true,
 		RedirectStandardOutput = true,
 	};
@@ -322,8 +470,10 @@ string? Validate(IReadOnlyList<string> paths)
 	}
 
 	using var process = System.Diagnostics.Process.Start(startInfo)!;
+	var stdout = process.StandardOutput.ReadToEndAsync();
 	var stderr = process.StandardError.ReadToEnd();
 	process.WaitForExit();
+	stdout.GetAwaiter().GetResult();
 	return process.ExitCode == 0 ? null : stderr;
 }
 

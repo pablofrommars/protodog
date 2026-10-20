@@ -3,7 +3,7 @@
 ## What this is
 
 Protodog is an execution protocol for agent-assisted engineering: one engineer's working
-methodology encoded as installable machinery for Claude Code — skills as entry points, hooks and
+methodology encoded as installable machinery for Claude Code and local Codex — skills as entry points, hooks and
 validators as enforcement, Markdown artifacts in the repository as the only execution state. It
 does not orchestrate models or generate code; it constrains how delegated work enters,
 progresses, and reaches `main`, so every session runs under the same contract instead of whatever
@@ -56,10 +56,18 @@ this README never overrides it.
 
 - .NET SDK ≥ 10 (hooks, validators, and the audit launcher are file-based apps; no packages, no Node)
 - bash, git
-- Claude Code (skills + hooks host)
-- Codex CLI, authenticated — only for launching independent audits
+- Claude Code for Task/Program execution; local Codex CLI/desktop for Task execution
+- An authenticated opposite-vendor CLI when an independent audit is selected: Codex for Claude
+  execution, Claude Code for Codex execution
+
+The Codex adapter targets local tool execution (tested against CLI 0.163.0 hook payloads).
+The Claude audit backend uses the `--safe-mode` and restricted-tool CLI surface available in
+Claude Code 2.1.304. Older clients must be checked for those flags before use. Program and
+concurrent writer support remain Claude-only.
 
 ## Install
+
+### Claude Code
 
 Once per engineer — the plugin follows you across repositories. This repository is a Claude Code
 plugin marketplace (`kennel`) serving the `protodog` plugin. In Claude Code:
@@ -73,6 +81,55 @@ That single install gives every repository you open the skills, the pinned chall
 and the enforcement hooks — no per-repo copies, no settings merges. Per-repo opt-out: `/plugin disable protodog@kennel` in
 that project. (`protodog/hooks/settings-fragment.json` remains only as the wiring fallback for a
 repository that vendors `protodog/` directly.)
+
+### Codex Task
+
+Build a self-contained local marketplace from the same core, validators, and skills. The output
+must be a new directory; use a new versioned destination when updating. Generated packages are
+not maintained source copies. From this repository:
+
+```bash
+dotnet protodog/scripts/build-codex-package.cs dist/codex-3.10.0
+codex plugin marketplace add ./dist/codex-3.10.0
+codex plugin add protodog@kennel-codex
+```
+
+Restart Codex and open `/hooks` to review and trust Protodog's hook definitions. Installing the
+plugin alone does not activate untrusted hooks. Use `/skills` to select the installed Task
+skill, or invoke `$protodog:task` with intent or `plan: @plan/<plan-id>/task-plan.md`. The package exposes
+Task, plan-sweep, deferred-review, and working-canvas; it does not expose Program or ideation-audit.
+Keep the generated marketplace available while it is registered. To update, remove the old
+`kennel-codex` marketplace registration, register the new build, reinstall the plugin, restart,
+and review changed hooks. The source Claude package and its install flow are unchanged.
+
+The coordinator is the only writer. Planning/challenge model settings live in
+`protodog/agents/challenge-codex.toml`; a lower-tier session hands off to a new coordinating
+session for challenge/remediation. This file is routing data loaded by the skill, not an
+automatically installed Codex custom agent. Host mechanics are normative in
+`protodog/core/host-runtime.md`. An explicit `no commits` instruction is retained on resumption
+and overrides checkpoint commits.
+
+**Installation smoke check.** In a disposable repository, start a fresh Codex Task, complete
+planning, and confirm it stops at readiness even with `cadence: continuous`. Resume the ready
+plan in a fresh session and release it with `go`. Confirm position output comes from the
+validator. In that disposable repository, ask for a patch to a bound spec and confirm the
+pre-tool hook blocks it; a deliberately invalid plan must produce post-tool validation feedback.
+Repair it before proceeding. Hook feedback is detection after a completed write, not rollback.
+Repeat with `no commits` and verify HEAD does not change. These host/model interaction checks
+complement the deterministic test suite; the suite does not prove model adherence or hook trust
+in a particular installation.
+
+Codex audits use Claude with only Read/Glob/Grep, no shell, editing, MCP servers, skills, or
+user/project customizations. The launcher captures JSON results and records the resolved model
+when supplied. Shell-based inspection and test execution are outside that auditor's coverage.
+The ordinary per-audit authorization gate still applies. No model calls occur during package
+building or the automated tests.
+
+Runtime references: [Codex hooks](https://learn.chatgpt.com/docs/hooks),
+[plugin packaging](https://developers.openai.com/plugins/build/plugins), and
+[subagent permissions and model configuration](https://learn.chatgpt.com/docs/agent-configuration/subagents).
+
+### Editor prompts
 
 Per-engineer, editor-level (optional, host-portable prompts): `prompt-utility.code-snippets` is a
 personal, repo-agnostic registry — install once at the VS Code user level, symlinked so this repo
@@ -102,9 +159,10 @@ commits; a heavier change may run under Protodog itself (plans under `plan/`, sp
 ./protodog/hooks/test-hooks.sh             # enforcement fences (incl. plugin-mode resolution)
 ./protodog/scripts/test-audit-launch.sh    # launcher gates (dry-run, no Codex contact)
 ./protodog/scripts/test-sweep-check.sh     # retirement sweep-safety checker
+bash ./protodog/scripts/test-codex.sh      # Codex payloads, Task lifecycle, fake Claude, relocated package
 ```
 
-CI runs the same five suites plus manifest checks on every push (macOS runner: the test drivers
+CI runs these suites plus manifest checks on every push (macOS runner: the test drivers
 use BSD sed).
 
 ## Use
@@ -239,9 +297,13 @@ authorization gate — cost plus data egress, since repository content leaves th
 
 ```bash
 dotnet protodog/scripts/audit-launch.cs plan/<plan-id>/audits/audit-NN-dispatch.md
+# From a Codex Task, select its cross-vendor backend:
+dotnet protodog/scripts/audit-launch.cs --auditor claude plan/<plan-id>/audits/audit-NN-dispatch.md
 ```
 
-`--dry-run` verifies every gate without contacting Codex. Reports are immutable; a re-launch is a
+`--dry-run` (before `--auditor`, when supplied) checks the launcher's argument, report, and manifest
+guards without contacting either service; the authorization grant remains a Protocol gate, not
+something the launcher infers. Reports are immutable; a re-launch is a
 new numbered cycle, and the challenge must address every report on file. Between launch and
 report capture the manifested files are frozen (a prose rule: the launcher re-verifies the
 manifest after capture and stamps any drift into the report) — plan updates that would touch them queue and

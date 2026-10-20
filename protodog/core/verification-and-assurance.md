@@ -2,13 +2,13 @@
 
 ## Why this document exists
 
-This defines how Protodog, the Claude-native agentic execution protocol selects verification and additional
+This defines how Protodog, the agentic execution protocol selects verification and additional
 assurance for Task and Program execution, and owns the audit cycle end to end. It supersedes
 `bundle/verification-and-assurance.md`; the invariants are unchanged, the audit loop is updated for
 planning-time selection and the guarded external launcher. It gives agents a consistent internal
 policy without turning assurance into an engineer-operated lifecycle or a numeric risk score.
 
-Status: committed normative policy, Claude-native line.
+Status: shared normative policy; `host-runtime.md` defines the auditor pairing.
 
 ## Role in execution
 
@@ -155,10 +155,11 @@ the result; scoped to exact artifacts and pinned target state; undirected within
 grounded in inspectable evidence; and read-only except for its report. Independence requires a
 separate session with no authorship of the audited state, the challenge, or remediation.
 
-**The standing auditor is the external engine** (cross-vendor: currently Codex with its pinned top
-model), selected for model-family diversity at the trust boundary; the launcher pins and the report
-discloses the exact auditor configuration. Unavailable diversity is disclosed as an audit
-limitation.
+**The standing auditor is the external engine**, selected for model-family diversity at the trust
+boundary: Codex audits Claude execution; Claude audits Codex Task execution. The launcher pins
+the reviewed configuration and the report discloses it. A model alias is identified as such;
+its resolved identity is disclosed when the backend supplies it. Unavailable diversity or model
+identity is disclosed as an audit limitation, never hidden by an automatic backend fallback.
 
 ## Audit cycle
 
@@ -175,9 +176,10 @@ prohibitions; and the coverage-disclosure requirement.
 
 **Launch** is an authorization gate: the decision-ready request identifies the dispatch path,
 pinned state, auditor configuration, cost bound, and transmitted data class (repository content
-leaves the boundary). On approval, the guarded launcher — taking exactly the dispatch path as its
-only argument — re-verifies the manifest hashes and refuses on mismatch, invokes the external
-engine read-only in the background with the pinned configuration, and captures the report to the
+leaves the boundary). On approval, the guarded launcher — taking the dispatch path as its only
+steering input, plus the host adapter's fixed auditor selection — re-verifies the manifest hashes
+and refuses on mismatch, invokes the external engine read-only in the background with the pinned
+configuration, and captures the report to the
 next unused `audit-NN.md`, immutable once written (enforced). From launch to report capture, the
 artifacts pinned in the dispatch manifest are frozen: no write touches a manifested file while
 the auditor reads, and a plan transition that would is queued and flushed immediately after

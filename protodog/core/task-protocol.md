@@ -2,12 +2,12 @@
 
 ## Why this document exists
 
-This defines the bounded-work execution profile of Protodog, the Claude-native agentic execution protocol.
+This defines the bounded-work execution profile of Protodog, the agentic execution protocol.
 It supersedes `bundle/task-protocol.md` and depends on the [Foundation](foundation.md), the
 [Verification and Assurance Policy](verification-and-assurance.md), and the
 [Git Policy](git-policy.md); it redefines none of them.
 
-Status: committed execution profile, Claude-native line.
+Status: shared execution profile for Claude Code and Codex; `host-runtime.md` defines host mechanics.
 
 ## Purpose
 
@@ -252,8 +252,9 @@ numbered cycle is `audit-NN-dispatch.md`, `audit-NN.md`, `audit-NN-challenge.md`
 **Challenge ownership.** In a Task, the coordinating Task agent owns the audit challenge and all
 resulting remediation, executing on the top-model configuration — routed through the pinned
 challenge agent type (shipped in the plugin's `agents/`) when the session model is not that tier.
-The auditor never challenges its own
-audit. Confirmed findings become ordinary task-plan steps with affected verification; no separate
+Where the host adapter uses a coordinating-session handoff instead of a challenge subagent,
+follow that handoff without transferring writes to a shared-worktree child. The auditor never
+challenges its own audit. Confirmed findings become ordinary task-plan steps with affected verification; no separate
 fix plan exists.
 
 ## Worked example: minimum one-step Task

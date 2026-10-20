@@ -10,10 +10,10 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
 
 ## Settled decisions (do not silently re-litigate)
 
-1. **Claude-specific implementation.** The semantic core (`protodog/core/`) is host-neutral prose;
+1. **Claude-specific implementation** (extended for Codex Task by decision 26). The semantic core (`protodog/core/`) is host-neutral prose;
    the mechanics layer is Claude-native — entry skills, hooks, validators. Where an invariant is
    mechanically enforced, prose states intent and enforcement defines the boundary.
-2. **Codex participates only outside the protocol**, at two file boundaries: independent auditor
+2. **Codex originally participated only outside the protocol** (superseded for Task by decision 26), at two file boundaries: independent auditor
    via the self-contained hash-pinned dispatch (standing selection; challenge and remediation stay
    internal on the top Claude model), and ideation engine whose syntheses enter as `inputs/` with
    cited provenance — never directly into `specs/` or `plan/`.
@@ -243,6 +243,20 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     recommendation and the default, and the register holds only rulings the engineer chose to
     postpone. The negative is the same as decision 21's: an unasked question is
     indistinguishable from a deferred one.
+
+26. **Codex Task shares the protocol, with host adapters** (added 2026-10-20; engineer requested
+    implementation after a Task-focused feasibility assessment). This extends decisions 1 and 2:
+    Codex is an execution host for Task, while Program remains Claude-only. Canonical state and
+    validators stay shared; the generated Codex package selects supported skills instead of
+    maintaining a second protocol. Hook compatibility is payload-level, not just matcher-level:
+    Codex supplies a multi-file patch rather than a single `file_path`, and shell completion can
+    arrive later, paired by tool-call ID. The coordinator remains the only writer; challenge on
+    a higher model uses a coordinating-session handoff. Claude supplies cross-vendor auditing
+    with only reading tools; shell-based inspection is an explicit coverage limitation. Local
+    installation and trusted hooks are prerequisites. A model-only imitation is not the
+    supported port. Explicit `no commits` instructions withhold checkpoint delegation and use
+    content hashes for uncommitted evidence. Program concurrency, cloud execution, and public
+    directory distribution are outside this port.
 
 ## Accepted background rationale
 

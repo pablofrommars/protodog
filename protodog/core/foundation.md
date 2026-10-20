@@ -2,7 +2,7 @@
 
 ## Why this document exists
 
-This is the common normative layer for Protodog, the Claude-native agentic execution protocol. It defines
+This is the common normative layer for Protodog, the agentic execution protocol. It defines
 the concepts, authority boundaries, lifecycle, human-in-the-loop interface, state semantics, and
 artifact contracts shared by the Task and Program execution profiles. A profile may add machinery
 but may not redefine this Foundation.
@@ -13,7 +13,7 @@ carried by the installed harness (skills, subagents, isolated worktrees) and by 
 enforcement (hooks, validators). Where an invariant is mechanically enforced, prose states the
 intent and the enforcement defines the operational boundary; prose-only rules remain fully binding.
 
-Status: committed normative Foundation, Claude-native line.
+Status: normative Foundation shared by Claude Code and Codex Task.
 
 ## Normative set and layering
 
@@ -23,19 +23,21 @@ Status: committed normative Foundation, Claude-native line.
 | Templates | `protodog/templates/` | Canonical artifact shapes; scaffolded at creation |
 | Enforcement | `protodog/hooks/`, `protodog/validators/` | Deterministic checks; authoritative for what they decide |
 | Entry | Task and Program skills | Implement the invocation contract |
+| Host mechanics | `host-runtime.md`, `protodog/agents/` | Supported host/profile combinations, invocation and model routing |
 | Prompt registries | `prompt-utility.code-snippets`, `boxer.code-snippets` under `prompt-registry-style.md` | Host-portable prompts outside Protocol state |
 | Ideation mechanics | `ideation-audit` skill | Claude-native adversarial pressure for ideation sessions — outside Protocol state |
-| Canvas mechanics | `working-canvas` skill | Claude-native maintenance of the working canvas for diagram-suited sessions — a working view, outside Protocol state |
+| Canvas mechanics | `working-canvas` skill | Shared maintenance of the working canvas for diagram-suited sessions — a working view, outside Protocol state |
 | Maintenance mechanics | `plan-sweep`, `deferred-review` skills with `scripts/sweep-check.cs` | Engineer-confirmed retirement and register upkeep |
 
 This table is the complete normative closure; nothing outside it carries Protocol authority. A
 validator rejection outranks a prose interpretation for whatever the validator decides; disputes
 about a validator's correctness are resolved by fixing the validator, not by overriding it ad hoc.
-"Enforced" names a boundary: hooks run at the host's Write, Edit, and Bash tools. A shell command
+"Enforced" names a boundary: hooks run at the host's Write, Edit, apply_patch, and Bash tool paths. A shell command
 is checked after it runs against a snapshot of `plan/` and `specs/` — an immutable artifact it
-changed is denied, a plan artifact it changed is validated — and a write that drops a durable id
+changed is reported as a rejection, a plan artifact it changed is validated — and a write that drops a durable id
 present at HEAD is denied once execution has begun. Anything outside those tools is a prose
-prohibition, binding as every prose rule is.
+prohibition, binding as every prose rule is. Post-tool rejection does not undo a mutation.
+Codex hook installation requires trust, and the Task adapter requires it before execution.
 
 ## Profiles and selection
 
@@ -418,7 +420,9 @@ distinct.
 
 ## External engine boundary
 
-The external engine (currently Codex) participates only through self-contained file contracts:
+An external engine is acting outside the executing host's Protocol session. It participates
+only through self-contained file contracts; being Codex or Claude does not itself make a session
+external. The supported execution hosts and auditor pairing are defined in `host-runtime.md`.
 
 - **Auditor** — consumes `audit-NN-dispatch.md`, produces `audit-NN.md` through the guarded
   launcher under the assurance policy. Challenge and remediation stay internal on the top model.
@@ -427,5 +431,5 @@ The external engine (currently Codex) participates only through self-contained f
 
 External contracts are self-contained by construction — executable without installed Protocol
 instructions — and the external engine never reads its instructions from, or writes anything into,
-canonical Protocol state. No other self-contained projection is maintained; context loss inside the
-Claude-native line is handled by native session continuity and canonical artifacts.
+canonical Protocol state. No other self-contained projection is maintained; context loss inside
+an executing host is handled by native session continuity and canonical artifacts.

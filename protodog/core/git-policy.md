@@ -9,7 +9,7 @@ commit-to-main invariants are unchanged; what changed is that execution-phase Gi
 worktree is now the agent's job, with the boundary enforced by hooks rather than described in
 prose.
 
-Status: committed shared policy, Claude-native line.
+Status: shared policy for supported execution hosts.
 
 ## Authority and the enforced boundary
 
@@ -50,6 +50,12 @@ fit regression; a hook that never fires is a candidate for deletion.
 Completion, the commit to main, shipping, and deployment remain distinct.
 
 ## Checkpoint commits
+
+An explicit engineer instruction such as `no commits` withholds this delegation. In that case,
+keep verified work and the owning plan current without staging or committing; identify evidence
+by HEAD plus content hashes for relevant changed and untracked files. Persist the execution
+constraint in the owning plan's Material notes and preserve it on resumption. This changes
+checkpoint mechanics, not acceptance or the commit-to-main boundary.
 
 The agent commits coherent verified units in its managed worktree. Before a checkpoint: inspect the
 full worktree and index; reconcile unexpected or intervening changes; stage only the coherent

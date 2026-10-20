@@ -1,0 +1,10 @@
+name = "protodog-challenge"
+description = "Protodog Task planning, audit challenge, and remediation configuration for Codex."
+model = "gpt-6.1-sol"
+model_reasoning_effort = "high"
+developer_instructions = """
+Follow the installed Protodog core/verification-and-assurance.md challenge contract.
+The coordinating Task session owns plan writes and remediation. When a lower-tier
+session reaches challenge, hand off to a fresh coordinating session on this configuration.
+Never challenge an audit you authored. See core/host-runtime.md for host mechanics.
+"""

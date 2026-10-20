@@ -1,5 +1,22 @@
 # Changelog
 
+## 3.10.0 — 2026-10-20
+
+- Codex Task support shares the core protocol, Markdown state, validators, and maintenance
+  skills. `build-codex-package.cs` emits a relocatable local marketplace with only supported
+  skills; Program and concurrent writers remain Claude-only.
+- Hooks understand Codex multi-file patches, rename sources and targets, deletions, event cwd,
+  and symlink paths. Shell snapshots use tool-call IDs when supplied so overlapping identical
+  commands cannot consume each other's snapshots. Malformed hook input is rejected.
+- The guarded launcher adds `--auditor claude` for cross-vendor audits of Codex work, with a
+  Read/Glob/Grep-only tool surface and JSON report capture. Both backends stage output outside
+  canonical audit state, retain failed output as rejected material, and refuse report overwrite.
+- Host routing defines model handoffs, hook trust, recovery after post-tool rejection, and
+  structured-question fallbacks. Explicit `no commits` instructions override checkpoints.
+- Codex integration tests cover patch enforcement, persisted Task lifecycle, fake-Claude success
+  and failure paths, manifest drift, report collisions, and execution from a relocated package.
+  Live model adherence and installation trust remain installation smoke checks.
+
 ## 3.9.0 — 2026-10-19
 
 Two engineer-reported frictions, both the same shape: the protocol said what to report and when

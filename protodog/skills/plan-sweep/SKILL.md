@@ -12,7 +12,11 @@ the current branch in the report and flag a sweep anywhere else.
 
 ## Procedure
 
-1. **Prove.** Run `dotnet ${CLAUDE_PLUGIN_ROOT}/scripts/sweep-check.cs` (in the protocol home
+Resolve the package root as `../..` from this `SKILL.md`'s directory; read
+`core/host-runtime.md` there for host mechanics. Explicit instructions such as `no commits`
+remain in force throughout the sweep.
+
+1. **Prove.** Run `dotnet <package-root>/scripts/sweep-check.cs` (in the protocol home
    repository: `protodog/scripts/sweep-check.cs`; pass `--base <ref>` when the commit base is
    not `main`). It classifies every `plan/` entry and proves the mechanically decidable
    retirement conditions: every plan file terminal, every obligation lifted (disposition
