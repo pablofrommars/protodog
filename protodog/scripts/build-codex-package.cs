@@ -28,7 +28,7 @@ foreach (var directory in new[] { "core", "templates" })
 foreach (var file in new[]
 {
 	"validators/validate-plan.cs", "hooks/hooks.json", "hooks/protodog-hooks.cs",
-	"scripts/audit-launch.cs", "scripts/sweep-check.cs", "agents/challenge-codex.toml",
+	"scripts/audit-launch.cs", "scripts/sweep-check.cs", "scripts/worktree-survey.cs", "agents/challenge-codex.toml",
 })
 {
 	var target = Path.Combine(package, file);
@@ -50,7 +50,7 @@ var manifest = new JsonObject
 	["$schema"] = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
 	["name"] = "protodog",
 	["version"] = version,
-	["description"] = "Protodog Task protocol for local Codex: shared plans, enforcement hooks, maintenance, and independent Claude audits. Program is not supported.",
+	["description"] = "Protodog Task protocol for local Codex: shared plans, enforcement hooks, maintenance, and independent Claude audits.",
 	["author"] = new JsonObject { ["name"] = "Pablo Belin" },
 	["license"] = "Proprietary",
 	["extensions"] = new JsonObject

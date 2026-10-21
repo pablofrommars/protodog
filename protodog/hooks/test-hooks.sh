@@ -103,6 +103,28 @@ git -C "$TMP/git" -c user.name=t -c user.email=t@t.t commit -q -am planning
 sed -i '' 's/STEP-01/STEP-02/g' "$TMP/git/plan/s/task-plan.md"
 gx_allow post-plan-write "$(file_json "$TMP/git/plan/s/task-plan.md")" "renumbering before execution begins is allowed"
 
+# --- post-plan-write: a new register id may not collide with one landed on origin/main ----
+reg_row() { printf '| ⬜ %s · parked | item | cost | — | p |\n' "$1"; }
+reg() { { printf '# Deferred register\n\n## Parked\n\n| ID | Item | Disposition | Revisit | Provenance |\n|---|---|---|---|---|\n'
+  for id in "$@"; do reg_row "$id"; done; printf '\n## Closed\n\n| ID | Outcome |\n|---|---|\n| ✅ D-01 · closed | done |\n'; } > "$TMP/git/plan/deferred.md"; }
+GX() { git -C "$TMP/git" -c user.name=t -c user.email=t@t.t "$@"; }
+reg D-02; GX add -A; GX commit -q -m register
+GX checkout -q -b landed; reg D-02 D-03; GX commit -q -am landed     # origin/main holds D-03 …
+GX update-ref refs/remotes/origin/main HEAD; GX checkout -q main      # … and the branch does not
+reg D-02 D-03
+gx_deny  post-plan-write "$(file_json "$TMP/git/plan/deferred.md")" "new register id already landed on origin/main is rejected"
+reg D-02 D-04
+gx_allow post-plan-write "$(file_json "$TMP/git/plan/deferred.md")" "new register id past the landed register passes"
+GX checkout -q -- plan/deferred.md
+GX checkout -q -b fresh "$(GX rev-list --max-parents=0 HEAD)"   # a branch from before the register existed
+reg_fresh() { { printf '# Deferred register\n\n## Parked\n\n| ID | Item | Disposition | Revisit | Provenance |\n|---|---|---|---|---|\n'
+  reg_row "$1"; printf '\n## Closed\n\n| ID | Outcome |\n|---|---|\n'; } > "$TMP/git/plan/deferred.md"; }
+reg_fresh D-03
+gx_deny  post-plan-write "$(file_json "$TMP/git/plan/deferred.md")" "creating the register with an id landed on origin/main is rejected"
+reg_fresh D-09
+gx_allow post-plan-write "$(file_json "$TMP/git/plan/deferred.md")" "creating the register past the landed ids passes"
+rm "$TMP/git/plan/deferred.md"; GX checkout -q main
+
 # --- plugin-mode resolution: env-provided roots and denial-log override ------
 PLUGIN_LOG="$TMP/plugin-denials.log"
 plugin_run() { echo "$2" | env CLAUDE_PLUGIN_ROOT="$ROOT/protodog" CLAUDE_PROJECT_DIR="$ROOT" PROTOCOL_DENIAL_LOG="$PLUGIN_LOG" dotnet "$HERE/protodog-hooks.cs" "$1" >/dev/null 2>&1; }

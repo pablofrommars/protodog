@@ -35,7 +35,7 @@ class CodexPackage(unittest.TestCase):
             self.assertFalse((package / ".claude-plugin").exists())
             self.assertTrue((package / "agents/challenge-codex.toml").is_file())
             self.assertFalse((package / "agents/challenge.md").exists())
-            for filename in ("core/task-protocol.md", "core/host-runtime.md", "validators/validate-plan.cs"):
+            for filename in ("core/task-protocol.md", "core/host-runtime.md", "validators/validate-plan.cs", "scripts/sweep-check.cs", "scripts/worktree-survey.cs"):
                 self.assertEqual((package / filename).read_bytes(), (PACKAGE / filename).read_bytes())
             # Maintenance handoffs must survive packaging, including mode-specific references.
             shared_skill = PACKAGE / "skills/deferred-review"

@@ -3,7 +3,7 @@
 ## Why this document exists
 
 This defines how Protodog, the agentic execution protocol selects verification and additional
-assurance for Task and Program execution, and owns the audit cycle end to end. It supersedes
+assurance for Task execution, and owns the audit cycle end to end. It supersedes
 `bundle/verification-and-assurance.md`; the invariants are unchanged, the audit loop is updated for
 planning-time selection and the guarded external launcher. It gives agents a consistent internal
 policy without turning assurance into an engineer-operated lifecycle or a numeric risk score.
@@ -12,7 +12,7 @@ Status: shared normative policy; `host-runtime.md` defines the auditor pairing.
 
 ## Role in execution
 
-The selected profile applies this policy during grounding, planning, execution, replanning, and
+The Task profile applies this policy during grounding, planning, execution, replanning, and
 completion; there is no separate assurance plan or decision-tree artifact. Record an assurance
 choice in the owning plan only when it affects acceptance or required verification; sequencing,
 dependencies, or integration; cost, external effects, or authority; a controlled measurement or
@@ -74,7 +74,7 @@ or target-state change.
 
 **The assurance interrogation.** Scheduling of the authorization-gated assurance instruments —
 audits and paid or external evaluation runs — is settled at the start of planning, not discovered
-downstream. Task planning, and each track's planning in a Program, opens by interrogating both
+downstream. Task planning opens by interrogating both
 for its scope: is one selected, by which authority, over what scope, with what placement or run
 bounds? Exactly one outcome per instrument is persisted in the owning plan before execution
 readiness: a selected audit with its declared placement, or scheduled evaluation runs with
@@ -82,9 +82,7 @@ purpose, order, and bounds; a decision gate raised at planning entry when the in
 an instrument that no selecting authority has ruled on — never silently selected, never silently
 dropped; or the explicit not-scheduled outcome, recorded as one decision with its basis. The
 negative is recorded deliberately: an absent answer is indistinguishable from an unasked
-question. Program-wide scheduling is interrogated once at Program planning; a track's
-interrogation covers its assigned scope and may conclude that a Program-wide placement already
-carries it. The interrogation settles scheduling only — each launch keeps its own authorization
+question. The interrogation settles scheduling only — each launch keeps its own authorization
 gate — and later evidence reopens the outcome as an ordinary material delta: it removes the
 uncertainty, not the ability to change.
 
@@ -118,7 +116,7 @@ both for controlled comparison; the owning plan records purpose, order, authoriz
 identity. Scheduling of paid or external runs is settled at planning entry by the assurance
 interrogation; each launch keeps its authorization gate.
 
-## Profile assurance
+## Task assurance
 
 **Task.** The universal invariants and triggers, no second layer. Map every bound criterion to
 planned verification before `ready`; verify each step at the narrowest credible level; establish
@@ -126,15 +124,6 @@ acceptance against the final Task state, reusing evidence only when later change
 and target unaffected; verify reconciled concurrent results for interactions not covered in
 isolation. Task selection alone never requires a full suite run, evaluation run, review, audit, or
 independent executor.
-
-**Program.** Adds verification across responsibility and integration seams: each track applies the
-Task policy to its assigned result; track-local evidence establishes only claims within the
-verified track state; dependency seams are verified before a dependent track consumes a
-predecessor; combined states are verified after reconciliation; a track closes only with evidence
-or accepted exception in the state the Program will consume; completion establishes acceptance
-against the combined integrated state. Progressive planning may defer detailed checks with
-not-yet-planned work but cannot hide acceptance ownership. Multiple tracks alone require no added
-assurance.
 
 ## Review and audit selection
 
@@ -144,7 +133,7 @@ assurance; it creates no artifact or HIL unless another actor needs the result.
 An **audit** adds independence and an adversarial posture, and exists only when selected **at
 planning time** — by the engineer, spec context, repository policy, or governing assurance policy —
 and recorded in the owning plan with its declared placement (a lifecycle position or state, e.g.
-"post-integration of TRACK-02, blocks the commit to main"). An emergent audit need is a material
+"at completion, blocks the commit to main"). An emergent audit need is a material
 delta and
 enters through a plan update. Blast radius, uncertainty, irreversibility, or weak direct
 verification may support a recommendation; they never silently select an audit. Selection is
@@ -202,8 +191,7 @@ with claim, evidence, affected surface, consequence, and `high / medium / low` c
 evidence. No mandatory severity scale; recommendations optional and advisory. A clean audit covers
 only the inspected scope.
 
-**Challenge.** The challenge owner — the Task coordinating agent for a Task cycle, the planner for
-a Program cycle — challenges every finding against the pinned state on the top-model configuration
+**Challenge.** The challenge owner — the Task coordinating agent — challenges every finding against the pinned state on the top-model configuration
 and writes `audit-NN-challenge.md`: per finding, a disposition
 (`confirmed / overstated / false positive / deliberate design / unverifiable here`), exact
 challenge evidence and corrected claim where applicable, material consequence and required gate if

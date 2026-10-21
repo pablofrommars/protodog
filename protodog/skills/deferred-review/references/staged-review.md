@@ -65,7 +65,17 @@ independent audit; a second model must check evidence, but vendor diversity is n
 - Checks run: <command, result, date; or none>
 - Open question / next step: <precise question, decision, observation, or spot-check eligibility>
 - Verification: pending
+
+## Clusters
+
+- Seed: D-<id> — <activation proposal, or the engineer's focus>
+- Members: D-<id> — <surface | trigger>: <symbol, dataset, or trigger>; verification: <shared verification and its cost>
+- Excluded: D-<id> — <failed axis, or verification veto: <what differs>>
+- After: <work a member must follow, or none>
+- Untracked: <defect with no row, for the residue report and the adopting Task; or none>
 ```
+
+The cluster section is written at verify from the grouped reads; triage may leave it empty.
 
 ## Verify a handoff
 
@@ -93,8 +103,8 @@ independent audit; a second model must check evidence, but vendor diversity is n
    checks. Never describe unresolved or unassessed rows as verified, or claim a full review while
    they remain. Do not repeat settled proposals after resumption.
 4. **Settle through the shared procedure.** Present evidence-backed proposals using the skill's
-   steps 2–4. Include unresolved rows and the coverage distinction in the report; present surviving
-   `needs-decision` rows for the engineer's ruling. Apply only ratified transitions to the current
+   steps 2–4, each cluster as one request. Include unresolved rows and the coverage distinction in
+   the report; present surviving `needs-decision` rows for the engineer's ruling. Apply only ratified transitions to the current
    register, checking for intervening changes first. Record rulings and outcomes in the handoff
    for resumption, while the register remains the authoritative obligation record. A partial
    review may settle verified proposals without implying that its unresolved rows were checked.

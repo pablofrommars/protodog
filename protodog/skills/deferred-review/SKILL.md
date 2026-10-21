@@ -1,6 +1,6 @@
 ---
 name: deferred-review
-description: Review plan/deferred.md against current repository state, optionally triaging first and resuming verification from a saved handoff. Find closed items, fired triggers, and drifted claims; apply only engineer-ratified transitions. Use when the register may have drifted, including when a completed profile offered this review.
+description: Review plan/deferred.md against current repository state, optionally triaging first and resuming verification from a saved handoff. Find closed items, fired triggers, and drifted claims; propose clusters for rows being picked up; apply only engineer-ratified transitions. Run at the landing moment, after the rebase onto main and before the commit to main, or whenever the register may have drifted.
 ---
 
 # Deferred register review
@@ -8,9 +8,8 @@ description: Review plan/deferred.md against current repository state, optionall
 You are reviewing the deferred register for drift. This is a review, not an audit: per-row
 verification is directed by nature and claims no independence. The register's founding defect was
 silent closure — items done or obsoleted with nobody reconciling the row — and that is what this
-review hunts. Profile completion offers this review against just-finished work but never runs it
-unprompted; when the offer is taken, start from the rows that work plausibly closed, unblocked,
-or amended — a fresh session serves the review better than a degraded closing context.
+review hunts. Task completion names this review but never runs it; when it runs, start from the
+rows that work plausibly closed, unblocked, or amended.
 
 ## Entry and modes
 
@@ -28,7 +27,10 @@ The engineer selects the model in each host before invoking a stage. Neither mod
 models, launches another vendor's CLI, or requires a particular model family. A fresh session
 can resume from the handoff without the triage conversation. Triage labels are review metadata,
 not new register dispositions. Review authorizes investigation and register upkeep, not fixing
-the parked work; activation remains a proposal to start it.
+the parked work; activation remains a proposal to start it. The review in any mode — the full
+procedure or either stage — runs after the engineer's rebase onto `main` and before the commit
+to main, in a fresh session: the register is then current, and what the review applies conflicts
+with nothing that is about to land.
 
 ## Full review and shared settlement
 
@@ -44,13 +46,27 @@ the parked work; activation remains a proposal to start it.
    supply the corrected wording). Flag a row as a **drop** candidate only when evidence says the
    work is no longer worth doing; that call is the engineer's. Never apply a transition on your
    own judgment.
+   **Propose clusters** beside the transitions, never as one: for each seed — a row proposed for
+   activation, or one the engineer named in the review's focus — the parked rows that share its
+   code surface or its trigger and whose verification, cost included, is the seed's; a
+   verification mismatch excludes a row whatever else it shares. One reason line per member (the
+   axis and its anchor: symbol, dataset, or trigger) and one per excluded row (the failed axis or
+   the verification veto), written from the reads the review already made, not a second pass,
+   with an "after" note where a member must follow other work. A cluster writes nothing to the
+   register; it is dispatch advice for the Task that adopts the seed.
 3. **Ratify and apply.** Present the proposals with evidence, and present every surviving
    `needs-decision` row as a decision interrogation — the host's structured question tool when
    available (otherwise the conversation), recommendation
-   and current default per row — so the engineer can rule it there; apply exactly what the
-   engineer ratifies — closed and dropped rows move to the Closed table with a one-line outcome
-   and date, amendments rewrite the row in place, D-ids are never reused or renumbered. The write is
-   validated on save by the register validator.
+   and current default per row — so the engineer can rule it there; present each cluster as one
+   request the engineer strikes members from; apply exactly what the engineer ratifies — closed
+   and dropped rows move to the Closed table with a one-line outcome and date, amendments rewrite
+   the row in place, D-ids are never reused or renumbered. The write is validated on save by the
+   register validator. A ratified cluster enters the adopting Task through its ordinary
+   grounding: each member becomes a checkable step with origin `from D-NN`, or stays parked with
+   the reason recorded in that plan.
 4. **Report residue.** Close with what was verified and kept, with the evidence that supports
    each survivor, so the next review knows what was already checked and when. Name any row later
    work closed at trivial cost — evidence the fix-now test was applied too tightly at its source.
+   The review lifts no rows: a defect it finds with no row is reported here as an untracked
+   finding and enters the adopting Task's finding triage, where it is a fix-now step or a tagged
+   deferred issue that lifts at terminal status like every row.

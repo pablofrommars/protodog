@@ -376,9 +376,7 @@ Dictionary<string, string> Canonical()
 bool IsPlanArtifact(string relative)
 {
 	var baseName = Path.GetFileName(relative);
-	return relative == "plan/deferred.md"
-		|| baseName is "task-plan.md" or "program-plan.md" or "track-plan.md"
-		|| Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$");
+	return relative == "plan/deferred.md" || baseName == "task-plan.md";
 }
 
 void PreWrite()
@@ -435,7 +433,7 @@ void PostPlanWrite()
 {
 	var baseName = Path.GetFileName(filePath);
 	var isRegister = baseName == "deferred.md" && Regex.IsMatch(Path.GetFullPath(filePath).Replace('\\', '/'), @"(^|/)plan/deferred\.md$");
-	var isPlan = isRegister || baseName is "task-plan.md" or "program-plan.md" or "track-plan.md" || Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$");
+	var isPlan = isRegister || baseName == "task-plan.md";
 	if (!isPlan)
 	{
 		return;
@@ -479,16 +477,22 @@ string? Validate(IReadOnlyList<string> paths)
 
 // Durable ids are stable after execution begins: a write that drops an id present in the last
 // committed version renumbered or reused it. The validator sees one artifact; this is the only
-// place that can see two. The register's D-ids are stable from the first row.
+// place that can see two. The register's D-ids are stable from the first row, and a new one may
+// not collide with an id already landed on origin/main: two branches allocating the next id from
+// the register each sees produce the same number, and the rename that resolves it rewrites ids
+// committed on main. The check is as fresh as the engineer's last fetch; it narrows that window,
+// it does not close it.
 IEnumerable<string> StableIdProblems(string path)
 {
 	var relative = Path.GetRelativePath(repoRoot, Path.GetFullPath(path)).Replace('\\', '/');
-	if (!IsPlanArtifact(relative) || Regex.IsMatch(Path.GetFileName(relative), @"^DISPATCH-") || !File.Exists(path))
+	if (!IsPlanArtifact(relative) || !File.Exists(path))
 	{
 		yield break;
 	}
 
-	var committed = Git("show", $"HEAD:{relative}");
+	// A register absent at HEAD is an empty baseline, so a branch creating the register still
+	// meets the landed-id check below; a plan absent at HEAD has nothing to hold stable.
+	var committed = Git("show", $"HEAD:{relative}") ?? (relative == "plan/deferred.md" ? "" : null);
 	if (committed is null)
 	{
 		yield break;
@@ -509,6 +513,17 @@ IEnumerable<string> StableIdProblems(string path)
 	foreach (var id in before.Except(now).OrderBy(id => id))
 	{
 		yield return $"{relative}: {id} is present at HEAD and gone from this write — ids are stable after execution begins; supersede and link instead";
+	}
+
+	if (relative != "plan/deferred.md" || Git("show", "origin/main:plan/deferred.md") is not { } landed)
+	{
+		yield break;
+	}
+
+	var taken = idPattern.Matches(landed).Select(m => m.Groups[1].Value).ToHashSet();
+	foreach (var id in now.Except(before).Where(taken.Contains).OrderBy(id => id))
+	{
+		yield return $"{relative}: {id} already exists on origin/main as of the last fetch — ids allocated on parallel branches collide; allocate past the landed register instead";
 	}
 }
 

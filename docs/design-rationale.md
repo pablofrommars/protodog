@@ -82,7 +82,7 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     ratifies — a fired trigger proposes activation, never silent closure. The survey is a
     command, not a document: no index artifact returns.
 14. **Diagram-suited work keeps a working canvas — one doctrine across stations** (added
-    2026-08-15; provenance: `inputs/ideation-visual-support-handoff.md`). The closing diagram
+    2026-08-15; provenance: `inputs/ideation-visual-support-handoff.md`, retired to Git history 2026-10-22). The closing diagram
     companion of an ideation session proved the visual form and failed only on timing; the fix is
     content diagrams maintained from the baseline turn. A session-state map was explicitly
     considered and shelved — the pain is visual support on the problem content, not on session
@@ -135,7 +135,7 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     not implementation plans. Prose-side complement to the hook-denial telemetry: denial spikes
     catch mechanical protocol-fit regression, the retro catches the judgment-side pain.
 18. **Planning runs on the top model; execution readiness is the downshift boundary** (added
-    2026-08-17; provenance: `inputs/protocol-cost.md` plus engineer retro observations). The
+    2026-08-17; provenance: `inputs/protocol-cost.md`, retired to Git history 2026-10-22, plus engineer retro observations). The
     costliest failure observed in daily use was planning-tier judgment: a spec premise a code
     read would have falsified was bound into an immutable spec, forcing a superseding spec and a
     sixteen-step rebuild. Binding immutability amplifies planning error by design — the same
@@ -210,7 +210,7 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     (decision 20). The `deferred-review` residue report feeds back: rows later work closed at
     trivial cost mean the test ran too tight at the source.
 24. **Enforcement claims match what the hook can see** (added 2026-10-19; provenance:
-    `inputs/protocol-review/audits/` — two external cycles, audit-01 ceremony-scoped and audit-02
+    `inputs/protocol-review/audits/`, retired to Git history 2026-10-22 — two external cycles, audit-01 ceremony-scoped and audit-02
     undirected, challenged in `audit-0N-challenge.md`). The ceremony audit found the protocol
     mostly lean, with its real duplication in the plan dialect and in restated contracts; the
     undirected audit found no ceremony and ten gaps between "(enforced)" and the validator's
@@ -257,6 +257,64 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     supported port. Explicit `no commits` instructions withhold checkpoint delegation and use
     content hashes for uncommitted evidence. Program concurrency, cloud execution, and public
     directory distribution are outside this port.
+
+27. **Program is retired; a Task sequence under a runbook is the multi-unit shape** (added
+    2026-10-21; provenance: the deferred-cluster ideation session of that day, audited with
+    `ideation-audit` in both modes, and the engineer's ruling "I want the repo to be stripped out
+    completely of the concept of program (changelogs are the exceptions)"; the session record was
+    not committed). Months of operation never reached for Program: plans change with the audits
+    between units, and a Program binds its tracks at a horizon the engineer cannot see across.
+    In two consuming repositories a hand-built runbook under `inputs/` did the multi-unit work
+    instead, cutting a source into Tasks with order, exclusive write surfaces, verification,
+    assurance, tier, and the dispatch prompt per Task, each Task landing on `main` as its own
+    commit. The reasons the runbook itself gave were confirmed against the protocol: each Task
+    binds its spec against code already on `main`, so nothing bound changes between units;
+    prerequisites on `main` are the only cross-unit state, and the Git policy's rebase supplies
+    them; parallel units need worktrees, not dispatch machinery. The governing principle, the
+    engineer's words: engineers are at the center of development; the protocol adds method —
+    coordination stays with the engineer and the runbook gives it a shape rather than an agent.
+    Task is the only profile; profile selection and its recommendation snippet are gone; the
+    Codex package's "Program not supported" asymmetry is gone with it. Earlier decisions that
+    mention Program stand as history. What Program carried and the runbook must now name per
+    sequence: objective-level completion once every unit has landed, the landing policy, and id
+    allocation across parallel branches, which has no owner and already collided once.
+
+28. **The register review clusters, lifts nothing, and runs at the landing moment** (added
+    2026-10-21; provenance: the same ideation session as decision 27, its conclusions on axes,
+    owner, persistence, evidence, authority, vocabulary, unlisted siblings, and cadence, each
+    re-cut by the ideation audit's findings). When a parked row is picked up, the economical unit is the row
+    plus the siblings sharing its code surface or its trigger, proven by the same verification;
+    two consuming repositories were batching this by hand in dispatch documents. The review now
+    proposes a cluster beside its five transitions, never as one: one reason line per member and
+    per excluded row, since the exclusion carries as much information as the inclusion, ratified
+    as one request, written nowhere in the register and adopted by the next Task as steps `from
+    D-NN`. Rejected: a register column or token (stale faster than a row; a register write
+    outside the transitions; already meant "alternative trigger" in practice), a sixth "add"
+    transition (the one review that lifted rows from live plans carried three obligations twice),
+    and a separate skill (four registrations for a paragraph). The review runs after the
+    engineer's rebase and before the commit to main, in a fresh session: the "on main" rule the
+    engineer had followed had no provenance and the pile-up it caused was the register's founding
+    defect in a second form; the observed register conflict was id allocation on two branches,
+    which no location rule prevents and which stays parked as a candidate row.
+
+29. **Specs and inputs retire with their plans; backlog is what no plan ever consumed; a
+    declared line of Tasks is one commit unit** (added 2026-10-22; provenance: engineer
+    observation that `inputs/`, `specs/`, and `plan/` kept growing until the backlog could not
+    be read, and the release audit's FINDING-01). Plans already died on schedule with Git
+    history as their archive; specs and inputs had no retirement rule, so a consuming
+    repository held 144 specs and over a thousand input files with no way to tell live work from
+    residue. The same rule now covers all three folders: a spec is reconciled intent for its plan
+    and an input is consumed material, both retire with the last plan that cites them, and what
+    must outlive a plan moves into repository documentation, which is self-contained and cites
+    neither — a `docs/` citation into `inputs/` or `specs/` is a defect, not a reason to keep.
+    The engineer's correction that shaped the classification: an input no plan has ever consumed
+    is backlog, work shaped and not started, never a sweep candidate; Git history tells the two
+    apart. The sweep checker classifies every file by citation (the file or any folder above it)
+    and history, so its survey plus the register's parked rows is the backlog view, with
+    deletion still engineer-confirmed in one sweep commit. Separately, the runbook's line option
+    had contradicted the Git policy's one-Task-one-commit invariant; the engineer ruled that
+    several Tasks may share a commit, so the invariant now names a declared line of Tasks as a
+    commit unit whose dependent units bind against the branch.
 
 ## Accepted background rationale
 

@@ -12,9 +12,8 @@ Status: shared execution profile for Claude Code and Codex; `host-runtime.md` de
 ## Purpose
 
 Use the Task Protocol for an engineer-selected, bounded engineering objective. One agent can carry
-the whole lifecycle; bounded subagent use is permitted without importing Program tracks, blocks,
-dispatches, or ledgers. Every Task has one durable task plan — the authority for live execution
-state — which references rather than duplicates its spec context.
+the whole lifecycle; bounded subagent use is permitted. Every Task has one durable task plan — the
+authority for live execution state — which references rather than duplicates its spec context.
 
 ## Entry and lifecycle
 
@@ -23,7 +22,7 @@ references, or an existing task plan. Overrides — execution scope, existing pl
 additional authority, assurance selection — are skill arguments; omitted values take defaults and
 never become questions. Invocation:
 
-1. records Task as the engineer-selected profile;
+1. records the Task profile;
 2. creates one task plan from the template (in `pending planning`) or resumes the matching plan —
    exactly one match resumes; none creates; multiple plausible matches use the Foundation HIL
    interface instead of guessing;
@@ -171,7 +170,7 @@ adopts it and is re-evaluated.
 remediation, new evidence, a new hypothesis, or a relevant state change. Triage every material
 failure — remediate when the Foundation's fix-now test passes, escalate capability, route an
 engineer escalation through its gate, or record a tagged deferred issue and continue when
-non-blocking. The Task has no issue ledger; deferred issues and accepted gaps live in the plan.
+non-blocking. Deferred issues and accepted gaps live in the plan.
 
 ## HIL and cadence
 
@@ -201,15 +200,14 @@ happen at coherent verified units regardless of cadence; plan currency is the st
 same discipline, and each checkpoint's commit body carries the position line so the log reads as
 progress without opening the plan.
 
-## Resumption and profile replacement
+## Resumption and plan replacement
 
 The task plan, bound specs, and repository state are the resumption contract — no bootstrap or
 resumption artifact exists. Persist a handoff only when responsibility transfers with material
-context that cannot live in that state. If evidence indicates the profile is unsuitable, persist
-the decision gate and present a decision-ready request; the Task cannot switch profiles. On
-replacement, reconcile reusable verified evidence without transferring scope, authority,
-acceptance, or bindings automatically; the original becomes `superseded` only when its exact
-successor exists.
+context that cannot live in that state. If evidence indicates the plan is unsuitable as written,
+persist the decision gate and present a decision-ready request. On replacement, reconcile
+reusable verified evidence without transferring scope, authority, acceptance, or bindings
+automatically; the original becomes `superseded` only when its exact successor exists.
 
 ## Completion
 
@@ -224,12 +222,12 @@ declaration that the Task is completed, then summarizes acceptance, material evi
 omissions, and retained issues or gaps — it is not persisted as a separate report — presents any
 decision interrogation still held, and closes with the engineer-owned actions that remain: the
 commit to main through the guarded workflow, the retirement sweep that follows it, and the
-standing offer of a deferred-register review against the finished work. The review is offered,
-never run unprompted — an end-of-session context may be too degraded for a quality review, so the
-engineer invokes `deferred-review`, often in a fresh session, when the register is worth the
-look. Completion is not the commit to main; when the engineer triggers it, the whole Task reaches
-`main` as one commit, and the terminal plan directory then awaits the engineer-triggered
-retirement sweep.
+deferred-register review at the landing moment — after the engineer's rebase onto `main` and
+before the commit to main, in a fresh session, where the register is current and nothing the
+review applies conflicts with what is about to land. The review is named, never run — the
+engineer invokes `deferred-review` there. Completion is not the commit to main; when the
+engineer triggers it, the Task reaches `main` in one commit, alone or within a declared line of
+Tasks, and the terminal plan directory then awaits the engineer-triggered retirement sweep.
 
 ## Assurance and audit
 

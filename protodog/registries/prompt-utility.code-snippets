@@ -12,7 +12,7 @@
 		"prefix": "p-protocol-ideate-feature",
 		"body": [
 			"<task>",
-			"Collaboratively shape the supplied intent into a defensible feature direction: explore the relevant repository surfaces, widen and test meaningful alternatives, and settle conclusions — including, when execution is in sight, enough orientation to ballpark blast radius, cost, and Task-or-Program fit — without planning or implementing.",
+			"Collaboratively shape the supplied intent into a defensible feature direction: explore the relevant repository surfaces, widen and test meaningful alternatives, and settle conclusions — including, when execution is in sight, enough orientation to ballpark blast radius, cost, and Task fit — without planning or implementing.",
 			"</task>",
 			"",
 			"<context>",
@@ -28,7 +28,7 @@
 			"- When the subject is diagram-suited — a mapping between structures, a topology, a lifecycle, or a data flow — maintain a working canvas beside the prose from the baseline turn: one master model at fixed altitude whose lanes are the separated concerns, roughly ten boxes, never mechanism, plus zoom views one level down that own exactly one question each, opened when their decision surface opens and split when a second question accumulates. Every element the session produces lands in exactly one lane; an element that cannot is a design finding — a missing concern — not a drawing problem. Render as diagrams where the host supports them, as structured prose otherwise; when detection cues are mixed, default to keeping the canvas — a discarded canvas is cheap.",
 			"- Sketch materially distinct alternatives on the canvas before comparing them in prose, each drawn in the affected region plus one ring of surrounding context. On settlement draw the winner into its zoom and delete the losing sketches — the session record keeps why they lost — and reconcile the canvas with every correction or reopened conclusion; never let a diagram's existence argue against reopening. The canvas follows the session's persistence rule: ephemeral by default, promoted with the results on explicit instruction; at close it is the visual companion of the synthesis.",
 			"- Continue automatically to the next useful decision surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
-			"- Profile orientation is a conclusion, not a selection: state blast radius, cost, and profile fit as settled conclusions when execution is in sight, and leave the choice to me. Do not create Protodog gates, profile state, specs, plans, or implementation.",
+			"- Sizing is a conclusion, not an entry: state blast radius, cost, and Task fit as settled conclusions when execution is in sight, and leave the invocation to me. Do not create Protodog gates, plans, specs, or implementation.",
 			"- Close only on my explicit instruction. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance.",
 			"</instructions>",
 			"",
@@ -37,7 +37,7 @@
 			"</output>",
 			"$0"
 		],
-		"description": "Start a multi-turn, repository-grounded feature ideation mini protocol; settles direction and profile orientation without entering the Protocol"
+		"description": "Start a multi-turn, repository-grounded feature ideation mini protocol; settles direction and Task sizing without entering the Protocol"
 	},
 	"Mini Protocol: Concept Ideation": {
 		"scope": "markdown",
@@ -60,7 +60,7 @@
 			"- When the subject is diagram-suited — a mapping between structures, a topology, a lifecycle, or a data flow — maintain a working canvas beside the prose from the baseline turn: one master model at fixed altitude whose lanes are the separated concerns, roughly ten boxes, never mechanism, plus zoom views one level down that own exactly one question each, opened when their decision surface opens and split when a second question accumulates. Every element the session produces lands in exactly one lane; an element that cannot is a design finding — a missing concern — not a drawing problem. Render as diagrams where the host supports them, as structured prose otherwise; when detection cues are mixed, default to keeping the canvas — a discarded canvas is cheap.",
 			"- Sketch materially distinct alternatives on the canvas before comparing them in prose, each drawn in the affected region plus one ring of surrounding context. On settlement draw the winner into its zoom and delete the losing sketches — the session record keeps why they lost — and reconcile the canvas with every correction or reopened conclusion; never let a diagram's existence argue against reopening. The canvas follows the session's persistence rule: ephemeral by default, promoted with the results on explicit instruction; at close it is the visual companion of the synthesis.",
 			"- Continue automatically to the next useful surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
-			"- Do not create Protodog state, select a profile, plan, or implement.",
+			"- Do not create Protodog state, plan, or implement.",
 			"- Close only on my explicit instruction. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance.",
 			"</instructions>",
 			"",
@@ -110,31 +110,33 @@
 		],
 		"description": "Start a multi-turn, DDD-informed domain ideation mini protocol converging on a pragmatic model"
 	},
-	"Protocol Utility: Recommend Profile": {
+	"Protocol Utility: Runbook": {
 		"scope": "markdown",
-		"prefix": "p-protocol-recommend-profile",
+		"prefix": "p-protocol-runbook",
 		"body": [
 			"<task>",
-			"Recommend the Protodog execution profile — Task or Program — for the supplied intent, as a decision-ready orientation. The recommendation is a conclusion, not a selection: profile choice belongs to me, by invocation.",
+			"Cut the supplied source — an ideation handoff, a register cluster proposed by the deferred review, or an audit reconciliation — into a sequence of Protodog Tasks, and return the runbook that dispatches them. The runbook is a dated cut, not a ledger: it is re-issued when the sequence changes, and live state stays in plan/ and plan/deferred.md, which compute it.",
 			"</task>",
 			"",
 			"<context>",
-			"${1:Describe the intended work, relevant repository surfaces and references, known scope and exclusions, constraints, and horizon.}",
+			"${1:Name the source document and the repository HEAD the cut is dated against; state constraints every Task inherits, surfaces already in flight, and what landed since the last cut if this is a re-issue.}",
 			"</context>",
 			"",
 			"<instructions>",
-			"- Ground the assessment in the repository and supplied references before concluding; distinguish evidence, inference, and uncertainty.",
-			"- Weigh: bounded objective versus long-lived horizon; whether the work decomposes into streams with independent acceptance and dependencies (latent track topology); durable cross-track state, responsibility dispatch, or concurrent repository writers; progressive-planning need. Decomposability alone is not a Program signal — Task permits bounded subagent use without Program machinery, and proportionality is protected: prefer Task when one agent can credibly carry the lifecycle.",
-			"- State blast radius, rough cost, and the reversibility of the choice: a wrong Task is superseded with no automatic transfer; an under-loaded Program pays its ceremony every turn.",
-			"- Do not invoke a profile, create Protodog state, plan, or implement. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance on explicit instruction.",
+			"- Ground every cut in the source and the repository: a unit's prerequisites are what must be on main before it can bind its spec, its write boundaries are the files it alone may change, and two units run in parallel only when those boundaries are disjoint.",
+			"- Ask me to choose the landing policy before writing the sequence: each unit lands on main as its own commit, or the whole line lands as one commit. Name the cost of the line: ids allocated on parallel branches can collide, and a long-lived branch rebases the register against every landing in between.",
+			"- Execution tier and assurance per unit are recommendations the Task's own readiness report and assurance interrogation re-decide; state them as tiers per host, never as a vendor model name.",
+			"- Name the objective-level completion: how the whole objective is proven once every unit has landed — a closing unit, or an external audit over the landed sequence — because no unit proves the combined state.",
+			"- On a re-issue, open with what the next unit inherits from the landed ones; do not carry status columns forward by hand.",
+			"- Do not create Protodog state, plan, or implement. Do not persist by default; on my explicit instruction save the runbook under inputs/ with cited provenance.",
 			"</instructions>",
 			"",
 			"<output>",
-			"Return in this session: the recommendation with confidence; the criteria that drove it, each with its evidence; the flip conditions — what evidence would reverse the recommendation; and the suggested invocation line with the exact context references to supply. Leave the selection to me.",
+			"Return the runbook: a header dating the cut against the HEAD and naming the source and the landing policy; the objective-level completion; a sequence table with unit, source steps or rows, prerequisites on main, can run in parallel with, execution tier, paid cost, and why here; then one section per unit with label and plan id, scope, out of scope, exclusive write boundaries, acceptance anchors in the source, required verification, size, execution tier, assurance, stopping conditions, and the dispatch prompt in both host forms — `/protodog:task <label>. … scope: …. assurance: ….` for Claude Code and the same text after `$protodog:task` for Codex; then parked and excluded items with reasons; then, on a re-issue, what the next cut inherits.",
 			"</output>",
 			"$0"
 		],
-		"description": "Protocol utility: one-shot grounded Task-vs-Program recommendation ending in a decision-ready orientation; profile selection stays with the engineer"
+		"description": "Protocol utility: cut an ideation handoff, register cluster, or audit reconciliation into a dated sequence of Tasks with dispatch prompts for both hosts; a cut that is re-issued, never a ledger"
 	},
 	"Mini Protocol: Session Retro": {
 		"scope": "markdown",

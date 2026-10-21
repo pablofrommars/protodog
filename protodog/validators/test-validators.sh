@@ -7,7 +7,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
 V="dotnet $HERE/validate-plan.cs"
 T="$ROOT/protodog/templates"
-TMP="$(mktemp -d)"
+TMP="$(mktemp -d)" || { echo "cannot create a temporary directory"; exit 2; }
 trap 'rm -rf "$TMP"' EXIT
 pass=0; fail=0
 
@@ -16,17 +16,17 @@ expect_ok() { # name, args...
   if $V "$@" >/dev/null 2>&1; then pass=$((pass+1)); else
     fail=$((fail+1)); echo "FAIL (expected valid): $name"; $V "$@" 2>&1 | sed 's/^/    /'; fi
 }
-expect_bad() { # name, args...
+expect_bad() { # name, args... — a missing fixture is a harness failure, never a rejection
   local name="$1"; shift
+  for fixture in "$@"; do
+    [ -e "$fixture" ] || { fail=$((fail+1)); echo "FAIL (fixture missing): $name — $fixture"; return; }
+  done
   if $V "$@" >/dev/null 2>&1; then fail=$((fail+1)); echo "FAIL (expected rejection): $name"
   else pass=$((pass+1)); fi
 }
 
 # --- positive ---------------------------------------------------------------
 expect_ok "template task plan"    "$T/task-plan.md"
-expect_ok "template program plan" "$T/program-plan.md"
-expect_ok "template track plan"   "$T/track-plan.md"
-expect_ok "template dispatch"     "$T/dispatch.md"
 expect_ok "template spec"         "$T/spec.md"
 expect_ok "template deferred register" "$T/deferred-register.md"
 
@@ -140,12 +140,11 @@ expect_bad "work status used for a criterion" "$TMP/task-plan.md"
 seed; sed -i '' 's/⬜ ACCEPTANCE-01 · pending/✅ ~~ACCEPTANCE-01~~ · satisfied/' "$TMP/task-plan.md"
 expect_bad "strikethrough on an acceptance id" "$TMP/task-plan.md"
 
-cp "$T/dispatch.md" "$TMP/DISPATCH-01.md"; sed -i '' '/- Return path:/d' "$TMP/DISPATCH-01.md"
-expect_bad "dispatch missing required key" "$TMP/DISPATCH-01.md"
-
-cp "$T/dispatch.md" "$TMP/DISPATCH-02.md"
-sed -i '' 's/- Repository access: read only/- Repository access: coordination writer — worktree, branch/' "$TMP/DISPATCH-02.md"
-expect_bad "removed coordination-writer access mode" "$TMP/DISPATCH-02.md"
+# --- retired artifact types are not recognised ------------------------------------
+for retired in program-plan.md track-plan.md DISPATCH-01.md; do
+  cp "$T/task-plan.md" "$TMP/$retired"
+  expect_bad "retired artifact type $retired" "$TMP/$retired"
+done
 
 mkdir -p "$TMP/plan-x/audits"; cp "$T/task-plan.md" "$TMP/plan-x/task-plan.md"
 touch "$TMP/plan-x/audits/audit-1-report.md"
@@ -290,6 +289,17 @@ lifted 'completed' 'retry backoff tuning, with a rationale long enough that the 
   onto a continuation line and never records a disposition'
 expect_bad "terminal plan with wrapped un-lifted item" "$LP"
 
+# An arrow accepted on the lead line still carries the lift checks when sub-bullets follow.
+lifted 'completed' 'retry backoff tuning · defer: cost → D-03
+  - supporting detail under the lifted item'
+expect_ok "sub-bulleted lifted item, tagged, row exists" "$LP"
+lifted 'completed' 'retry backoff tuning → D-03
+  - supporting detail under the lifted item'
+expect_bad "sub-bulleted lifted item without its tag" "$LP"
+lifted 'completed' 'retry backoff tuning · defer: cost → D-77
+  - supporting detail under the lifted item'
+expect_bad "sub-bulleted lift to a register row that does not exist" "$LP"
+
 lifted 'completed' 'retry backoff tuning · defer: cost → D-77'
 expect_bad "lift to a register row that does not exist" "$LP"
 
@@ -339,18 +349,6 @@ done_plan '✅ STEP-01 · completed' '✅ ACCEPTANCE-01 · satisfied' '🔴 GATE
 expect_bad "completed plan with an open gate" "$LP"
 done_plan '✅ STEP-01 · completed' '✅ ACCEPTANCE-01 · satisfied' '✅ ~~GATE-01~~ · settled'
 expect_ok  "completed plan with a settled gate" "$LP"
-
-cp "$T/track-plan.md" "$TMP/track-plan.md"; sed -i '' 's/| — | ACCEPTANCE-01 |/| — | ACCEPTANCE-99 |/' "$TMP/track-plan.md"
-expect_bad "block references unmapped acceptance" "$TMP/track-plan.md"
-
-# --- program track rows: acceptance ownership resolves into the track plan ---------
-mkdir -p "$TMP/plan/pg/tracks/TRACK-01"; cp "$T/track-plan.md" "$TMP/plan/pg/tracks/TRACK-01/track-plan.md"
-cp "$T/program-plan.md" "$TMP/plan/pg/program-plan.md"; sed -i '' 's|not created|@plan/pg/tracks/TRACK-01/track-plan.md|' "$TMP/plan/pg/program-plan.md"
-expect_ok  "program track row acceptance owned by its track plan" "$TMP/plan/pg/program-plan.md"
-sed -i '' 's/| ACCEPTANCE-01 |$/| ACCEPTANCE-07 |/' "$TMP/plan/pg/program-plan.md"
-expect_bad "program track row assigns acceptance its track plan does not own" "$TMP/plan/pg/program-plan.md"
-sed -i '' 's|TRACK-01/track-plan.md|TRACK-09/track-plan.md|' "$TMP/plan/pg/program-plan.md"
-expect_bad "program track row references a missing track plan" "$TMP/plan/pg/program-plan.md"
 
 # --- deferred register --------------------------------------------------------
 reg() { # parked id cell, disposition -> a register carrying one parked and one closed row
@@ -473,8 +471,6 @@ sed -i '' -e '/^- Next boundary/d' -e '/GATE-02/d' -e 's/🟡 STEP-02 · in prog
 expect_line "position omits empty fields" "retry-docs · in progress · steps 3/4 done · acceptance 1/2" "$PP"
 sed -i '' 's/- Status: in progress/- Status: nowhere/' "$PP"
 if $V --position "$PP" >/dev/null 2>&1; then fail=$((fail+1)); echo "FAIL: position of an invalid plan must be refused"; else pass=$((pass+1)); fi
-cp "$T/program-plan.md" "$TMP/plan/retry-docs/program-plan.md"; rm "$PP"
-expect_line "program position line" "retry-docs · pending planning · tracks 0/1 done · next TRACK-01" "$TMP/plan/retry-docs/program-plan.md"
 
 # ----------------------------------------------------------------------------
 echo "validator tests: $pass passed, $fail failed"

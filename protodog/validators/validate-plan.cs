@@ -82,7 +82,7 @@ foreach (var arg in args)
 	}
 	else
 	{
-		ValidateFile(path, null);
+		ValidateFile(path);
 	}
 }
 
@@ -106,7 +106,7 @@ if (position)
 			: [path];
 		foreach (var file in files)
 		{
-			if (Path.GetFileName(file) is "task-plan.md" or "program-plan.md" or "track-plan.md")
+			if (Path.GetFileName(file) is "task-plan.md")
 			{
 				Console.WriteLine(Position(file));
 			}
@@ -129,19 +129,11 @@ string Position(string file)
 	var header = ParseHeader(lines);
 	var sections = Sections(lines, mask);
 	var directory = Path.GetDirectoryName(Path.GetFullPath(file))!;
-	var kind = Path.GetFileName(file);
-	var (workTitle, noun, label) = kind switch
-	{
-		"program-plan.md" => ("Tracks", "tracks", Path.GetFileName(directory)),
-		"track-plan.md" => ("Blocks", "blocks", $"{Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(directory))!)}/{First(header, "Track") ?? Path.GetFileName(directory)}"),
-		_ => ("Steps", "steps", Path.GetFileName(directory)),
-	};
-
-	var parts = new List<string> { label, First(header, "Status") ?? "?" };
-	var work = Rows(lines, sections, mask, workTitle);
+	var parts = new List<string> { Path.GetFileName(directory), First(header, "Status") ?? "?" };
+	var work = Rows(lines, sections, mask, "Steps");
 	var active = work.Where(w => w.Status == "in progress").Select(w => w.Id).ToList();
 	var blocked = work.Where(w => w.Status == "blocked").Select(w => w.Id).ToList();
-	parts.Add($"{noun} {work.Count(w => terminalWork.Contains(w.Status))}/{work.Count} done");
+	parts.Add($"steps {work.Count(w => terminalWork.Contains(w.Status))}/{work.Count} done");
 	if (active.Count > 0)
 	{
 		parts.Add($"active {string.Join(" ", active)}");
@@ -158,13 +150,13 @@ string Position(string file)
 		parts.Add($"gates open {string.Join(" ", gates)}");
 	}
 
-	var acceptance = Rows(lines, sections, mask, kind == "program-plan.md" ? "Program acceptance" : "Acceptance");
+	var acceptance = Rows(lines, sections, mask, "Acceptance");
 	if (acceptance.Count > 0)
 	{
 		parts.Add($"acceptance {acceptance.Count(a => settledAcceptance.Contains(a.Status))}/{acceptance.Count}");
 	}
 
-	var next = First(header, kind == "program-plan.md" ? "Next" : "Next boundary");
+	var next = First(header, "Next boundary");
 	if (!string.IsNullOrWhiteSpace(next))
 	{
 		parts.Add($"next {next}");
@@ -581,7 +573,7 @@ void CheckCompletedRows(string file, string[] lines, List<Section> sections, boo
 
 const string DeferTagPattern = @"\bdefer: (out-of-scope|needs-decision|cost|blocked-by)\b|\baccepted gap\b";
 
-void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool[] mask, string? status, string sectionTitle, string arrowPattern, string expectation, string? registerPath, string? ledgerPath)
+void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool[] mask, string? status, string sectionTitle, string arrowPattern, string expectation, string? registerPath)
 {
 	if (status is not ("completed" or "superseded" or "cancelled"))
 	{
@@ -602,7 +594,7 @@ void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool
 		}
 
 		// An item may wrap: its continuation is every following non-blank line up to the next
-		// top-level bullet. The arrow closes either the lead line (sub-bulleted ledger items) or
+		// top-level bullet. The arrow closes either the lead line (sub-bulleted items) or
 		// the item as a whole (wrapped text).
 		var end = i + 1;
 		while (end < section.End && !mask[end] && lines[end].Trim().Length > 0 && !lines[end].StartsWith("- "))
@@ -613,11 +605,15 @@ void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool
 		var joined = string.Join(" ", lines[i..end].Select(l => l.Trim()));
 		var item = lines[i][2..];
 		var label = item.Length > 60 ? item[..60] + "…" : item;
+		// A lift arrow is read where the arrow was accepted: the lead line when it closes there,
+		// otherwise the whole wrapped item — so a sub-bulleted item cannot skip the lift checks.
+		var liftPattern = @"→ (D-\d{2,})$";
+		var lift = Regex.Match(lines[i], liftPattern) is { Success: true } lead ? lead : Regex.Match(joined, liftPattern);
 		if (!Regex.IsMatch(lines[i], arrowPattern) && !Regex.IsMatch(joined, arrowPattern))
 		{
 			Bad(file, $"terminal plan: \"{label}\" in \"## {sectionTitle}\" must close with {expectation} at the end of its lead line or of the whole wrapped item");
 		}
-		else if (Regex.Match(joined, @"→ ((D|ISSUE)-\d{2,})$") is { Success: true } lift)
+		else if (lift.Success)
 		{
 			// A lifted item is a classified deferral, not a residual: it names the fix-now
 			// condition it failed on, or it is an accepted gap.
@@ -628,16 +624,13 @@ void CheckTerminalLift(string file, string[] lines, List<Section> sections, bool
 
 			// The arrow is a claim that the obligation lives elsewhere; the destination row must exist.
 			var id = lift.Groups[1].Value;
-			var (path, kind, rowPattern) = id.StartsWith("D-")
-				? (registerPath, "plan/deferred.md", $@"\b{id} · (parked|closed|dropped)\b")
-				: (ledgerPath, "the program issue ledger", $@"^- {id} —");
-			if (path is null || !File.Exists(path))
+			if (registerPath is null || !File.Exists(registerPath))
 			{
-				Bad(file, $"terminal plan: \"{label}\" lifts to {id} but {kind} was not found at {path ?? "(no path)"}");
+				Bad(file, $"terminal plan: \"{label}\" lifts to {id} but plan/deferred.md was not found at {registerPath ?? "(no path)"}");
 			}
-			else if (!Regex.IsMatch(File.ReadAllText(path), rowPattern, RegexOptions.Multiline))
+			else if (!Regex.IsMatch(File.ReadAllText(registerPath), $@"\b{id} · (parked|closed|dropped)\b", RegexOptions.Multiline))
 			{
-				Bad(file, $"terminal plan: \"{label}\" lifts to {id} but no such row exists in {kind}");
+				Bad(file, $"terminal plan: \"{label}\" lifts to {id} but no such row exists in plan/deferred.md");
 			}
 		}
 
@@ -749,7 +742,7 @@ void ValidateTaskPlan(string file)
 	var planDirectory = Path.GetDirectoryName(Path.GetFullPath(file))!;
 	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Deferred issues and accepted gaps",
 		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"",
-		Path.Combine(planDirectory, "..", "deferred.md"), null);
+		Path.Combine(planDirectory, "..", "deferred.md"));
 	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Acceptance", settledAcceptance);
 	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Gates", ["settled"]);
 	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Steps", terminalWork);
@@ -774,252 +767,6 @@ void ValidateTaskPlan(string file)
 		{
 			Bad(file, $"Next boundary references unknown {step}");
 		}
-	}
-}
-
-void ValidateProgramPlan(string file, string? planDir)
-{
-	var lines = File.ReadAllLines(file);
-	var mask = FenceMask(lines);
-	var header = ParseHeader(lines);
-	var sections = Sections(lines, mask);
-	CheckHeaderCommon(file, header, "Program");
-	var cadence = First(header, "Cadence");
-	if (cadence is null || !cadences.Contains(cadence))
-	{
-		Bad(file, $"Cadence \"{cadence ?? ""}\" not in enum ({string.Join(" | ", cadences)})");
-	}
-
-	CheckEmptySections(file, lines, mask);
-	CheckContents(file, lines, sections, mask);
-	CheckGates(file, lines, sections, mask);
-	var programDirectory = Path.GetDirectoryName(Path.GetFullPath(file))!;
-	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Program issue ledger",
-		@"→ (D-\d{2,}|closed: .+)$", "\"→ D-NN\" (lifted to plan/deferred.md) or \"→ closed: <reason>\"",
-		Path.Combine(programDirectory, "..", "deferred.md"), null);
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Program acceptance", settledAcceptance);
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Gates", ["settled"]);
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Tracks", terminalWork);
-	var tracksSection = sections.FirstOrDefault(s => s.Title == "Tracks");
-	if (tracksSection is null)
-	{
-		Bad(file, "missing \"## Tracks\" section");
-		return;
-	}
-
-	var table = CheckTable(file, lines, tracksSection, ["Track", "Outcome", "Track plan", "Dependencies", "Acceptance"], "Tracks", mask);
-	var ids = new HashSet<string>();
-	if (table is not null)
-	{
-		foreach (var row in table.Rows)
-		{
-			if (row.Count < 5)
-			{
-				Bad(file, $"tracks row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 5");
-				continue;
-			}
-
-			var cell = CheckWorkCell(file, row[0], @"^TRACK-\d{2,}$", workMarkers, null);
-			var label = cell?.Id ?? row[0];
-			if (cell is not null && !ids.Add(cell.Id))
-			{
-				Bad(file, $"duplicate track \"{cell.Id}\"");
-			}
-
-			if (row[2] != "not created" && !row[2].StartsWith('@'))
-			{
-				Bad(file, $"\"{label}\" Track plan cell must be \"not created\" or an @reference");
-			}
-
-			if (row[2].StartsWith("@plan/"))
-			{
-				var trackPlan = Path.GetFullPath(Path.Combine(programDirectory, "..", "..", row[2][1..]));
-				if (!File.Exists(trackPlan))
-				{
-					Bad(file, $"\"{label}\" track plan {row[2]} does not exist");
-				}
-				else
-				{
-					// Acceptance ids are owned by the track plan's own table; the row's assignment must resolve there.
-					var owned = Regex.Matches(File.ReadAllText(trackPlan), @"^\| (?:⬜|🟡|✅|🔴|⬛) (ACCEPTANCE-\d{2,}) ·", RegexOptions.Multiline)
-						.Select(m => m.Groups[1].Value)
-						.ToHashSet();
-					foreach (var reference in Refs(row[4], @"ACCEPTANCE-\d{2,}"))
-					{
-						if (!owned.Contains(reference))
-						{
-							Bad(file, $"\"{label}\" assigns {reference} but {row[2]} does not own it");
-						}
-					}
-				}
-			}
-		}
-
-		foreach (var row in table.Rows)
-		{
-			if (row.Count < 5)
-			{
-				continue;
-			}
-
-			foreach (var dependency in Refs(row[3], @"TRACK-\d{2,}"))
-			{
-				if (!ids.Contains(dependency))
-				{
-					Bad(file, $"\"{ParseWorkCell(row[0])?.Id ?? row[0]}\" depends on unknown {dependency}");
-				}
-			}
-		}
-	}
-
-	CheckAcceptanceTable(file, lines, sections, "Program acceptance", mask);
-	foreach (var track in Refs(First(header, "Next"), @"TRACK-\d{2,}"))
-	{
-		if (!ids.Contains(track))
-		{
-			Bad(file, $"Next references unknown {track}");
-		}
-	}
-}
-
-void ValidateTrackPlan(string file)
-{
-	var lines = File.ReadAllLines(file);
-	var mask = FenceMask(lines);
-	var header = ParseHeader(lines);
-	var sections = Sections(lines, mask);
-	var programPlan = First(header, "Program plan");
-	if (programPlan is null || !programPlan.StartsWith('@'))
-	{
-		Bad(file, "missing @\"Program plan\" reference");
-	}
-
-	if (!Regex.IsMatch(First(header, "Track") ?? "", @"^TRACK-\d{2,}$"))
-	{
-		Bad(file, $"Track \"{First(header, "Track") ?? ""}\" malformed");
-	}
-
-	CheckHeaderCommon(file, header, null);
-	var cadenceOverride = First(header, "Cadence override");
-	if (cadenceOverride is not null && !cadences.Contains(cadenceOverride))
-	{
-		Bad(file, "Cadence override not in enum");
-	}
-
-	CheckEmptySections(file, lines, mask);
-	CheckContents(file, lines, sections, mask);
-	CheckGates(file, lines, sections, mask);
-	var trackDirectory = Path.GetDirectoryName(Path.GetFullPath(file))!;
-	CheckTerminalLift(file, lines, sections, mask, First(header, "Status"), "Deferred issues and accepted gaps",
-		@"→ (ISSUE-\d{2,}|D-\d{2,}|closed: .+)$", "\"→ ISSUE-NN\" (deduplicated into the ledger), \"→ D-NN\", or \"→ closed: <reason>\"",
-		Path.Combine(trackDirectory, "..", "..", "..", "deferred.md"), Path.Combine(trackDirectory, "..", "..", "program-plan.md"));
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Acceptance", settledAcceptance);
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Gates", ["settled"]);
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), "Blocks", terminalWork);
-	CheckCompletedRows(file, lines, sections, mask, First(header, "Status"), @"^BLOCK-\d{2,} — ", terminalWork, titleIsPattern: true);
-	var accIds = CheckAcceptanceTable(file, lines, sections, "Acceptance", mask) ?? [];
-	var blocksSection = sections.FirstOrDefault(s => s.Title == "Blocks");
-	if (blocksSection is null)
-	{
-		Bad(file, "missing \"## Blocks\" section");
-		return;
-	}
-
-	var blocksTable = CheckTable(file, lines, blocksSection, ["Block", "Checkable result", "Dependencies", "Acceptance"], "Blocks", mask);
-	var blockIds = new HashSet<string>();
-	if (blocksTable is not null)
-	{
-		foreach (var row in blocksTable.Rows)
-		{
-			if (row.Count < 4)
-			{
-				Bad(file, $"blocks row \"{string.Join(" | ", row)}\" has {row.Count} cells, expected 4");
-				continue;
-			}
-
-			var cell = CheckWorkCell(file, row[0], @"^BLOCK-\d{2,}$", workMarkers, null);
-			if (cell is not null && !blockIds.Add(cell.Id))
-			{
-				Bad(file, $"duplicate block \"{cell.Id}\"");
-			}
-
-			foreach (var reference in Refs(row[3], @"ACCEPTANCE-\d{2,}"))
-			{
-				if (!accIds.Contains(reference))
-				{
-					Bad(file, $"\"{cell?.Id ?? row[0]}\" references unmapped {reference}");
-				}
-			}
-		}
-
-		foreach (var row in blocksTable.Rows)
-		{
-			if (row.Count < 4)
-			{
-				continue;
-			}
-
-			foreach (var dependency in Refs(row[2], @"BLOCK-\d{2,}"))
-			{
-				if (!blockIds.Contains(dependency))
-				{
-					Bad(file, $"\"{ParseWorkCell(row[0])?.Id ?? row[0]}\" depends on unknown {dependency}");
-				}
-			}
-		}
-	}
-
-	var seenSteps = new HashSet<string>();
-	foreach (var section in sections.Where(s => Regex.IsMatch(s.Title, @"^BLOCK-\d{2,} — ")))
-	{
-		var blockId = section.Title.Split(" — ")[0];
-		if (!blockIds.Contains(blockId))
-		{
-			Bad(file, $"detail section \"{section.Title}\" has no Blocks-table row");
-		}
-
-		var stepTable = CheckTable(file, lines, section, ["Step", "Checkable result", "Affected surfaces", "Acceptance", "Verification"], section.Title, mask);
-		if (stepTable is not null)
-		{
-			CheckStepRows(file, stepTable, @"^STEP-\d{2,}$", accIds, seenSteps);
-		}
-	}
-
-	foreach (var step in Refs(First(header, "Next boundary"), @"STEP-\d{2,}"))
-	{
-		if (!seenSteps.Contains(step))
-		{
-			Bad(file, $"Next boundary references unknown {step}");
-		}
-	}
-}
-
-void ValidateDispatch(string file)
-{
-	var lines = File.ReadAllLines(file);
-	if (lines.Length == 0 || !Regex.IsMatch(lines[0], @"^# DISPATCH-\d{2,} — .+"))
-	{
-		Bad(file, "H1 must be \"# DISPATCH-NN — <checkable result>\"");
-	}
-
-	var header = ParseHeader(lines);
-	string[] required =
-	[
-		"Program plan", "Track plan", "Assigned scope", "Checkable result", "Write boundaries",
-		"Required verification", "Repository access", "Authority", "Stopping conditions", "Return path",
-	];
-	foreach (var key in required)
-	{
-		if (First(header, key) is null)
-		{
-			Bad(file, $"missing dispatch key \"{key}\"");
-		}
-	}
-
-	var access = First(header, "Repository access") ?? "";
-	if (access.Length > 0 && access != "read only" && !access.StartsWith("isolated writer — "))
-	{
-		Bad(file, "Repository access must be \"read only\" or \"isolated writer — <worktree>, <branch>, <baseline>\"");
 	}
 }
 
@@ -1060,7 +807,7 @@ void ValidateSpec(string file)
 	}
 }
 
-void ValidateFile(string file, string? planDir)
+void ValidateFile(string file)
 {
 	var baseName = Path.GetFileName(file);
 	var separator = Path.DirectorySeparatorChar;
@@ -1069,21 +816,6 @@ void ValidateFile(string file, string? planDir)
 		case "task-plan.md":
 		{
 			ValidateTaskPlan(file);
-			break;
-		}
-		case "program-plan.md":
-		{
-			ValidateProgramPlan(file, planDir);
-			break;
-		}
-		case "track-plan.md":
-		{
-			ValidateTrackPlan(file);
-			break;
-		}
-		case var name when Regex.IsMatch(name, @"^DISPATCH-\d+.*\.md$") || name == "dispatch.md":
-		{
-			ValidateDispatch(file);
 			break;
 		}
 		case var name when name == "deferred.md" || name == "deferred-register.md":
@@ -1098,7 +830,7 @@ void ValidateFile(string file, string? planDir)
 		}
 		default:
 		{
-			Bad(file, "unrecognized artifact type (expected task-plan.md, program-plan.md, track-plan.md, DISPATCH-NN*.md, deferred.md, or a spec)");
+			Bad(file, "unrecognized artifact type (expected task-plan.md, deferred.md, or a spec)");
 			break;
 		}
 	}
@@ -1121,9 +853,9 @@ void ValidateDirectory(string directory)
 			continue;
 		}
 
-		if (baseName is "task-plan.md" or "program-plan.md" or "track-plan.md" or "deferred.md" || Regex.IsMatch(baseName, @"^DISPATCH-\d+.*\.md$"))
+		if (baseName is "task-plan.md" or "deferred.md")
 		{
-			ValidateFile(file, directory);
+			ValidateFile(file);
 			any = true;
 		}
 	}

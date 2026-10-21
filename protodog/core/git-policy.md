@@ -17,7 +17,7 @@ Repository instructions remain authoritative for exact commands and permitted ac
 narrows Protocol behavior; capability (an available command, a host permission) never establishes
 authority.
 
-**Agent-owned, inside the managed worktree** (the engineer-supplied Task/Program worktree or a
+**Agent-owned, inside the managed worktree** (the engineer-supplied Task worktree or a
 provisioned isolated writer worktree): status, diff, and history inspection; working-tree edits;
 staging; checkpoint commits; internal branches and internal merges; conflict detection. This
 delegation is part of profile invocation and is cadence-independent — cadence governs when the
@@ -36,10 +36,11 @@ fit regression; a hook that never fires is a candidate for deletion.
 
 ## Committed invariants
 
-1. A Task or Program profile branch reconciles with `main` by rebasing onto it, never by merging
-   `main` into it. Ordinary branches and merges remain valid inside the Task or Program.
-2. One Task or one whole Program is one commit unit and appears on `main` as one commit. Program
-   tracks never reach `main` independently.
+1. A Task branch reconciles with `main` by rebasing onto it, never by merging `main` into it.
+   Ordinary branches and merges remain valid inside the Task.
+2. One Task, or a line of Tasks the engineer declares in a runbook, is one commit unit and
+   appears on `main` as one commit. A dependent unit in a line binds its spec against the
+   branch rather than `main`, and its plan records that.
 3. The final commit to main is engineer-triggered. A guarded script performs the authorized
    mechanics after that trigger; an agent never infers it from Protocol completion.
 4. Concurrent repository writers never share a worktree. Each writer gets its own isolated
@@ -88,13 +89,6 @@ multiple writers, each gets an isolated worktree via a handoff identifying branc
 baseline, write surfaces, verification, and return path. Returned results reconcile into the Task
 branch one at a time; affected verification runs against each combined state.
 
-**Program.** The engineer-supplied Program worktree and branch are the coordination state and
-commit unit; the coordinating agent is its only writer and never transfers that role. Sequential
-track work changes it directly. Prefer concurrent read-only or non-interfering work over concurrent
-writers; when writers are needed, the execution topology and dispatch record assignment, baseline,
-worktree and branch identity, disjoint write surfaces, required child verification, and the
-reconciliation owner and order.
-
 **Serialized reconciliation** admits concurrent child results one at a time: freeze and verify the
 returned child state; select the next child by dependency and interference evidence; record source
 and target states; integrate with the authorized internal strategy (rebase, merge, and merge
@@ -140,10 +134,9 @@ assurance policy says the state change leaves them valid.
 Where a firm repository provides guarded Git scripts and tasks, they are the adapter: they own the
 engineer-owned operations, and this policy's delegated window must be reflected in repository
 authority, host permissions, guarded scripts, and their behavioral tests as one coordinated change
-— worktrees provisioned from a Program baseline, recovery states preserved, serialized child
+— worktrees provisioned from the Task baseline, recovery states preserved, serialized child
 integration, the engineer-owned one-commit path to `main`. Do not work around a repository that
-has not yet enabled delegation: no track committed to `main` separately, no children from stale
-baselines, no unguarded
+has not yet enabled delegation: no children from stale baselines, no unguarded
 commands where guarded ones are mandated. Existing exposed tasks are a strict compatibility
 boundary — a new Protocol capability uses a new guarded command, or an existing one changes only
 through a reviewed, engineer-approved workflow change. Where a read-only repository-state

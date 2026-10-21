@@ -1,5 +1,40 @@
 # Changelog
 
+## 4.0.0 — 2026-10-22
+
+- Program is retired. Task is the only execution profile: the Program protocol, its entry skill,
+  the program, track, and dispatch templates, their validation and position lines, the issue
+  ledger lift path, the profile-selection ceremony and its recommendation snippet are gone, and
+  both hosts expose the same package. A sequence of Tasks under a runbook is the multi-unit
+  shape; the Git policy admits a declared line of Tasks as one commit unit. Design rationale
+  decisions 27 to 29 carry the reasons.
+- The deferred review proposes clusters beside its five transitions: for a row being picked up,
+  the parked rows sharing its code surface or trigger and its verification, one reason line per
+  member and per excluded row, ratified as one request and adopted by the next Task as steps.
+  The review lifts no rows of its own, and runs in any mode at the landing moment, after the
+  rebase onto main and before the commit to main; Task completion names that moment instead of
+  offering a review against a degraded closing context.
+- `scripts/worktree-survey.cs` reports worktree retirement candidates: merged (ancestor,
+  patch-equivalent, or squash-landed) and clean proven; dirty paths, detached heads, unpublished
+  branches, ignored files, and matching plan directories listed as judgment; shell-quoted
+  removal commands printed and never run.
+- Specs and inputs retire with their plans. The sweep checker classifies every file under
+  `specs/` and `inputs/` as live, retiring, retirable, backlog (never consumed by any plan), or
+  blocked, by citation of the file or its folder and by history; a `docs/` citation into either
+  folder is a defect. With the register's parked rows, the survey is the backlog view; deletion
+  stays engineer-confirmed in one sweep commit.
+- `p-protocol-runbook` is a protocol utility that cuts an ideation handoff, register cluster, or
+  audit reconciliation into a dated sequence of Tasks with dispatch prompts for both hosts, the
+  landing policy chosen by the engineer, and objective-level completion named; a cut that is
+  re-issued, never a ledger.
+- The hook denies a new register id that already exists on `origin/main` as of the last fetch,
+  including when a branch creates the register; the validator's terminal-lift check no longer
+  skips a sub-bulleted lifted item; the validator test harness fails on a missing fixture
+  instead of crediting a rejection.
+- The README's release ritual names the Verify suites, an optional delta audit, the Codex
+  rebuild, and both hosts' update commands. Two Codex audits ran on this line and their
+  confirmed findings are remediated.
+
 ## 3.11.0 — 2026-10-21
 
 - Deferred review adds opt-in `triage` and `verify <handoff-path>` modes in Claude Code and

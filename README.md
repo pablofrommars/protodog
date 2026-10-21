@@ -9,8 +9,8 @@ does not orchestrate models or generate code; it constrains how delegated work e
 progresses, and reaches `main`, so every session runs under the same contract instead of whatever
 the model woke up believing.
 
-The concepts, in one pass. The engineer selects one of two **profiles** — Task (bounded
-objective, one agent) or Program (multi-track, dispatched) — never the protocol itself. Context
+The concepts, in one pass. The engineer enters the **Task profile** — a bounded objective, one
+agent — never the protocol itself. Context
 moves through a provenance chain: `inputs/` (unvalidated material, including anything an external
 model produced), `specs/` (reconciled intent, premises verified against the repository, immutable
 once a plan binds it), `plan/` (live
@@ -28,9 +28,9 @@ rebase, history rewrites, `main`); validators reject malformed plans, marker/sta
 unmapped acceptance, edits to bound specs or audit reports, terminal plans still carrying live
 obligations or unsettled acceptance, and lifts whose destination row does not exist. Enforcement
 sits at the host's Write, Edit, and Bash tools: shell commands are checked after they run against
-a snapshot of `plan/` and `specs/`, and ids are held stable against HEAD once execution begins. Prose is reserved for judgment. Git is a split contract — the agent checkpoints
-freely inside its managed worktree, the engineer owns the commit to main, and one Task or whole
-Program reaches `main` as exactly one commit. Plans die on schedule: obligations close or lift to
+a snapshot of `plan/` and `specs/`, ids are held stable against HEAD once execution begins, and a new register id may not collide with one already landed on `origin/main`. Prose is reserved for judgment. Git is a split contract — the agent checkpoints
+freely inside its managed worktree, the engineer owns the commit to main, and one Task, or a
+declared line of Tasks, reaches `main` as exactly one commit. Plans die on schedule: obligations close or lift to
 a register, committed directories are swept, Git history is the archive.
 
 What that buys: no per-session variance in how delegation works; no silent agent overreach; no
@@ -56,14 +56,14 @@ this README never overrides it.
 
 - .NET SDK ≥ 10 (hooks, validators, and the audit launcher are file-based apps; no packages, no Node)
 - bash, git
-- Claude Code for Task/Program execution; local Codex CLI/desktop for Task execution
+- Claude Code or local Codex CLI/desktop for Task execution
 - An authenticated opposite-vendor CLI when an independent audit is selected: Codex for Claude
   execution, Claude Code for Codex execution
 
 The Codex adapter targets local tool execution (tested against CLI 0.163.0 hook payloads).
 The Claude audit backend uses the `--safe-mode` and restricted-tool CLI surface available in
-Claude Code 2.1.304. Older clients must be checked for those flags before use. Program and
-concurrent writer support remain Claude-only.
+Claude Code 2.1.304. Older clients must be checked for those flags before use. Concurrent writer
+support remains Claude-only.
 
 ## Install
 
@@ -82,22 +82,22 @@ and the enforcement hooks — no per-repo copies, no settings merges. Per-repo o
 that project. (`protodog/hooks/settings-fragment.json` remains only as the wiring fallback for a
 repository that vendors `protodog/` directly.)
 
-### Codex Task
+### Codex
 
 Build a self-contained local marketplace from the same core, validators, and skills. The output
 must be a new directory; use a new versioned destination when updating. Generated packages are
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-3.11.0
-codex plugin marketplace add ./dist/codex-3.11.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.0.0
+codex plugin marketplace add ./dist/codex-4.0.0
 codex plugin add protodog@kennel-codex
 ```
 
 Restart Codex and open `/hooks` to review and trust Protodog's hook definitions. Installing the
 plugin alone does not activate untrusted hooks. Use `/skills` to select the installed Task
 skill, or invoke `$protodog:task` with intent or `plan: @plan/<plan-id>/task-plan.md`. The package exposes
-Task, plan-sweep, deferred-review, and working-canvas; it does not expose Program or ideation-audit.
+Task, plan-sweep, deferred-review, and working-canvas; it does not expose ideation-audit.
 Keep the generated marketplace available while it is registered. To update, remove the old
 `kennel-codex` marketplace registration, register the new build, reinstall the plugin, restart,
 and review changed hooks. The source Claude package and its install flow are unchanged.
@@ -145,20 +145,26 @@ repositories that use it, nowhere else.
 
 ## Release ritual
 
-Change → full sweep green → bump `protodog/.claude-plugin/plugin.json` version → `CHANGELOG.md`
-entry → commit. Consumers pull with `/plugin marketplace update kennel` and
-`/plugin update protodog`. Protocol changes to this repository ship as engineer-reviewed release
-commits; a heavier change may run under Protodog itself (plans under `plan/`, specs under
-`specs/`).
+Change → the Verify suites green → optional release audit over the delta since the last audited
+state, through the guarded launcher, challenged and remediated on the branch → bump
+`protodog/.claude-plugin/plugin.json` version → `CHANGELOG.md` entry → one commit to `main` →
+rebuild the Codex package to `dist/codex-<version>`. Both hosts update from their own CLI, and a
+session asked to release closes by naming the commands: Claude Code `/plugin marketplace update
+kennel` then `/plugin update protodog`; Codex `codex plugin marketplace add ./dist/codex-<version>`
+then `codex plugin add protodog@kennel-codex`, after removing the old `kennel-codex` registration,
+then restart and review changed hooks. Protocol changes to this repository ship as
+engineer-reviewed release commits; a heavier change may run under Protodog itself (plans under
+`plan/`, specs under `specs/`).
 
 ## Verify
 
 ```bash
-./protodog/validators/test-validators.sh   # plan/spec/dispatch/register validation
+./protodog/validators/test-validators.sh   # plan/spec/register validation
 ./protodog/validators/test-registry.sh     # snippet registries
 ./protodog/hooks/test-hooks.sh             # enforcement fences (incl. plugin-mode resolution)
 ./protodog/scripts/test-audit-launch.sh    # launcher gates (dry-run, no Codex contact)
 ./protodog/scripts/test-sweep-check.sh     # retirement sweep-safety checker
+./protodog/scripts/test-worktree-survey.sh # worktree retirement survey (report-only)
 bash ./protodog/scripts/test-codex.sh      # Codex payloads, Task lifecycle, fake Claude, relocated package
 ```
 
@@ -171,7 +177,7 @@ use BSD sed).
 
 Ideation is optional and happens outside the Protocol — in any host, by expanding a registry mini
 protocol: `p-protocol-ideate-feature` (repository-grounded work shaping, ending in blast-radius
-and profile orientation), `p-protocol-ideate-concept` (pure conceptual — approaches, abstractions,
+and Task sizing), `p-protocol-ideate-concept` (pure conceptual — approaches, abstractions,
 no repository required), or `p-protocol-ideate-domain` (domain modeling).
 Inside a Claude ideation session, `/protodog:ideation-audit` dispatches fresh-context adversarial
 subagent audits — grounded in the repository and/or purely conceptual — of the session's settled
@@ -180,20 +186,21 @@ For diagram-suited subjects — structure mappings, topologies, lifecycles, data
 `/protodog:working-canvas` keeps a working canvas from the baseline turn: one master model in
 concern lanes plus one-question zooms, alternatives sketched in context before the prose
 comparison, recolored at settlement and audit reconciliation, promotable at close. The same
-doctrine follows work into the profiles — a gate in a diagram-suited domain presents its options
+doctrine follows work into the profile — a gate in a diagram-suited domain presents its options
 drawn in context, and execution recolors built work — with the canvas always a working view,
 never state.
 A heavy session can close with `p-protocol-retro` — a retrospective surfacing churn and dragged
 uncertainties while they are fresh, shaping remediations as handoffs.
-Ideation results enter the Protocol only as `inputs/` documents with cited provenance.
+Ideation results enter the Protocol only as `inputs/` documents with cited provenance. When the
+result is more than one Task, `p-protocol-runbook` cuts it into a dated sequence — prerequisites
+on `main`, exclusive write boundaries, verification, tier and assurance per unit, the dispatch
+prompt in both host forms, the landing policy you choose, and how the whole objective is proven
+once every unit has landed; the runbook is re-issued as units land, never maintained as a ledger.
 
-### One session, one profile
+### One session, one Task
 
-The profile choice is yours. Entering cold — without ideation's profile orientation — expand
-`p-protocol-recommend-profile` for a grounded, decision-ready Task-vs-Program recommendation
-(advisory only; no entry skill solicits it).
-Start bounded work with `/protodog:task`, long-lived multi-track work with `/protodog:program`;
-supply intent or exact `@inputs/` / `@specs/` references. Artifacts live under `inputs/`,
+Start with `/protodog:task` in Claude Code or `$protodog:task` in Codex; supply intent or exact
+`@inputs/` / `@specs/` references. Artifacts live under `inputs/`,
 `specs/`, and `plan/<plan-id>/` of the repository you're in, per `protodog/core/foundation.md`.
 Start the session on the model you want planning to run on — planning through execution readiness
 belongs on the top tier, where binding immutability amplifies judgment error — and the readiness
@@ -214,8 +221,8 @@ flowchart TD
         mini --> inputsDoc[(inputs/ with cited provenance)]
     end
 
-    subgraph profile[Profile session — Task or Program]
-        invoke(["/protodog:task or /protodog:program"]):::engineer --> ground[Grounding: repository state,<br>policy, supplied inputs]
+    subgraph profile[Task session]
+        invoke(["/protodog:task"]):::engineer --> ground[Grounding: repository state,<br>policy, supplied inputs]
         ground --> planning[Plan to execution readiness —<br>opens with the assurance interrogation]
         planning --> bind[Premises verified, exact specs bound<br>at readiness — immutable from that point]
         bind --> readyGate([Readiness boundary: go here, or resume<br>on the recommended model in a fresh session]):::engineer
@@ -225,7 +232,7 @@ flowchart TD
         execute -.->|if selected at planning| auditCycle[[Audit cycle]]
         auditCycle -.-> execute
         execute --> lift[Deferred items closed or lifted<br>to plan/deferred.md]
-        lift --> completed([Profile completed — remaining<br>engineer actions named]):::done
+        lift --> completed([Task completed — remaining<br>engineer actions named]):::done
     end
 
     subgraph closure[Engineer-owned closure]
@@ -234,7 +241,6 @@ flowchart TD
     end
 
     inputsDoc --> invoke
-    orient[p-protocol-recommend-profile:<br>advisory Task-vs-Program orientation] -.-> invoke
     completed --> commit
 
     classDef engineer fill:#facc151a,stroke:#facc1533,color:#eab308
@@ -257,9 +263,8 @@ verification, or who commits; checkpoints happen at coherent verified units in e
   boundary reports, the plan is the engineer's only window — every status transition writes the
   owning plan and verifies the persisted state before dependent work proceeds, and each
   checkpoint commit carries the position line so the log reads as progress.
-- Cadence is profile-wide in a Task; a Program has a default with track and block overrides — the
-  most specific active setting wins and expires with its scope. The engineer may intervene at any
-  time, and in neither cadence are grounding, planning, or plan revision approval stops.
+- Cadence is Task-wide. The engineer may intervene at any time, and in neither cadence are
+  grounding, planning, or plan revision approval stops.
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
@@ -287,8 +292,8 @@ sequenceDiagram
 
 ### Audit cycle
 
-Audits and paid evaluation runs are scheduled at planning time: Task planning — and each track's
-planning in a Program — opens with the assurance interrogation, so scheduling leaves planning as
+Audits and paid evaluation runs are scheduled at planning time: Task planning opens with the
+assurance interrogation, so scheduling leaves planning as
 settled state (a selected instrument with its placement or bounds, a gate for ruling, or an
 explicit not-scheduled decision) instead of lingering uncertainty. When execution reaches the
 declared placement, the agent
@@ -312,7 +317,7 @@ flush after capture.
 ```mermaid
 %%{init: {'theme':'dark'}}%%
 sequenceDiagram
-    participant A as Profile agent
+    participant A as Task agent
     participant E as Engineer
     participant L as Guarded launcher
     participant X as External auditor<br>(Codex, pinned model)
@@ -373,14 +378,24 @@ stateDiagram-v2
 
 Two engineer-invoked skills keep `plan/` honest. `/protodog:plan-sweep` is the retirement sweep:
 a deterministic checker proves terminal + lifted + committed for every entry
-(`dotnet protodog/scripts/sweep-check.cs`, usable standalone as the plan-tree survey), the skill
+(`dotnet protodog/scripts/sweep-check.cs`, usable standalone as the plan-tree survey), classifies
+every file under `specs/` and `inputs/` as live, retiring with a sweepable plan, retirable,
+backlog (never consumed by any plan), or blocked, by citation and history, the skill
 adds the one judgment step — citation liveness — and deletes only what you confirm, as one sweep
-commit. `/protodog:deferred-review` hunts register drift: it verifies every parked row against
+commit. The survey is the backlog view: live plans, parked rows, and backlog inputs. `dotnet protodog/scripts/worktree-survey.cs [<repo-root>] [--base <ref>]` surveys the
+repository's worktrees the same way — merged and clean proven, dirty paths, detached heads,
+unpublished branches, ignored files and matching plan directories listed as judgment — and prints
+the removal commands for candidates without running them; cleanup stays yours.
+`/protodog:deferred-review` hunts register drift: it verifies every parked row against
 current repository state (closed by later work? trigger fired? claim still reproduces?) and
-applies only the transitions you ratify. Profile completion offers this review against
-just-finished work but never runs it unprompted — take the offer in a fresh session when the
-closing context is degraded. The survey is a command, not a document — there is no index artifact
-to maintain.
+applies only the transitions you ratify. Run it at the landing moment — after your rebase onto
+`main` and before the commit to main, in a fresh session — where the register is current; Task
+completion names that moment and never runs the review itself. Beside its transitions the review
+proposes **clusters**: for a row being picked up, the parked rows that share its code surface or
+its trigger and its verification, one reason line per member and per excluded row, ratified as
+one request you strike members from, and adopted by the next Task as steps. The review lifts no
+rows of its own; a defect it finds without one goes to the Task that adopts the cluster. The
+survey is a command, not a document — there is no index artifact to maintain.
 
 For a large register, use a cheaper model for a bounded first pass, then select a stronger model
 in a fresh session for focused verification. Both hosts use the same skill and handoff format:

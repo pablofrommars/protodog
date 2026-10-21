@@ -8,7 +8,7 @@ description: Maintain the working canvas — a session-scoped visual model of di
 You are maintaining the working canvas: the session's visual model of the problem under work,
 seeded at baseline and kept current forward — not a companion drawn at close. This is
 shared host mechanics for the canvas doctrine stated in the ideation mini protocols
-(`p-protocol-ideate-*`) and the Task/Program profile prose; it is not a Protocol entry point and
+(`p-protocol-ideate-*`) and the Task profile prose; it is not a Protocol entry point and
 creates no Protodog state. The canvas is a working view under the Foundation's rule: state is
 mirrored *to* it, never *from* it — the canvas illustrates; the session ledger, the plan, or the
 conclusions document rules. Never let a diagram's existence argue against reopening a settled
@@ -56,10 +56,10 @@ base canvas changes:
 | Station | Base canvas | Hook |
 |---|---|---|
 | Ideation | The problem model | Seed at baseline; zoom per decision surface; settlement, correction, and `ideation-audit` reconciliation recolor (reopened = red) |
-| Planning | The plan's structure — tracks, steps, blocking order | The gate/dependency order rendered as a DAG, states colored open / leaning / ruled / deferred |
-| Execution (Task, Program) | The system as built so far | Gate-presentation contract per the profile prose: a gate's options drawn in the affected region plus one ring; the ruling recolors, and step completion recolors built/verified — structure changes are rare post-planning, so maintenance collapses to recoloring, which doubles as the engineer's progress view |
+| Planning | The plan's structure — steps, blocking order | The gate/dependency order rendered as a DAG, states colored open / leaning / ruled / deferred |
+| Execution | The system as built so far | Gate-presentation contract per the profile prose: a gate's options drawn in the affected region plus one ring; the ruling recolors, and step completion recolors built/verified — structure changes are rare post-planning, so maintenance collapses to recoloring, which doubles as the engineer's progress view |
 
-Program-scale work — many gates, long horizon — is where the rendered gate DAG pays most.
+Long-horizon work — many gates — is where the rendered gate DAG pays most.
 
 ## Continuity and close
 

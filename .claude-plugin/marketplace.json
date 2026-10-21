@@ -5,7 +5,7 @@
     {
       "name": "protodog",
       "source": "./protodog",
-      "description": "Protodog — agentic execution protocol: entry skills, enforcement hooks, validators, and audit launcher."
+      "description": "Protodog — agentic execution protocol: the Task entry skill, enforcement hooks, validators, and audit launcher."
     }
   ]
 }

@@ -13,14 +13,12 @@ the installed package; do not assume either variable exists in ordinary shell to
 
 ## Claude Code
 
-Task and Program are supported. Entry and resumption use `/protodog:task` and
-`/protodog:program`. Challenge routing uses `agents/challenge.md`. The external auditor is
+Entry and resumption use `/protodog:task`. Challenge routing uses `agents/challenge.md`. The external auditor is
 Codex: `dotnet <package-root>/scripts/audit-launch.cs <dispatch-path>`.
 
-## Codex — Task
+## Codex
 
-Only Task is supported in the Codex package. Entry and resumption use the installed `task`
-skill, selected explicitly from `/skills` or with `$protodog:task`; for example:
+Entry and resumption use the installed `task` skill, selected explicitly from `/skills` or with `$protodog:task`; for example:
 
 ```text
 $protodog:task plan: @plan/retry-fix/task-plan.md
@@ -40,7 +38,7 @@ $protodog:task plan: @plan/retry-fix/task-plan.md
    assignments are permitted when useful; explicitly request fresh context and give only the
    scoped brief when independence matters. Codex subagents inherit permissions and can share
    the working directory: read-only instructions are a behavioral restriction, not a sandbox.
-   Concurrent writers and Program dispatch are outside this adapter's supported scope.
+   Concurrent writers are outside this adapter's supported scope.
 4. Challenge and remediation execute on the pinned top configuration. If the coordinating
    session is below it, present the exact model/effort and `$protodog:task plan: @...` handoff and wait
    for a fresh coordinating session. Do not delegate writes into the shared worktree to a

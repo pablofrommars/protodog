@@ -4,8 +4,8 @@
 
 This is the common normative layer for Protodog, the agentic execution protocol. It defines
 the concepts, authority boundaries, lifecycle, human-in-the-loop interface, state semantics, and
-artifact contracts shared by the Task and Program execution profiles. A profile may add machinery
-but may not redefine this Foundation.
+artifact contracts of the Task execution profile, which may add machinery but may not redefine
+this Foundation.
 
 It supersedes `bundle/protocol-foundation.md`. The semantic essence is unchanged; what changed is
 the enforcement model: mechanics that the vendor-neutral predecessor specified in prose are now
@@ -19,11 +19,11 @@ Status: normative Foundation shared by Claude Code and Codex Task.
 
 | Layer | Artifacts | Role |
 |---|---|---|
-| Semantic core | this document, `task-protocol.md`, `program-protocol.md`, `verification-and-assurance.md`, `git-policy.md` | Meaning, authority, lifecycle — host-neutral prose |
+| Semantic core | this document, `task-protocol.md`, `verification-and-assurance.md`, `git-policy.md` | Meaning, authority, lifecycle — host-neutral prose |
 | Templates | `protodog/templates/` | Canonical artifact shapes; scaffolded at creation |
 | Enforcement | `protodog/hooks/`, `protodog/validators/` | Deterministic checks; authoritative for what they decide |
-| Entry | Task and Program skills | Implement the invocation contract |
-| Host mechanics | `host-runtime.md`, `protodog/agents/` | Supported host/profile combinations, invocation and model routing |
+| Entry | Task skill | Implements the invocation contract |
+| Host mechanics | `host-runtime.md`, `protodog/agents/` | Supported hosts, invocation and model routing |
 | Prompt registries | `prompt-utility.code-snippets`, `boxer.code-snippets` under `prompt-registry-style.md` | Host-portable prompts outside Protocol state |
 | Ideation mechanics | `ideation-audit` skill | Claude-native adversarial pressure for ideation sessions — outside Protocol state |
 | Canvas mechanics | `working-canvas` skill | Shared maintenance of the working canvas for diagram-suited sessions — a working view, outside Protocol state |
@@ -39,24 +39,19 @@ present at HEAD is denied once execution has begun. Anything outside those tools
 prohibition, binding as every prose rule is. Post-tool rejection does not undo a mutation.
 Codex hook installation requires trust, and the Task adapter requires it before execution.
 
-## Profiles and selection
+## Profile and entry
 
-The engineer selects Task or Program by invoking its skill from sufficient current-session or
-persisted context. The Protocol does not score the choice, select automatically, or promote a Task
-when Program-like conditions appear. A pre-entry recommendation may be requested — the registry
-protocol utility (`p-protocol-recommend-profile`) or feature ideation's profile orientation — and
-is advisory only: never solicited by an entry skill, never a selection; the engineer selects by
-invocation. Ideation happens outside the Protocol — through the external
-engine or a portable ideation mini protocol; inside a Claude ideation session, the
-`ideation-audit` skill may dispatch adversarial subagent audits of the session's settled
-conclusions, which remain session material. Ideation results enter the Protocol only as `inputs/`
-documents with cited provenance.
+The engineer enters the Task profile by invoking its skill from sufficient current-session or
+persisted context; the Protocol never enters on its own. Ideation happens outside the Protocol —
+through the external engine or a portable ideation mini protocol; inside a Claude ideation
+session, the `ideation-audit` skill may dispatch adversarial subagent audits of the session's
+settled conclusions, which remain session material. Ideation results enter the Protocol only as
+`inputs/` documents with cited provenance.
 
-If later evidence makes the selected profile unsuitable, the agent presents a decision-ready
+If later evidence makes the plan unsuitable as written, the agent presents a decision-ready
 recommendation. Only the engineer may choose a replacement. The original plan becomes `superseded`,
 links its exact successor, and transfers no scope, acceptance, authority, or spec binding
-implicitly. Task vocabulary is a conflict-free subset of Program vocabulary; Program-only concepts
-do not appear as empty Task fields.
+implicitly.
 
 ## Design principles
 
@@ -71,8 +66,7 @@ do not appear as empty Task fields.
    when separating them changes no semantics.
 6. **Ground claims.** Availability is not truth; capability is not authority; completion is not
    the commit to main.
-7. **Preserve profile proportionality.** Task must remain usable by one agent without Program
-   machinery.
+7. **Preserve proportionality.** A Task must remain usable by one agent.
 8. **Enforce over specify.** When an invariant is mechanically decidable, implement it as a hook or
    validator and delete the defensive prose. Prose is reserved for judgment.
 
@@ -110,11 +104,7 @@ path derives from it.
 | Curated spec context | `specs/` |
 | Execution state | `plan/<plan-id>/` |
 | Task plan | `plan/<plan-id>/task-plan.md` |
-| Program plan | `plan/<plan-id>/program-plan.md` |
-| Track plan | `plan/<plan-id>/tracks/TRACK-NN/track-plan.md` |
-| Program dispatch | `plan/<plan-id>/dispatches/DISPATCH-NN.md` |
-| Audit cycle (profile-wide) | `plan/<plan-id>/audits/` |
-| Audit cycle (track) | `plan/<plan-id>/tracks/TRACK-NN/audits/` |
+| Audit cycle | `plan/<plan-id>/audits/` |
 | Deferred register | `plan/deferred.md` |
 
 An audit cycle consists of exactly these files, numbered within their declared scope:
@@ -124,9 +114,12 @@ An audit cycle consists of exactly these files, numbered within their declared s
 
 `plan/` holds exactly two kinds of entry: plan-id directories and the deferred register
 (`plan/deferred.md`, shaped by its template and validated on write). Ideation products enter as
-`inputs/`; rationale that must outlive its plan moves to spec context or repository
-documentation. `plan/` is working execution state — never an archive, and never a decision record
-in disguise.
+`inputs/`; rationale that must outlive its plan moves to repository documentation, which is
+self-contained and cites neither inputs nor specs. `plan/` is working execution state — never an
+archive, and never a decision record in disguise. Specs and inputs retire with the last plan that
+cites them: a spec is reconciled intent for its plan, an input is consumed material, and Git
+history on `main` is the archive of both once they landed with that plan. An input no plan has
+ever consumed is backlog, not residue.
 
 A plan may not go terminal while it is the sole carrier of a live obligation. Before `completed`,
 `superseded`, or `cancelled` is recorded, every deferred issue and accepted gap — and any open
@@ -160,7 +153,7 @@ The register's `needs-decision` rows are decisions the engineer chose to postpon
 nobody asked. The tag travels: it is the register row's disposition
 when the item lifts, with `accepted gap` as the fifth value — one taxonomy from plan to register.
 A lifted item without its tag — unless it is an accepted gap — is rejected on a terminal plan, and
-its arrow must resolve to an existing register or ledger row (both enforced). Under `interactive` cadence the
+its arrow must resolve to an existing register row (enforced). Under `interactive` cadence the
 next report lists the triage so the engineer can flip either way; under `continuous`, fix-now
 steps proceed and deferrals are visible in the plan.
 
@@ -178,8 +171,10 @@ Harness task lists, session memory, transcripts, and the working canvas — the 
 rendered model a diagram-suited session may keep — are working views: state may be mirrored *to*
 them for visibility, never *from* them, and harness-generated identifiers never appear in canonical
 artifacts. Durable identifiers are readable and stable: `ACCEPTANCE-01`, `GATE-02`, `STEP-01`,
-`BLOCK-01`, `TRACK-01`, `DISPATCH-01`, `DECISION-01`. Never reuse or renumber one after execution
-begins; supersede and link instead.
+`DECISION-01`. Never reuse or renumber one after execution
+begins; supersede and link instead. A register id already present on `origin/main` at the last
+fetch is taken: a new row allocates past the landed register (enforced at the write, and only as
+fresh as that fetch).
 
 Artifact ownership is `agent generated / engineer maintained / mixed / unclear`; mixed artifacts
 assign ownership at section level. Preserve engineer-maintained content and reconcile intervening
@@ -188,7 +183,7 @@ lists for sparse optional state; omit absent optional sections (enforced).
 
 ### Plan row grammar and contents index
 
-Every plan row that carries state — step, block, track, gate, acceptance criterion — puts its
+Every plan row that carries state — step, gate, acceptance criterion — puts its
 status marker, identifier, and status label in one identifier cell, and no plan table has a
 separate status column (enforced):
 
@@ -239,7 +234,7 @@ not themselves enforced.
 ## Shared lifecycle and work status
 
 ```text
-optional external ideation → engineer invokes Task or Program
+optional external ideation → engineer invokes Task
   → ground intent, inputs, repository, policy, and current state
   → curate and bind spec context → plan to execution readiness
   → execute and verify planned work
@@ -301,7 +296,7 @@ An agent asks the engineer only for:
 
 | Interface | Why the engineer is needed | What waits |
 |---|---|---|
-| Profile invocation | The engineer owns profile selection. | Execution has not started. |
+| Profile invocation | The engineer owns entry. | Execution has not started. |
 | Decision gate | A material choice belongs to the engineer. | Only dependent work. |
 | Authorization gate | An understood action needs permission — including every audit launch (cost and data egress) and any external, paid, or hard-to-reverse effect. | The action and dependent work. |
 | Engineer-held evidence | Required evidence or access only the engineer has. | Only dependent work. |
@@ -321,15 +316,15 @@ scope. Batch up to five related, independently answerable requests, through the 
 question tool where one exists; continue independent authorized work while a gate is open.
 
 **Persistence and response.** Persist a blocking gate in its owning plan before requesting the
-engineer — plan-write ownership is arranged so this is always possible (see the Program topology
-rule). After the response, persist the exact decision, authority bound, evidence, or exception.
+engineer — plan-write ownership is arranged so this is always possible (see the topology rule
+below). After the response, persist the exact decision, authority bound, evidence, or exception.
 Silence is not approval; an ambiguous response does not close a materially ambiguous gate. `Go` or
 `next` releases only the declared boundary and changes nothing else. A material change to target,
 cost, reversibility, or consequences invalidates the corresponding part of a prior closure.
 
 ## Execution cadence and topology
 
-Both profiles start `interactive`: proceed to the declared boundary, report completed work,
+A Task starts `interactive`: proceed to the declared boundary, report completed work,
 material evidence, and the next unit, then wait. Every boundary report, gate request, and
 completion response opens with the **position line** — the output of the plan validator's
 `--position` mode on the owning plan, verbatim: plan, status, work done over total, active and
@@ -337,9 +332,8 @@ blocked rows, open gates, acceptance satisfied over total, next boundary. It is 
 validated artifact and never composed, so the engineer reads where the work stands before
 reading what happened. `Continuous` is an explicit override that proceeds
 through unambiguous planned work until a gate, stop condition, required engineer action,
-completion, or engineer intervention. Cadence changes interaction frequency only. A Program has a
-Program default with track and block overrides; the most-specific active setting wins and expires
-with its scope. The engineer may intervene at any time.
+completion, or engineer intervention. Cadence changes interaction frequency only. The engineer may
+intervene at any time.
 
 **Plan currency under `continuous` cadence.** An interactive boundary forces the plan current — the
 report is written from it, and the engineer sees the state. `Continuous` removes that boundary, so
@@ -404,17 +398,18 @@ cases is never called a suite.
 ## Handoffs, checkpoints, integration, and the commit to main
 
 A **handoff** transfers scoped context, state, or responsibility, and when persisted is the
-artifact carrying that transfer; it references canonical state instead of copying it. Program
-dispatch is its Program specialization. Session resumption needs no dedicated artifact: native
+artifact carrying that transfer; it references canonical state instead of copying it. Session
+resumption needs no dedicated artifact: native
 session continuity plus the canonical plans are the resumption contract, and a handoff is persisted
 only when responsibility transfers with material context that cannot live in canonical state.
 
 A **checkpoint** is verified recoverable state — durable plan state, repository-state provenance,
 and verification evidence — normally represented by a delegated local commit under the Git policy.
 **Integration reconciliation** follows any internal integration: verify the combined state and
-update affected plan state, acceptance, baselines, and ledgers; it creates no parallel log.
+update affected plan state, acceptance, and baselines; it creates no parallel log.
 The **commit to main** (formerly "landing") is engineer-triggered incorporation of one complete
-Task or whole Program into `main` as one commit, per the Git policy; bare "commit" stays with the
+Task, or a declared line of completed Tasks, into `main` as one commit, per the Git policy; bare
+"commit" stays with the
 delegated checkpoint commits. Completion, the commit to main, shipping, and deployment remain
 distinct.
 
