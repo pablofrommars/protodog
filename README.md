@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.0.0
-codex plugin marketplace add ./dist/codex-4.0.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.0.1
+codex plugin marketplace add ./dist/codex-4.0.1
 codex plugin add protodog@kennel-codex
 ```
 
@@ -191,11 +191,16 @@ drawn in context, and execution recolors built work — with the canvas always a
 never state.
 A heavy session can close with `p-protocol-retro` — a retrospective surfacing churn and dragged
 uncertainties while they are fresh, shaping remediations as handoffs.
-Ideation results enter the Protocol only as `inputs/` documents with cited provenance. When the
-result is more than one Task, `p-protocol-runbook` cuts it into a dated sequence — prerequisites
-on `main`, exclusive write boundaries, verification, tier and assurance per unit, the dispatch
-prompt in both host forms, the landing policy you choose, and how the whole objective is proven
-once every unit has landed; the runbook is re-issued as units land, never maintained as a ledger.
+`p-protocol-runbook` cuts the visible session, or an explicit ideation handoff, register cluster,
+or audit reconciliation, into a dated sequence of Tasks. It reconciles settled decisions and
+corrections, inspects repository HEAD, reuses your settled landing policy or asks you to choose,
+and names prerequisites on `main` or a declared line's branch. Each unit carries exclusive write
+boundaries, verification, host-relative execution tiers, any host/model preferences you supplied,
+assurance recommendations, and dispatch prompts for both hosts with enough source context for a
+fresh session. The runbook names how the combined objective is proven and is re-issued from
+repository and plan evidence as the sequence changes. Drafting needs no saved handoff and creates
+no files by default; ideation results enter Protocol planning only as `inputs/` documents with
+cited provenance, saved on explicit instruction.
 
 ### One session, one Task
 

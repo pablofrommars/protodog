@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.0.1 — 2026-10-23
+
+- `p-protocol-runbook` can cut the visible session directly, retaining settled decisions,
+  corrections, source provenance, and supplied host/model preferences. Explicit source documents
+  remain supported; repository HEAD is inspected, and an already settled landing policy is reused.
+- Prerequisites distinguish separately landed Tasks on `main` from a declared line's branch.
+  Dispatch prompts carry enough context for a fresh session; assurance recommendations become
+  invocation overrides only when selected. The Codex invocation's dollar sign survives snippet
+  expansion. Runbooks remain advisory and are saved only on explicit instruction.
+
 ## 4.0.0 — 2026-10-22
 
 - Program is retired. Task is the only execution profile: the Program protocol, its entry skill,
