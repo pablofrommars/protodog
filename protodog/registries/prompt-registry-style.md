@@ -3,10 +3,13 @@
 ## Why this document exists
 
 This is the single mechanical authoring contract for the distributed prompt registries of the
-Claude-native line. It supersedes `bundle/prompt-registry-style.md`, rescoped: the Agentic
-Execution Protocol's entry points are skills, not snippets, so no protocol snippet registry exists.
-The registries carry host-portable prompt text — usable in any host, including the external
-ideation engine — which is precisely why they remain snippets rather than skills.
+Claude-native line. It supersedes `bundle/prompt-registry-style.md`, rescoped twice: the Agentic
+Execution Protocol's entry points are skills, not snippets, so no protocol snippet registry
+exists; and since 2026-10-29 every prompt invoked from an agent host is a skill too — the ideation
+mini protocols, the runbook, session persistence, and the engineer shortcuts live under
+`protodog/skills/` and take the typed context as their argument. The registries carry what lives
+in the editor: composition fragments, guardrail lines, prompts applied to a selection, the audits,
+and the session retro. A prompt exists in one form only; a snippet is never kept beside its skill.
 
 Status: committed registry mechanics, Claude-native line.
 
@@ -14,7 +17,7 @@ Status: committed registry mechanics, Claude-native line.
 
 | Registry | Content | Prefixes |
 |---|---|---|
-| `prompt-utility.code-snippets` | Protocol-family prompts (ideation mini protocols, protocol utilities), full prompt utilities, and composition helpers | `p-protocol-*`, `p-*`, `c-*`, `e-*`, `g-*` |
+| `prompt-utility.code-snippets` | Editor-side protocol-family prompts (the session retro), full prompt utilities applied in the editor, and composition helpers | `p-protocol-*`, `p-*`, `c-*`, `e-*`, `g-*` |
 | `boxer.code-snippets` | Verbatim standalone Boxer family and its local dialect | `bx-*` |
 
 The `p-protocol-*` prefix marks the protocol family: prompts affiliated with Protodog itself. The
@@ -28,7 +31,9 @@ Protocol state — Protocol entry remains skills-only, and skills are invoked by
 prefix can collide with them. The former skills-only reservation of `p-protocol-*` was retired
 2026-08-13 (it defended against a collision that cannot occur); the family was re-cut 2026-08-15
 from mini-protocols-only to the protocol affiliation it now carries, with the kind moved into the
-description.
+description. Where a family member is used from an agent host it moves to a skill and leaves the
+registry; the same kinds and contracts apply to the skill, with the context block filled by the
+invocation argument.
 
 ## Snippet mechanics
 

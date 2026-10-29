@@ -31,7 +31,7 @@ class CodexPackage(unittest.TestCase):
             self.assertEqual(hook_path, "./hooks/hooks.json")
             self.assertTrue((package / hook_path).is_file())
             skills = {p.name for p in (package / "skills").iterdir()}
-            self.assertEqual(skills, {"task", "plan-sweep", "deferred-review", "working-canvas"})
+            self.assertEqual(skills, {"task", "plan-sweep", "deferred-review", "working-canvas", "ideate-feature", "ideate-concept", "ideate-domain", "runbook", "persist", "interrogate", "commit-message"})
             self.assertFalse((package / ".claude-plugin").exists())
             self.assertTrue((package / "agents/challenge-codex.toml").is_file())
             self.assertFalse((package / "agents/challenge.md").exists())

@@ -44,7 +44,8 @@ fit regression; a hook that never fires is a candidate for deletion.
 3. The final commit to main is engineer-triggered. A guarded script performs the authorized
    mechanics after that trigger; an agent never infers it from Protocol completion.
 4. Concurrent repository writers never share a worktree. Each writer gets its own isolated
-   worktree; provisioning follows repository authority with a defined reconciliation path.
+   worktree inside the repository's writable roots, never a sibling directory; provisioning
+   follows repository authority with a defined reconciliation path.
 5. The initial profile worktree is supplied by the engineer and may be assumed; entry inspects and
    reconciles it without provisioning ceremony.
 

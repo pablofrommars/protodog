@@ -126,7 +126,8 @@ A plan may not go terminal while it is the sole carrier of a live obligation. Be
 question still unresolved, which becomes a deferred issue at that moment — either lifts to the
 deferred register or records its closure through the owning profile's disposition-arrow grammar
 (enforced). The choice is a judgment, not a reflex: an obligation the finished work resolved or
-obsoleted records its closure with the reason rather than parking in the register. A lifted row
+obsoleted records its closure with the reason rather than parking in the register, and so does one
+a live plan has already adopted as a step `from <plan-id>`, closed as `carried by <plan-id>`. A lifted row
 is self-sufficient: it carries the condensed claim, why it matters, and
 its revisit condition, because the source plan will be retired; its provenance cell points into
 history, not at required reading.
@@ -144,7 +145,13 @@ in-scope work profile invocation already authorizes; it creates no permission an
 A finding that fails the test is recorded as a deferred issue carrying the tag that names the
 failed condition: `defer: out-of-scope` (names the surface; the superseding-spec path if it must
 land now), `defer: needs-decision` (material — routed to its gate), `defer: cost` (exceeds one
-bounded step), `defer: blocked-by` (names the trigger). A `needs-decision` finding is a decision
+bounded step), `defer: blocked-by` (names the trigger). A finding that fails only the surface condition —
+understood, not material, one reversible step with a check — on a surface the bound spec does not
+exclude is one **surface grant** from a step: under `interactive` the engineer's word at the
+triage flip grants it, under `continuous` a standing `authority:` grant in the invocation does;
+the grant is persisted under the plan's **Authority** section with its date, the step records its
+origin as usual, and the spec stands because nothing it binds moved — a repair touching outcome,
+acceptance, or constraints still takes the superseding-spec path. A `needs-decision` finding is a decision
 request before it is a deferral: the report that raises it closes with the **decision
 interrogation** — the batch of decision-ready requests, each with its recommendation and the
 default that holds if unruled — and the finding becomes a register row only when the engineer
@@ -267,7 +274,10 @@ commit to main; those follow their gates.
 
 **Model routing** lives in agent-type definitions, which own current model identities and effort
 tiers. Select the lowest-cost configuration demonstrated capable of the assignment, with two
-standing exceptions. Planning — profile entry through execution readiness, where binding
+standing exceptions. The configurations form a ladder of three rungs — standard, advanced, top —
+and a Task never runs below it on the small tier; low confidence that a rung is capable of the
+assignment selects the next rung up, and every recommendation states that confidence. The host
+adapter names the rungs' current families. Planning — profile entry through execution readiness, where binding
 immutability amplifies judgment error — belongs on the top-model configuration; it is carried by
 the session model the engineer selects at entry, so the Protocol implements it as a boundary:
 execution readiness is a declared boundary in every cadence, reporting planning complete and

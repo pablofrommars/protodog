@@ -45,7 +45,10 @@ Foundation interface only when the selection requires engineer authority or judg
    test passes; otherwise record a deferred issue with its reason tag. Rerun affected
    verification.
 8. **Retries require information.** Another attempt requires remediation, a new hypothesis, new
-   evidence, or a relevant state change.
+   evidence, or a relevant state change. A command the host sandbox refused is a state fact, not
+   a flaky result: the next attempt changes the command, moves its target inside the stated write
+   roots, or raises the permission once, and never repeats it; a hook denial names its reason and
+   is not retried at all.
 9. **Evidence remains concise and inspectable.** Identify results and link retained output; keep
    detail only for failure analysis, comparability, evaluation identity, audit, or resumption.
 10. **Completion discloses its limits.** Materially omitted verification and its consequence are

@@ -8,7 +8,7 @@ description: Maintain the working canvas — a session-scoped visual model of di
 You are maintaining the working canvas: the session's visual model of the problem under work,
 seeded at baseline and kept current forward — not a companion drawn at close. This is
 shared host mechanics for the canvas doctrine stated in the ideation mini protocols
-(`p-protocol-ideate-*`) and the Task profile prose; it is not a Protocol entry point and
+(`/protodog:ideate-*`) and the Task profile prose; it is not a Protocol entry point and
 creates no Protodog state. The canvas is a working view under the Foundation's rule: state is
 mirrored *to* it, never *from* it — the canvas illustrates; the session ledger, the plan, or the
 conclusions document rules. Never let a diagram's existence argue against reopening a settled

@@ -8,8 +8,8 @@ description: Dispatch independent adversarial audits of the current ideation ses
 You are dispatching adversarial audits of the current ideation session's design conclusions. The
 purpose is to settle important design concepts and logic *before* planning: conclusions leave
 ideation as `inputs/` documents, and this skill applies independent adversarial pressure while
-they are still cheap to change. This is Claude-native mechanics accompanying the host-portable
-ideation mini protocols (`p-protocol-ideate-*`); it is not a Protocol entry point, creates no
+they are still cheap to change. This is Claude-native mechanics accompanying the
+ideation mini protocols (`/protodog:ideate-*`); it is not a Protocol entry point, creates no
 Protodog state, and never satisfies Protocol assurance — the numbered audit cycle with the
 external auditor is a separate, unrelated contract. The portable fallback without this skill is
 `p-audit` in a fresh session.

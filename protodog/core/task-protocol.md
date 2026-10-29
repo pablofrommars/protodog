@@ -26,8 +26,9 @@ never become questions. Invocation:
 2. creates one task plan from the template (in `pending planning`) or resumes the matching plan —
    exactly one match resumes; none creates; multiple plausible matches use the Foundation HIL
    interface instead of guessing;
-3. assumes the engineer-supplied worktree, inspects its repository state and policy, and grounds
-   the work, creating or refining spec context as needed;
+3. assumes the engineer-supplied worktree, inspects its repository state and policy — including
+   the host's sandbox constraints per the host adapter — and grounds the work, creating or
+   refining spec context as needed;
 4. plans the known path end to end; and
 5. proceeds through authorized work without a plan-approval stop.
 
@@ -153,8 +154,8 @@ when it records dependencies, write surfaces, verification, and reconciliation. 
 agent remains sole writer of the task plan and of the Task worktree; subagents are
 repository-read-only by default and receive bounded work through native subagent invocation with
 the handoff content the Foundation defines. When concurrency needs multiple repository writers,
-each writer runs in a native isolated worktree; the coordinating agent reconciles results into the
-Task worktree one at a time under the Git policy before dependent execution proceeds.
+each writer runs in a native isolated worktree inside the repository's writable roots; the
+coordinating agent reconciles results into the Task worktree one at a time under the Git policy before dependent execution proceeds.
 
 **Checkpoints.** Checkpoint commits inside the managed Task worktree are the agent's job under the
 Git policy, at coherent verified units, regardless of cadence. Cadence governs when the engineer is

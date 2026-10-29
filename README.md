@@ -89,15 +89,17 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.0.1
-codex plugin marketplace add ./dist/codex-4.0.1
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.1.0
+codex plugin marketplace add ./dist/codex-4.1.0
 codex plugin add protodog@kennel-codex
 ```
 
 Restart Codex and open `/hooks` to review and trust Protodog's hook definitions. Installing the
 plugin alone does not activate untrusted hooks. Use `/skills` to select the installed Task
 skill, or invoke `$protodog:task` with intent or `plan: @plan/<plan-id>/task-plan.md`. The package exposes
-Task, plan-sweep, deferred-review, and working-canvas; it does not expose ideation-audit.
+Task, plan-sweep, deferred-review, working-canvas, the ideation mini protocols, runbook, persist,
+interrogate, and commit-message — on Codex their argument is the invocation text, with no
+substitution and no shell injection; it does not expose ideation-audit or coordinate.
 Keep the generated marketplace available while it is registered. To update, remove the old
 `kennel-codex` marketplace registration, register the new build, reinstall the plugin, restart,
 and review changed hooks. The source Claude package and its install flow are unchanged.
@@ -131,9 +133,11 @@ Runtime references: [Codex hooks](https://learn.chatgpt.com/docs/hooks),
 
 ### Editor prompts
 
-Per-engineer, editor-level (optional, host-portable prompts): `prompt-utility.code-snippets` is a
-personal, repo-agnostic registry — install once at the VS Code user level, symlinked so this repo
-stays the single canonical source:
+Per-engineer, editor-level (optional): `prompt-utility.code-snippets` holds the prompts that live
+in the editor — composition fragments, guardrail lines, the selection-based prompt improver, the
+audits, and the session retro — as a personal, repo-agnostic registry; prompts invoked from an
+agent host are skills, and each prompt exists in one form only. Install once at the VS Code user
+level, symlinked so this repo stays the single canonical source:
 
 ```bash
 ln -s "$(pwd)/protodog/registries/prompt-utility.code-snippets" \
@@ -175,10 +179,13 @@ use BSD sed).
 
 ### Ideate, then enter
 
-Ideation is optional and happens outside the Protocol — in any host, by expanding a registry mini
-protocol: `p-protocol-ideate-feature` (repository-grounded work shaping, ending in blast-radius
-and Task sizing), `p-protocol-ideate-concept` (pure conceptual — approaches, abstractions,
-no repository required), or `p-protocol-ideate-domain` (domain modeling).
+Ideation is optional and happens outside the Protocol — in either host, by invoking a mini
+protocol with your context as the argument: `/protodog:ideate-feature` (repository-grounded work
+shaping, ending in blast-radius and Task sizing), `/protodog:ideate-concept` (pure conceptual —
+approaches, abstractions, no repository required), or `/protodog:ideate-domain` (domain modeling).
+Whenever you ask to be interrogated, `/protodog:interrogate` puts the open choices to you as
+structured questions, recommendation first and default stated; `/protodog:persist @inputs/…`
+saves the conclusions with provenance when you say so.
 Inside a Claude ideation session, `/protodog:ideation-audit` dispatches fresh-context adversarial
 subagent audits — grounded in the repository and/or purely conceptual — of the session's settled
 conclusions, so design concepts and logic are settled while they are still cheap to change.
@@ -191,7 +198,7 @@ drawn in context, and execution recolors built work — with the canvas always a
 never state.
 A heavy session can close with `p-protocol-retro` — a retrospective surfacing churn and dragged
 uncertainties while they are fresh, shaping remediations as handoffs.
-`p-protocol-runbook` cuts the visible session, or an explicit ideation handoff, register cluster,
+`/protodog:runbook` cuts the visible session, or an explicit ideation handoff, register cluster,
 or audit reconciliation, into a dated sequence of Tasks. It reconciles settled decisions and
 corrections, inspects repository HEAD, reuses your settled landing policy or asks you to choose,
 and names prerequisites on `main` or a declared line's branch. Each unit carries exclusive write
@@ -200,7 +207,18 @@ assurance recommendations, and dispatch prompts for both hosts with enough sourc
 fresh session. The runbook names how the combined objective is proven and is re-issued from
 repository and plan evidence as the sequence changes. Drafting needs no saved handoff and creates
 no files by default; ideation results enter Protocol planning only as `inputs/` documents with
-cited provenance, saved on explicit instruction.
+cited provenance, saved on explicit instruction. Before the sequence it settles the standing
+rulings once — landing policy, cadence, surface grants, assurance, paid runs — and carries each
+into the affected dispatch as the Task skill's overrides (`cadence:`, `authority:`,
+`assurance:`); tiers follow the routing ladder with a stated confidence.
+
+Dispatch by hand, one fresh session per unit, or from one session with
+`/protodog:coordinate [units: …]`: it runs the eligible units as isolated-worktree subagents on
+their rungs, rules within the standing rulings, batches every other gate into one interrogation,
+re-issues the runbook on evidence or on your instruction (add a unit, add an audit), and routes
+each landed unit's deferred items to the downstream unit that owns their surface. Landing on
+`main` stays yours. Coordination is one dispatch option, Claude Code only, and dispatches only
+the subset you name.
 
 ### One session, one Task
 
@@ -210,7 +228,8 @@ Start with `/protodog:task` in Claude Code or `$protodog:task` in Codex; supply 
 Start the session on the model you want planning to run on — planning through execution readiness
 belongs on the top tier, where binding immutability amplifies judgment error — and the readiness
 boundary pauses in every cadence: it recommends the execution model the planned steps actually
-need (driving signals, confidence, what would flip the tier) and hands you the exact invocation
+need under the routing ladder — never the small tier, the next rung up when confidence is low —
+with driving signals, confidence, and what would flip the tier, and hands you the exact invocation
 to resume in a fresh session on it, or `go` continues in place.
 Yellow below marks the engineer-owned moments; everything else is delegated agent work.
 
@@ -400,7 +419,13 @@ proposes **clusters**: for a row being picked up, the parked rows that share its
 its trigger and its verification, one reason line per member and per excluded row, ratified as
 one request you strike members from, and adopted by the next Task as steps. The review lifts no
 rows of its own; a defect it finds without one goes to the Task that adopts the cluster. The
-survey is a command, not a document — there is no index artifact to maintain.
+survey is a command, not a document — there is no index artifact to maintain. A deferred item
+rarely needs the register while a runbook is live: a small finding on an adjacent surface becomes
+a step on your surface grant (`authority:`) rather than a superseding spec, and an item another
+live plan adopts closes as carried by it; the register keeps what no unit owns.
+
+`/protodog:commit-message` proposes one line for the staged changes in your own style and
+commits nothing.
 
 For a large register, use a cheaper model for a bounded first pass, then select a stronger model
 in a fresh session for focused verification. Both hosts use the same skill and handoff format:

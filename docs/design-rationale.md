@@ -316,6 +316,49 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     several Tasks may share a commit, so the invariant now names a declared line of Tasks as a
     commit unit whose dependent units bind against the branch.
 
+30. **Coordination is a dispatch option over the runbook, not the multi-unit shape** (added
+    2026-10-29; provenance: the engineer's report of dispatching a runbook from one session with
+    checkpoint commits and parallel worktrees, and the rulings of that session). The runbook
+    still does the shaping; `coordinate` only dispatches — the subset named by `units:` or every
+    unit whose prerequisites are landed — and the engineer may still dispatch by hand. A
+    subagent cannot ask the engineer, so dispatched units run `continuous`, their gates end the
+    turn persisted in the plan, and the coordinator rules only inside the runbook's standing
+    rulings, settled once at cut time as the Task skill's own overrides (`cadence:`,
+    `authority:`, `assurance:`), the shape the engineer named as the precedent. Every other gate
+    is batched into one interrogation. The coordinator may change the runbook — re-issue on
+    evidence, or on instruction such as "add a unit" or "add an audit" — under the plan-change
+    rule: update on evidence, gate on engineer-owned choices. Model choice is conservative: a
+    ladder of three rungs, never the small tier for a Task, the next rung up whenever confidence
+    is low, which the engineer confirmed is the existing routing rule with a floor and an order.
+    Claude Code only, because the Codex adapter has no isolated writer worktrees.
+
+31. **Snippets used from an agent host become skills; the registry keeps the editor** (added
+    2026-10-29; provenance: the engineer's observation that the VS Code snippets went unused,
+    the same evidence that retired Program, and the interrogation that settled the cut). The
+    portability reason for snippets held only while ideation ran in chat hosts; it now runs in
+    Claude Code or Codex only. The three ideation mini protocols, the runbook, and session
+    persistence are skills taking the typed context as `$ARGUMENTS`, with shell injection where
+    live repository state helps; `commit-message` and `interrogate` are user-only shortcuts
+    costing no context. Rejected: a second plugin for the shortcuts (the prompts are used during
+    ideation or inside Tasks, so they are protocol-affiliated), and keeping a snippet beside its
+    skill (two forms drift within a release). Kept as snippets: fragments and guardrail lines,
+    the selection-based prompt improver, the audits, the session retro, and the Boxer family.
+
+32. **A small adjacent finding is one surface grant from a step; a live downstream plan carries a
+    deferral** (added 2026-10-29; provenance: the engineer's observation that Tasks judge new
+    items out of scope too quickly and that bringing a small item in costs a superseding spec,
+    and that inside a runbook a deferred item lands best in a downstream unit). The fix-now
+    test's first condition priced a surface like an outcome change. Now the spec binds outcome,
+    acceptance, and constraints, write surfaces are plan state, and the engineer's word at the
+    triage flip — or a standing `authority:` grant under `continuous` — persists under Authority
+    and makes the finding a step. Inside a runbook an item a live plan adopts closes as carried
+    by it, which the validator already accepted as a closure; an item whose unit is not yet
+    dispatched lifts as a `blocked-by` row naming the unit, and the runbook re-cut carries it.
+    The register keeps what no unit owns. Separately, the sandbox, not the hooks, was found to
+    cost iterations: one real hook denial across two repositories against sibling worktrees,
+    remote Git under Codex, and `gh` under denied read paths, so grounding now reads the sandbox
+    configuration and a refused command falls under the retry rule as a state fact.
+
 ## Accepted background rationale
 
 - The protocol encodes the engineer's pre-AI methodology: custom fit, a personal delegation

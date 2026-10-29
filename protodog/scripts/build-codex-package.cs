@@ -43,6 +43,17 @@ foreach (var skill in new[] { "task", "plan-sweep", "deferred-review", "working-
 	CopyTree(Path.Combine(source, "skills", skill), Path.Combine(package, "skills", skill));
 }
 
+// Argument-taking skills: Codex passes the invocation text as the prompt and substitutes nothing,
+// so the Claude placeholders and shell injections are rewritten into instructions.
+foreach (var skill in new[] { "ideate-feature", "ideate-concept", "ideate-domain", "runbook", "persist", "interrogate", "commit-message" })
+{
+	var from = Path.Combine(source, "skills", skill);
+	var to = Path.Combine(package, "skills", skill);
+	CopyTree(from, to);
+	var skillFile = Path.Combine(to, "SKILL.md");
+	File.WriteAllText(skillFile, ForCodex(File.ReadAllText(skillFile)));
+}
+
 var version = JsonNode.Parse(File.ReadAllText(Path.Combine(source, ".claude-plugin", "plugin.json")))!["version"]!.GetValue<string>();
 var options = new JsonSerializerOptions { WriteIndented = true };
 var manifest = new JsonObject
@@ -80,6 +91,16 @@ File.WriteAllText(Path.Combine(marketplace, "marketplace.json"), catalog.ToJsonS
 Console.WriteLine($"Built Task-only marketplace: {output}");
 Console.WriteLine("Register this directory with codex plugin marketplace add; install protodog@kennel-codex, then review /hooks.");
 return 0;
+
+string ForCodex(string text)
+{
+	text = System.Text.RegularExpressions.Regex.Replace(text, @"^(disable-model-invocation|argument-hint):.*\n", "", System.Text.RegularExpressions.RegexOptions.Multiline);
+	text = text.Replace("replaces `$ARGUMENTS`", "fills the context block").Replace("replace `$ARGUMENTS`", "fill the context block");
+	text = text.Replace("$ARGUMENTS", "<the text of the invocation after the skill mention>");
+	text = System.Text.RegularExpressions.Regex.Replace(text, @"```!\n(.*?)\n```", m => "(inspect by running: `" + m.Groups[1].Value.Trim() + "`)", System.Text.RegularExpressions.RegexOptions.Singleline);
+	text = System.Text.RegularExpressions.Regex.Replace(text, @"!`([^`]+)`", "(inspect by running: `$1`)");
+	return text;
+}
 
 void CopyTree(string from, string to)
 {

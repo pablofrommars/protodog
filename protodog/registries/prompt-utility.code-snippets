@@ -1,5 +1,5 @@
 {
-	// Families: protocol family (p-protocol-*: ideation mini protocols and protocol utilities),
+	// Families: protocol family (p-protocol-*: editor-side members such as the session retro),
 	// full prompt utilities (p-*), and composition helpers (c-*, e-*, g-*). Mechanical style:
 	// prompt-registry-style.md (same directory). These entries do not invoke or write Protodog
 	// state.
@@ -7,141 +7,6 @@
 	// ============================================================
 	// PROTOCOL FAMILY (p-protocol-*)
 	// ============================================================
-	"Mini Protocol: Feature Ideation": {
-		"scope": "markdown",
-		"prefix": "p-protocol-ideate-feature",
-		"body": [
-			"<task>",
-			"Collaboratively shape the supplied intent into a defensible feature direction: explore the relevant repository surfaces, widen and test meaningful alternatives, and settle conclusions — including, when execution is in sight, enough orientation to ballpark blast radius, cost, and Task fit — without planning or implementing.",
-			"</task>",
-			"",
-			"<context>",
-			"${1:Describe the intent or problem, relevant repository surfaces and references, known scope and exclusions, constraints, and any direction already favored.}",
-			"</context>",
-			"",
-			"<instructions>",
-			"- Treat this as a multi-turn working session. Do not attempt to complete the exploration or produce a final guide in the first response.",
-			"- Ground material claims in applicable repository instructions, documentation, code, and immediate seams. Distinguish current behavior, documented intent, my direction, inference, and uncertainty.",
-			"- Begin with a concise preliminary baseline: relevant behavior and boundaries, forces behind the current shape, concrete friction, contradictions, and material unknowns. Let my feedback correct or redirect it as part of the conversation rather than as a formal approval gate.",
-			"- In each turn, advance one coherent decision surface or small related batch. Generate materially distinct alternatives only where the direction remains open; test consequential assumptions, strongest objections, trade-offs, reversibility, and affected seams before recommending.",
-			"- Maintain local session state as `settled conclusions / active directions / unresolved decisions`. Reconcile it after every correction or new repository fact. Surface it when materially changed or requested; do not print a ceremonial ledger every turn.",
-			"- When the subject is diagram-suited — a mapping between structures, a topology, a lifecycle, or a data flow — maintain a working canvas beside the prose from the baseline turn: one master model at fixed altitude whose lanes are the separated concerns, roughly ten boxes, never mechanism, plus zoom views one level down that own exactly one question each, opened when their decision surface opens and split when a second question accumulates. Every element the session produces lands in exactly one lane; an element that cannot is a design finding — a missing concern — not a drawing problem. Render as diagrams where the host supports them, as structured prose otherwise; when detection cues are mixed, default to keeping the canvas — a discarded canvas is cheap.",
-			"- Sketch materially distinct alternatives on the canvas before comparing them in prose, each drawn in the affected region plus one ring of surrounding context. On settlement draw the winner into its zoom and delete the losing sketches — the session record keeps why they lost — and reconcile the canvas with every correction or reopened conclusion; never let a diagram's existence argue against reopening. The canvas follows the session's persistence rule: ephemeral by default, promoted with the results on explicit instruction; at close it is the visual companion of the synthesis.",
-			"- Continue automatically to the next useful decision surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
-			"- Sizing is a conclusion, not an entry: state blast radius, cost, and Task fit as settled conclusions when execution is in sight, and leave the invocation to me. Do not create Protodog gates, plans, specs, or implementation.",
-			"- Close only on my explicit instruction. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance.",
-			"</instructions>",
-			"",
-			"<output>",
-			"Work conversationally across turns. On explicit close, return an in-session synthesis of settled conclusions, necessary rationale, rejected directions worth preserving, unresolved decisions and assumptions, and useful next validation. If I explicitly request persistence, write the requested artifact beginning with `Why this document exists`; preserve conclusions and continuation context rather than session narrative.",
-			"</output>",
-			"$0"
-		],
-		"description": "Start a multi-turn, repository-grounded feature ideation mini protocol; settles direction and Task sizing without entering the Protocol"
-	},
-	"Mini Protocol: Concept Ideation": {
-		"scope": "markdown",
-		"prefix": "p-protocol-ideate-concept",
-		"body": [
-			"<task>",
-			"Collaboratively explore the supplied concept and converge on defensible conceptual conclusions — abstractions, approaches, and their limits — independent of any repository or execution intent.",
-			"</task>",
-			"",
-			"<context>",
-			"${1:Describe the concept or question, the motivating problem, known prior art or sources, constraints, and any position already held.}",
-			"</context>",
-			"",
-			"<instructions>",
-			"- Treat this as a multi-turn conceptual working session. No repository grounding is assumed or required; when sources, papers, or artifacts are supplied, cite them exactly.",
-			"- Distinguish established knowledge, supported inference, working hypothesis, and speculation. Never present speculation as settled; state what evidence, experiment, or worked example would settle a material unknown.",
-			"- Begin with a concise framing baseline: the core question, the forces on it, materially distinct schools or approaches, and material unknowns. Let my feedback correct or redirect it as part of the conversation rather than as a formal approval gate.",
-			"- In each turn, advance one coherent conceptual surface or small related batch. Stress abstractions against concrete cases, edge conditions, and failure modes; test the strongest objections and materially distinct alternatives before recommending.",
-			"- Maintain local session state as `settled conclusions / active directions / unresolved questions`. Reconcile it after every correction or new fact. Surface it when materially changed or requested; do not print a ceremonial ledger every turn.",
-			"- When the subject is diagram-suited — a mapping between structures, a topology, a lifecycle, or a data flow — maintain a working canvas beside the prose from the baseline turn: one master model at fixed altitude whose lanes are the separated concerns, roughly ten boxes, never mechanism, plus zoom views one level down that own exactly one question each, opened when their decision surface opens and split when a second question accumulates. Every element the session produces lands in exactly one lane; an element that cannot is a design finding — a missing concern — not a drawing problem. Render as diagrams where the host supports them, as structured prose otherwise; when detection cues are mixed, default to keeping the canvas — a discarded canvas is cheap.",
-			"- Sketch materially distinct alternatives on the canvas before comparing them in prose, each drawn in the affected region plus one ring of surrounding context. On settlement draw the winner into its zoom and delete the losing sketches — the session record keeps why they lost — and reconcile the canvas with every correction or reopened conclusion; never let a diagram's existence argue against reopening. The canvas follows the session's persistence rule: ephemeral by default, promoted with the results on explicit instruction; at close it is the visual companion of the synthesis.",
-			"- Continue automatically to the next useful surface after I settle the current one unless I redirect the session. Do not infer that agreement closes the session.",
-			"- Do not create Protodog state, plan, or implement.",
-			"- Close only on my explicit instruction. Do not persist by default; results destined for planning are saved under inputs/ with cited provenance.",
-			"</instructions>",
-			"",
-			"<output>",
-			"Work conversationally across turns. On explicit close, return an in-session synthesis of settled conclusions, necessary rationale, rejected directions worth preserving, unresolved questions, and useful next validation. If I explicitly request persistence, write the requested artifact beginning with `Why this document exists`; preserve conclusions and continuation context rather than session narrative.",
-			"</output>",
-			"$0"
-		],
-		"description": "Start a multi-turn conceptual ideation mini protocol for abstractions and approaches; needs no repository grounding"
-	},
-	"Mini Protocol: Domain Ideation": {
-		"scope": "markdown",
-		"prefix": "p-protocol-ideate-domain",
-		"body": [
-			"<task>",
-			"Collaboratively explore the domain and converge on a pragmatic model useful for the stated problem.",
-			"</task>",
-			"",
-			"<context>",
-			"Problem or process: ${1:describe the domain problem or process}",
-			"Domain language and exact meanings: ${2:supply known terms and definitions}",
-			"Relevant types, processes, documentation, or tests: ${3:supply references when available}",
-			"Known business rules and invariants: ${4:supply known rules}",
-			"Constraints, disagreements, and uncertainty: ${5:none known}",
-			"</context>",
-			"",
-			"<instructions>",
-			"- Treat this as a multi-turn modeling session. Do not attempt a complete domain model in the first response; establish the first useful language, rule, boundary, or invariant surface and let my feedback shape subsequent turns.",
-			"- Ground proposed language and rules in supplied domain evidence; distinguish facts, assumptions, alternatives, and questions for a domain expert.",
-			"- Use supplied domain names exactly. Surface overloaded, conflicting, or unstable terminology; never silently normalize it or substitute a convenient synonym.",
-			"- Use DDD technical terms precisely. Do not label something an entity, value object, aggregate, bounded context, or domain event unless its defining characteristics are supported.",
-			"- When repository references are supplied, inspect the relevant types and processes as evidence of the current implementation and model. Do not treat existing code as automatic domain truth or authority for future design.",
-			"- Use strategic DDD concepts only where boundaries, ownership, or relationships materially affect the problem. Use tactical concepts only where behavior and invariants justify them.",
-			"- Challenge leaky boundaries, anemic models, accidental coupling, and pattern-shaped designs that lack domain evidence.",
-			"- Do not force bounded contexts, aggregates, value objects, events, repositories, services, or factories into the result. Explicitly recommend CRUD or a simpler model when sufficient.",
-			"- Advance one coherent domain decision surface or small related batch per turn, reconcile my corrections, and continue until I explicitly close the session.",
-			"- Maintain a lightweight evolving domain-language ledger as local session state. Surface it only when terminology changes materially or I ask.",
-			"- When the subject is diagram-suited — a mapping between structures, a topology, a lifecycle, or a data flow — maintain a working canvas beside the prose from the baseline turn: one master model at fixed altitude whose lanes are the separated concerns, roughly ten boxes, never mechanism, plus zoom views one level down that own exactly one question each, opened when their decision surface opens and split when a second question accumulates. Every element the session produces lands in exactly one lane; an element that cannot is a design finding — a missing concern — not a drawing problem. Render as diagrams where the host supports them, as structured prose otherwise; when detection cues are mixed, default to keeping the canvas — a discarded canvas is cheap.",
-			"- Sketch materially distinct alternatives on the canvas before comparing them in prose, each drawn in the affected region plus one ring of surrounding context. On settlement draw the winner into its zoom and delete the losing sketches — the session record keeps why they lost — and reconcile the canvas with every correction or reopened conclusion; never let a diagram's existence argue against reopening. The canvas follows the session's persistence rule: ephemeral by default, promoted with the results on explicit instruction; at close it is the visual companion of the synthesis.",
-			"- Do not implement, perform an audit, or create an artifact unless I request it.",
-			"</instructions>",
-			"",
-			"<output>",
-			"Work conversationally. On explicit close, return a concise in-session summary of the settled model, rationale, remaining domain questions, and next validation. Create no file by default.",
-			"</output>",
-			"$0"
-		],
-		"description": "Start a multi-turn, DDD-informed domain ideation mini protocol converging on a pragmatic model"
-	},
-	"Protocol Utility: Runbook": {
-		"scope": "markdown",
-		"prefix": "p-protocol-runbook",
-		"body": [
-			"<task>",
-			"Cut the work discussed in the current session, or an explicitly supplied source, into a sequence of Protodog Tasks, and return the runbook that dispatches them. The runbook is a dated cut, not a ledger: it is re-issued when the sequence changes, and live state stays in plan/ and plan/deferred.md.",
-			"</task>",
-			"",
-			"<context>",
-			"${1:Optional: narrow the session scope or name another source; add inherited constraints, work already in flight, host/model preferences, or changes since the last cut. Default source: the visible session so far.}",
-			"</context>",
-			"",
-			"<instructions>",
-			"- Use the visible session by default; no handoff document is required to draft the runbook. Explicit sources may instead be an ideation handoff, a register cluster proposed by deferred review, or an audit reconciliation. State any missing source context rather than reconstructing unavailable turns.",
-			"- Reconcile settled conclusions, my later corrections, constraints, rejected directions, assumptions, and unresolved questions. Preserve the latest settled intent; distinguish my decisions from your recommendations and inference. Ground session anchors in descriptive topics or short quotes without inventing turn numbers, source steps, or file references.",
-			"- Inspect repository instructions, relevant code, HEAD, branch, and working-tree state, plus applicable plans and plan/deferred.md when present. Date the cut against the inspected state; distinguish uncommitted work and completed Tasks from work proven landed. Do not ask me to transcribe repository facts you can inspect.",
-			"- Reuse a landing policy already settled in the source or session; otherwise ask me to choose before writing the sequence: each unit lands on main as its own commit, or the whole declared line lands as one commit. Name the costs: ids allocated on parallel branches can collide, and a long-lived line rebases the register against every landing in between.",
-			"- Ground each unit's prerequisites and exclusive write boundaries in the source and repository. Separately landed units bind against prerequisites on main; dependent units in a declared line bind against the line's branch and record that basis. Parallel units require disjoint write boundaries and isolated writer worktrees; name their reconciliation and combined-state verification.",
-			"- Recommend execution tiers per host and carry any engineer-specified host/model preferences separately, including named models. These are run-specific preferences, not new routing pins; disclose unavailable or unverified choices rather than silently substituting. The Task's own readiness report and assurance interrogation re-decide suitability and assurance; recommendations authorize no paid or external launch.",
-			"- Name objective-level completion against the combined final state under the landing policy: a closing Task over the integrated line, or an external audit over the landed sequence. Isolated unit verification does not prove the combined objective.",
-			"- Make each dispatch usable in a fresh session: include its source-grounded intent, acceptance anchors, inherited constraints, and material preferences. For session sources, carry a compact synthesis with provenance rather than relying on the reader having the conversation; cite existing documents exactly and do not invent a persisted handoff.",
-			"- On a re-issue, open with what the next unit inherits from landed units or completed predecessors on the declared line's branch. Reconcile that basis with repository and plan evidence; do not carry status columns forward by hand.",
-			"- Do not create Protodog state, plan, or implement. Do not persist by default; on my explicit instruction save the runbook under inputs/ with cited provenance and enough source intent for its dispatches. Ideation material must be persisted under inputs/ with cited provenance before it enters Protocol planning; drafting an in-session runbook does not perform that step.",
-			"</instructions>",
-			"",
-			"<output>",
-			"Return the runbook: a header dating the cut against the inspected HEAD and naming the source, landing policy, and inherited host/model preferences; the objective-level completion; a sequence table with unit, source anchors (steps, rows, or session evidence), prerequisites on main or the declared line's branch, can run in parallel with, execution tier, paid cost (estimate or unknown), and why here; then one section per unit with proposed label and plan id, scope, out of scope, exclusive write boundaries, acceptance anchors in the source, required verification, size, execution tier, host/model preferences where supplied, assurance, stopping conditions, and the self-contained dispatch prompt in both host forms — `/protodog:task <label>. … scope: ….` for Claude Code and the same text after `\\$protodog:task` for Codex. State assurance recommendations beside the dispatch; include an `assurance:` override only for an already selected choice. End with parked and excluded items with reasons and, on a re-issue, what the next cut inherits.",
-			"</output>",
-			"$0"
-		],
-		"description": "Protocol utility: cut the current session or an explicit source into a dated sequence of Tasks with source-grounded dispatch prompts for both hosts and run-specific host/model preferences"
-	},
 	"Mini Protocol: Session Retro": {
 		"scope": "markdown",
 		"prefix": "p-protocol-retro",
@@ -228,20 +93,6 @@
 			"$0"
 		],
 		"description": "Run a risk-driven adversarial review of a prompt registry and its immediate harness"
-	},
-	"Prompt: Persist Session": {
-		"scope": "markdown",
-		"prefix": "p-persist-session",
-		"body": [
-			"<task>",
-			"Persist this session to ${1:@clear/destination/path}.",
-			"Write for ${2:engineers and LLMs}; include enough context for another session to continue.",
-			"Preserve ${3:the conclusions plus only the context needed to understand and apply them}; omit thought process and session narrative.",
-			"Open the artifact with `Why this document exists`.",
-			"</task>",
-			"$0"
-		],
-		"description": "Persist session conclusions and continuation context to an explicit destination"
 	},
 	"Prompt: Improve Prompt": {
 		"scope": "markdown",

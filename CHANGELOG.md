@@ -1,5 +1,26 @@
 # Changelog
 
+## 4.1.0 — 2026-10-29
+
+- The ideation mini protocols, the runbook, and session persistence are skills in both hosts —
+  `/protodog:ideate-feature`, `-concept`, `-domain`, `/protodog:runbook`, `/protodog:persist` —
+  taking the engineer's typed context as the argument; their snippets are retired. Two shortcuts
+  join them, user-only and out of the model's context: `/protodog:commit-message` and
+  `/protodog:interrogate`. The registry keeps the editor-side prompts: fragments, guardrails,
+  the prompt improver, the audits, and the session retro.
+- `/protodog:coordinate` dispatches a runbook's units from one session, Claude Code only: a
+  `units:` subset or every unit whose prerequisites are landed, isolated-worktree subagents on
+  their rungs, rulings within the runbook's standing rulings, other gates batched into one
+  interrogation, re-issue on evidence or instruction, deferred items routed downstream; landing
+  on `main` stays engineer-executed. The runbook settles standing rulings once as Task overrides.
+- The routing ladder: three rungs, never the small tier for a Task, the next rung up whenever
+  confidence is low; the host adapter names the families.
+- A small finding on an adjacent surface becomes a step on a surface grant under Authority, no
+  superseding spec; an obligation a live plan adopts closes as carried by it.
+- Host constraints: grounding reads the sandbox configuration and states write roots and network
+  allowlist; writer worktrees live inside the repository; a refused command is a state fact under
+  the retry rule, distinct from a hook denial; macOS tooling noted.
+
 ## 4.0.1 — 2026-10-23
 
 - `p-protocol-runbook` can cut the visible session directly, retaining settled decisions,
