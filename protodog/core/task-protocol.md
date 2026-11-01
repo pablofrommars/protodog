@@ -56,8 +56,8 @@ Execution readiness is a declared boundary in every cadence: planning ran on the
 engineer selected at entry, and the first step is where execution may downshift. The readiness
 report declares planning complete and presents the Foundation's model handoff for the planned
 steps — its contents are defined there, not restated here — and proceeding in the current session
-is released by the ordinary `go`. Execution never starts STEP-01 on its own momentum out of
-planning.
+is released by the ordinary `go`; under coordination the dispatcher relaunches execution on the
+recommended rung instead. Execution never starts STEP-01 on its own momentum out of planning.
 
 ## Task plan
 

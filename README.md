@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.1.0
-codex plugin marketplace add ./dist/codex-4.1.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.2.0
+codex plugin marketplace add ./dist/codex-4.2.0
 codex plugin add protodog@kennel-codex
 ```
 
@@ -213,12 +213,13 @@ into the affected dispatch as the Task skill's overrides (`cadence:`, `authority
 `assurance:`); tiers follow the routing ladder with a stated confidence.
 
 Dispatch by hand, one fresh session per unit, or from one session with
-`/protodog:coordinate [units: …]`: it runs the eligible units as isolated-worktree subagents on
-their rungs, rules within the standing rulings, batches every other gate into one interrogation,
+`/protodog:coordinate [units: …]`: it plans each eligible unit on the top rung as an
+isolated-worktree subagent, relaunches its execution on the rung the readiness report recommends,
+rules within the standing rulings, batches every other gate into one interrogation,
 re-issues the runbook on evidence or on your instruction (add a unit, add an audit), and routes
-each landed unit's deferred items to the downstream unit that owns their surface. Landing on
-`main` stays yours. Coordination is one dispatch option, Claude Code only, and dispatches only
-the subset you name.
+each landed unit's deferred items to the downstream unit that owns their surface, and closes with
+a cost line per unit. Landing on `main` stays yours. Coordination is one dispatch option, Claude
+Code only, and dispatches only the subset you name.
 
 ### One session, one Task
 

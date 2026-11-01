@@ -289,8 +289,10 @@ concretely, with the demand signals driving it (remaining exploration or design 
 radius and reversibility of the riskiest steps, how reliably the selected verification would
 catch a weaker model's errors), confidence, and the conditions that would change the tier; a
 planned step already known to exceed that configuration is named with its capability escalation
-rather than raising the whole session's tier. The recommendation is advisory — the engineer
-selects the execution model by launching the fresh session — and names the model as report
+rather than raising the whole session's tier. The recommendation weighs capability only, never
+the cost of switching sessions, which belongs to whoever holds the session model and takes the
+recommendation: the engineer, by launching the fresh session, or a coordinator dispatching a
+runbook, by relaunching execution on that rung. It is advisory and names the model as report
 output: agent-type definitions remain the only Protocol source pinning model identity.
 Audit challenge and every resulting remediation step likewise use the top-model configuration,
 routed through the pinned challenge agent type when the session model is not that tier. Material

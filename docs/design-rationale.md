@@ -359,6 +359,33 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     remote Git under Codex, and `gh` under denied read paths, so grounding now reads the sandbox
     configuration and a refused command falls under the retry rule as a state fact.
 
+33. **Coordination dispatches by phase: planning on the top rung, execution on the readiness
+    recommendation** (added 2026-11-01; provenance: the engineer's report of a nine-unit runbook
+    dispatched by `coordinate`, where six units ran end to end on the top rung and every one of
+    their readiness reports had named the advanced rung for roughly half the steps). The first
+    cut of `coordinate` gave each unit one rung for planning and execution together, and forbade
+    downshifting below it, so single-rung dispatch broke a standing decision whichever rung was
+    chosen: decision 22 when the top rung executed, decision 18 when a lower rung planned. The
+    readiness recommendation had no consumer — the Foundation named only the engineer launching a
+    fresh session, the subagent cannot switch itself, and the coordinator was told to resume the
+    same agent — and the units rendered its flip conditions as "none worth a session switch", a
+    clause the Protocol never carried. Now the Foundation's rule by phase is applied as written:
+    every unit plans on the top rung, the readiness stop that every cadence already makes ends
+    the planning agent's turn, and the coordinator relaunches execution as a fresh agent on the
+    recommended rung in the same worktree with the handoff's own resumption invocation; a step
+    the plan marks with a capability escalation ends the executing turn at the boundary before
+    it and the remainder relaunches on the escalated rung. The runbook's tier column is the
+    cut's estimate of the execution rung, as the runbook skill already said readiness re-decides
+    it, and a moved rung re-issues the cut. The recommendation now states that it weighs
+    capability only; the cost of switching belongs to whoever holds the session model, which
+    removes the clause at its source. Rejected: a per-phase tier column in the runbook (planning
+    is fixed on top, and execution is better judged by the plan just written than estimated
+    before it) and a cost line in the plan (the Task protocol admits no completion-report
+    artifact) — the coordinator's close report carries the cost line per unit instead, from what
+    it can measure itself. Partitioning execution into several rung segments was left as the
+    fuller shape: relaunches are cheap under coordination, but each one re-reads the plan, and
+    re-reading was most of the observed spend.
+
 ## Accepted background rationale
 
 - The protocol encodes the engineer's pre-AI methodology: custom fit, a personal delegation

@@ -31,9 +31,11 @@ Stated in plain language inside the invocation, only when they differ from defau
   its dispatch prompt already carries. Dispatched units run `continuous` unless overridden,
   because a subagent cannot ask the engineer: its gates persist in its plan and end its turn.
 
-Model preferences are not arguments. The unit's tier comes from the runbook under the routing
-ladder; the coordinator may escalate a rung on evidence and reports it, and never downshifts
-below the runbook's tier.
+Model preferences are not arguments. Rungs follow the routing ladder by phase, as the
+Foundation sets them: planning runs on the top rung for every unit, and execution runs on the rung
+the unit's readiness report recommends. The runbook's tier is the cut's estimate of that execution
+rung, not a floor on it. The coordinator may escalate a rung on evidence and reports it, and never
+runs execution below the readiness recommendation.
 
 ## Procedure
 
@@ -44,16 +46,26 @@ below the runbook's tier.
    classification and the standing rulings in force; a runbook older than the repository state
    it describes is re-issued first (step 6).
 2. **Dispatch.** One native subagent per eligible unit, in an isolated worktree inside the
-   repository's writable roots — never a sibling directory — with the model the unit's rung names
-   on this host; a fork inherits the session model and cannot be downshifted, so use a fresh
-   agent when the rung is lower. The prompt is the unit's dispatch prompt verbatim, plus the
-   pass-through overrides, plus the instruction that the plan is the only progress view and that
-   a gate ends the turn with the gate persisted. Parallel dispatch only for units the runbook
-   marks parallel, with disjoint write boundaries.
+   repository's writable roots — never a sibling directory — on the top rung: the dispatch plans
+   the unit, and planning through execution readiness belongs on the top-model configuration. The
+   prompt is the unit's dispatch prompt verbatim, plus the pass-through overrides, plus the
+   instruction that the plan is the only progress view and that a gate ends the turn with the
+   gate persisted. Parallel dispatch only for units the runbook marks parallel, with disjoint
+   write boundaries.
 3. **Rule.** When a subagent's turn ends, read its plan and print the position line from the plan
-   validator. Then: completed — go to step 4; a gate inside a standing ruling — rule it, have the
+   validator. Then: readiness — the plan is `ready` and the turn ended at the readiness boundary:
+   take the handoff's execution-model recommendation as the unit's execution rung, escalated on
+   evidence and never lowered, and relaunch execution as a fresh agent on that rung — never a
+   fork, which inherits the session model — in the same worktree, with the handoff's resumption
+   invocation (`/protodog:task plan: @plan/<plan-id>/task-plan.md` plus the unit's overrides,
+   `cadence: continuous` among them), the same dispatch instructions, and the instruction to end
+   the turn, next boundary persisted, before any step the plan marks with a capability escalation
+   above its rung; when a turn ends there, the remainder is relaunched the same way on the
+   escalated rung. A rung that moved from the runbook's estimate is reported and re-issues the
+   runbook (step 6). Completed — go to step 4; a gate inside a standing ruling — rule it, have the
    ruling persisted in the plan with the provenance `ruled by coordinator under <ruling>`, and
-   resume the subagent; a gate outside — hold it; failure beyond recovery — report it. Gates held
+   resume the agent whose turn ended, on its phase's rung; a gate outside — hold it; failure
+   beyond recovery — report it. Gates held
    from all units are put to the engineer as one decision interrogation, the structured question
    tool with up to five requests per batch, recommendation first and default stated, and the
    affected units resume after the answer. Nothing resumes on silence or elapsed time.
@@ -77,7 +89,10 @@ below the runbook's tier.
    right after the re-cut so it costs one answer.
 7. **Close.** Stop when every selected unit is landed or waits on the engineer. Report units
    dispatched, rulings given with their provenance, items routed, the runbook's current cut, and
-   the worktrees left for the worktree survey — cleanup is engineer-owned.
+   the worktrees left for the worktree survey — cleanup is engineer-owned. Close with one cost
+   line per unit: the rung planning and execution ran on against the runbook's estimate, agents
+   launched, wall clock across its turns, gates ruled and held, and the verification runs its
+   completion response reports — so the tiering outcome is read per unit, not reconstructed.
 
 ## Boundaries
 
@@ -85,5 +100,7 @@ below the runbook's tier.
   worktree; the hooks deny these and a denial is never retried.
 - Never dispatch a unit whose prerequisites are not landed, pass a surface grant the runbook does
   not carry, or rule a gate the standing rulings do not cover.
+- Never plan a unit below the top rung, run its execution below the readiness recommendation, or
+  carry an agent across the readiness boundary on a rung the recommendation did not name.
 - Never treat a subagent's report as the engineer's word: approvals, grants, and releases come
   from the engineer in this session only.

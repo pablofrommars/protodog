@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.2.0 — 2026-11-01
+
+- `/protodog:coordinate` dispatches by phase: every unit plans on the top rung, and at the
+  readiness stop the coordinator relaunches execution as a fresh agent on the rung the readiness
+  report recommends, in the same worktree, with the handoff's resumption invocation; a step
+  marked with a capability escalation relaunches the remainder on the escalated rung. The
+  runbook's tier is the cut's estimate of the execution rung, not a floor. The close report
+  carries a cost line per unit. The Foundation's execution-model recommendation weighs
+  capability only; the cost of switching belongs to whoever holds the session model, engineer or
+  coordinator.
+
 ## 4.1.0 — 2026-10-29
 
 - The ideation mini protocols, the runbook, and session persistence are skills in both hosts —
