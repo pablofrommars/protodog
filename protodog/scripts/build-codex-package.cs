@@ -58,18 +58,18 @@ var version = JsonNode.Parse(File.ReadAllText(Path.Combine(source, ".claude-plug
 var options = new JsonSerializerOptions { WriteIndented = true };
 var manifest = new JsonObject
 {
-	["$schema"] = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
 	["name"] = "protodog",
 	["version"] = version,
 	["description"] = "Protodog Task protocol for local Codex: shared plans, enforcement hooks, maintenance, and independent Claude audits.",
 	["author"] = new JsonObject { ["name"] = "Pablo Belin" },
 	["license"] = "Proprietary",
-	["extensions"] = new JsonObject
-	{
-		["com.openai"] = new JsonObject { ["hooks"] = "./hooks/hooks.json" },
-	},
+	["hooks"] = "./hooks/hooks.json",
 };
-File.WriteAllText(Path.Combine(package, "plugin.json"), manifest.ToJsonString(options) + "\n");
+// Codex skips bundled hooks for the root AgentPlugin manifest format. Select
+// its legacy Codex format until that loader supports hooks for AgentPlugin.
+var codexManifest = Path.Combine(package, ".codex-plugin");
+Directory.CreateDirectory(codexManifest);
+File.WriteAllText(Path.Combine(codexManifest, "plugin.json"), manifest.ToJsonString(options) + "\n");
 
 var marketplace = Path.Combine(output, ".agents", "plugins");
 Directory.CreateDirectory(marketplace);

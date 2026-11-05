@@ -25,11 +25,18 @@ class CodexPackage(unittest.TestCase):
             shutil.move(str(built), installed)
             catalog = json.loads((installed / ".agents/plugins/marketplace.json").read_text())
             package = installed / catalog["plugins"][0]["source"]["path"]
-            manifest = json.loads((package / "plugin.json").read_text())
+            # Codex skips hooks for the root AgentPlugin manifest format. The
+            # legacy Codex manifest must be selected, not shadowed by a root one.
+            self.assertFalse((package / "plugin.json").exists())
+            manifest = json.loads((package / ".codex-plugin/plugin.json").read_text())
             self.assertEqual(manifest["name"], catalog["plugins"][0]["name"])
-            hook_path = manifest["extensions"]["com.openai"]["hooks"]
+            hook_path = manifest["hooks"]
             self.assertEqual(hook_path, "./hooks/hooks.json")
             self.assertTrue((package / hook_path).is_file())
+            declarations = json.loads((package / hook_path).read_text())["hooks"]
+            self.assertEqual(set(declarations), {"PreToolUse", "PostToolUse"})
+            self.assertEqual(sum(len(group["hooks"]) for groups in declarations.values()
+                                 for group in groups), 4)
             skills = {p.name for p in (package / "skills").iterdir()}
             self.assertEqual(skills, {"task", "plan-sweep", "deferred-review", "working-canvas", "ideate-feature", "ideate-concept", "ideate-domain", "runbook", "persist", "interrogate", "commit-message"})
             self.assertFalse((package / ".claude-plugin").exists())

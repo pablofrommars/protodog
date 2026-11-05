@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.2.1 — 2026-11-05
+
+- The Codex package uses `.codex-plugin/plugin.json` with its hook declaration at the top
+  level. Codex skips bundled hooks for the root AgentPlugin manifest format previously emitted,
+  leaving the skills installed but the four enforcement hooks absent from `/hooks`.
+  The relocated-package regression checks the manifest selection and all four handlers.
+
 ## 4.2.0 — 2026-11-01
 
 - `/protodog:coordinate` dispatches by phase: every unit plans on the top rung, and at the

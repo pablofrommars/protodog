@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.2.0
-codex plugin marketplace add ./dist/codex-4.2.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.2.1
+codex plugin marketplace add ./dist/codex-4.2.1
 codex plugin add protodog@kennel-codex
 ```
 
@@ -103,6 +103,10 @@ substitution and no shell injection; it does not expose ideation-audit or coordi
 Keep the generated marketplace available while it is registered. To update, remove the old
 `kennel-codex` marketplace registration, register the new build, reinstall the plugin, restart,
 and review changed hooks. The source Claude package and its install flow are unchanged.
+
+The generated package uses `.codex-plugin/plugin.json` with a direct `hooks` declaration.
+Codex's loader skips bundled hooks for the root `plugin.json` AgentPlugin format, even
+when skills load successfully. Do not add a root manifest that shadows the Codex manifest.
 
 The coordinator is the only writer. Planning/challenge model settings live in
 `protodog/agents/challenge-codex.toml`; a lower-tier session hands off to a new coordinating
