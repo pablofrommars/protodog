@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.2.2 — 2026-11-06
+
+- The external Codex auditor is pinned to Astra (`gpt-6-astra`) instead of `gpt-5.6-sol`.
+  The read-only sandbox and guarded launch contract are unchanged.
+
 ## 4.2.1 — 2026-11-05
 
 - The Codex package uses `.codex-plugin/plugin.json` with its hook declaration at the top

@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.2.1
-codex plugin marketplace add ./dist/codex-4.2.1
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.2.2
+codex plugin marketplace add ./dist/codex-4.2.2
 codex plugin add protodog@kennel-codex
 ```
 
@@ -125,7 +125,8 @@ Repeat with `no commits` and verify HEAD does not change. These host/model inter
 complement the deterministic test suite; the suite does not prove model adherence or hook trust
 in a particular installation.
 
-Codex audits use Claude with only Read/Glob/Grep, no shell, editing, MCP servers, skills, or
+When Codex is the external auditor, the launcher pins Astra (`gpt-6-astra`) in a read-only sandbox.
+Audits of Codex execution use Claude with only Read/Glob/Grep, no shell, editing, MCP servers, skills, or
 user/project customizations. The launcher captures JSON results and records the resolved model
 when supplied. Shell-based inspection and test execution are outside that auditor's coverage.
 The ordinary per-audit authorization gate still applies. No model calls occur during package
