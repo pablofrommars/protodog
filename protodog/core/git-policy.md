@@ -30,6 +30,13 @@ guarded
 repository scripts exist, they are the only path for these operations; where they do not, these
 operations happen only by the engineer's hand.
 
+**Under coordination** (the `coordinate` skill, where the host exposes it) the engineer's
+invocation delegates the engineer-owned operations above to the coordinating session for the
+runbook's units: provisioning, synchronization, squash, the commit to main, and cleanup. The
+invocation is the trigger invariant 3 requires; `no landing` withholds it. The delegation runs
+only through the repository's guarded scripts — raw Git stays inside the boundary below — and
+does not extend to the dispatched units, which remain Tasks under the split above.
+
 The hook layer enforces this split mechanically — engineer-owned operations attempted by the agent
 are denied and logged. The denial log is protocol telemetry: spikes after a model update signal
 fit regression; a hook that never fires is a candidate for deletion.

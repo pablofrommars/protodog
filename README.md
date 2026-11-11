@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.2.2
-codex plugin marketplace add ./dist/codex-4.2.2
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.3.0
+codex plugin marketplace add ./dist/codex-4.3.0
 codex plugin add protodog@kennel-codex
 ```
 
@@ -223,7 +223,10 @@ isolated-worktree subagent, relaunches its execution on the rung the readiness r
 rules within the standing rulings, batches every other gate into one interrogation,
 re-issues the runbook on evidence or on your instruction (add a unit, add an audit), and routes
 each landed unit's deferred items to the downstream unit that owns their surface, and closes with
-a cost line per unit. Landing on `main` stays yours. Coordination is one dispatch option, Claude
+a cost line per unit. It runs from the primary checkout or from a worktree, whose branch then
+becomes the line units merge into, and it manages the coordination's Git — unit worktrees,
+merges, synchronization, landing — through the guarded script your contributing guide
+documents; `no landing` keeps landing yours. Coordination is one dispatch option, Claude
 Code only, and dispatches only the subset you name.
 
 ### One session, one Task

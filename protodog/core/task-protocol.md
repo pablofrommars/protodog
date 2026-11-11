@@ -226,7 +226,8 @@ commit to main through the guarded workflow, the retirement sweep that follows i
 deferred-register review at the landing moment — after the engineer's rebase onto `main` and
 before the commit to main, in a fresh session, where the register is current and nothing the
 review applies conflicts with what is about to land. The review is named, never run — the
-engineer invokes `deferred-review` there. Completion is not the commit to main; when the
+engineer invokes `deferred-review` there. A unit dispatched from a runbook is reviewed where the
+runbook schedules a review, not at its own landing. Completion is not the commit to main; when the
 engineer triggers it, the Task reaches `main` in one commit, alone or within a declared line of
 Tasks, and the terminal plan directory then awaits the engineer-triggered retirement sweep.
 

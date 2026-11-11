@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.3.0 — 2026-11-11
+
+- `/protodog:coordinate` manages the coordination's Git. Invoking it delegates unit worktrees,
+  merges, synchronization, landing, and cleanup to the coordinator, through the guarded script
+  the repository's contributing guide documents; `no landing` keeps landing with the engineer,
+  and a repository without a guarded script keeps it there too. The coordinator runs from the
+  primary checkout, where it never writes, or from a worktree, whose branch becomes the line
+  units branch from and merge into. Its opening report states where it sits and each eligible
+  unit's model fit: planning rung, estimated execution rung, confidence. Hooks are unchanged.
+- Register reviews are scheduled by the runbook cut rather than run at every landing: before the
+  cut when it draws on unverified parked rows, after a unit that closes or unblocks rows a later
+  unit adopts, and before the line lands. Each is a sequence entry with a focus and a mode; the
+  coordinator runs only those, between landings. A Task dispatched by hand keeps the review at
+  its landing moment.
+  Rationale in `docs/design-rationale.md` decision 34.
+
 ## 4.2.2 — 2026-11-06
 
 - The external Codex auditor is pinned to Astra (`gpt-6-astra`) instead of `gpt-5.6-sol`.

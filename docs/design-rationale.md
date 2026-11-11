@@ -385,6 +385,28 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     it can measure itself. Partitioning execution into several rung segments was left as the
     fuller shape: relaunches are cheap under coordination, but each one re-reads the plan, and
     re-reading was most of the observed spend.
+34. **Under coordination, Git is the coordinator's** (added 2026-11-11; provenance: the
+    engineer's ruling "`coordinate` should assume git is managed by the coordinator", and the
+    coordinator sessions of 2026-11-06 to 11-11 in a consuming repository). Those sessions ran
+    without the skill: the engineer asked for each unit's model fit by hand, granted the landing
+    per unit ("use git flow script to squash and merge"), and once made a worktree's branch the
+    landing branch, while the skill still said landing was by the engineer's hand and the
+    coordinator never touched `main`. The skill now matches the practice. Invoking it delegates
+    the coordination's Git — worktrees, merges, synchronization, landing, cleanup — and is the
+    engineer's trigger for the commit to main; `no landing` withholds it, the shape of
+    `no commits`. The delegation runs only through the guarded script the repository's
+    contributing guide documents, so the hooks are unchanged: raw Git toward `main` or the
+    remote stays denied for every agent, and a repository without a guarded script keeps
+    landing with the engineer. The coordinator runs from the primary checkout, never writing
+    there, or from a worktree whose branch is the line. Dispatched units remain ordinary Tasks.
+    The register review moves with it: a script that rebases and pushes in one run leaves no
+    landing moment to review in, and a review at every landing was noise, so the runbook cut
+    schedules reviews where the register is expected to have moved — before the cut, after a
+    unit that closes or unblocks rows a later unit adopts, before the line lands — and the
+    coordinator runs only those (the engineer: "it makes sense to schedule when cutting a
+    runbook or on some transitions of tasks"). A hand-dispatched Task keeps decision 28's
+    landing moment. Rejected: a per-landing grant (the engineer gave it every time), a new `authority:` token
+    (the invocation carries it), and naming one repository's script in the Protocol.
 
 ## Accepted background rationale
 

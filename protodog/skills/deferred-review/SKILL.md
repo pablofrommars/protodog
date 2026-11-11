@@ -1,6 +1,6 @@
 ---
 name: deferred-review
-description: Review plan/deferred.md against current repository state, optionally triaging first and resuming verification from a saved handoff. Find closed items, fired triggers, and drifted claims; propose clusters for rows being picked up; apply only engineer-ratified transitions. Run at the landing moment, after the rebase onto main and before the commit to main, or whenever the register may have drifted.
+description: Review plan/deferred.md against current repository state, optionally triaging first and resuming verification from a saved handoff. Find closed items, fired triggers, and drifted claims; propose clusters for rows being picked up; apply only engineer-ratified transitions. Run where a runbook schedules it, at the landing moment of a Task dispatched by hand (after the rebase onto main and before the commit to main), or whenever the register may have drifted.
 ---
 
 # Deferred register review
@@ -28,9 +28,10 @@ models, launches another vendor's CLI, or requires a particular model family. A 
 can resume from the handoff without the triage conversation. Triage labels are review metadata,
 not new register dispositions. Review authorizes investigation and register upkeep, not fixing
 the parked work; activation remains a proposal to start it. The review in any mode — the full
-procedure or either stage — runs after the engineer's rebase onto `main` and before the commit
-to main, in a fresh session: the register is then current, and what the review applies conflicts
-with nothing that is about to land.
+procedure or either stage — runs in a fresh session at a moment when the register is current and
+what the review applies conflicts with nothing that is about to land: for a Task dispatched by
+hand, after the engineer's rebase onto `main` and before the commit to main; in a runbook, at the
+points the cut schedules, between landings, limited to the scheduled focus.
 
 ## Full review and shared settlement
 
