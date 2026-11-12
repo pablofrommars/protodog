@@ -54,7 +54,7 @@ this README never overrides it.
 
 ## Prerequisites
 
-- .NET SDK ≥ 10 (hooks, validators, and the audit launcher are file-based apps; no packages, no Node)
+- .NET SDK ≥ 11 (hooks, validators, and the audit launcher are file-based apps; no packages, no Node)
 - bash, git
 - Claude Code or local Codex CLI/desktop for Task execution
 - An authenticated opposite-vendor CLI when an independent audit is selected: Codex for Claude
@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.3.0
-codex plugin marketplace add ./dist/codex-4.3.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.3.1
+codex plugin marketplace add ./dist/codex-4.3.1
 codex plugin add protodog@kennel-codex
 ```
 

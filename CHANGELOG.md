@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.3.1 — 2026-11-12
+
+- The .NET SDK baseline is 11: `global.json` pins SDK 11.0.100 (latest-patch roll-forward), the
+  validate workflow installs the SDK it names instead of `10.0.x`, and the prerequisite reads
+  .NET SDK ≥ 11. Hooks, validators, and the launcher are unchanged.
+
 ## 4.3.0 — 2026-11-11
 
 - `/protodog:coordinate` manages the coordination's Git. Invoking it delegates unit worktrees,
