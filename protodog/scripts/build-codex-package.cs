@@ -45,7 +45,7 @@ foreach (var skill in new[] { "task", "plan-sweep", "deferred-review", "working-
 
 // Argument-taking skills: Codex passes the invocation text as the prompt and substitutes nothing,
 // so the Claude placeholders and shell injections are rewritten into instructions.
-foreach (var skill in new[] { "ideate-feature", "ideate-concept", "ideate-domain", "runbook", "persist", "interrogate", "commit-message" })
+foreach (var skill in new[] { "ideate-feature", "ideate-concept", "ideate-domain", "runbook", "persist", "interrogate", "commit-message", "squash-message" })
 {
 	var from = Path.Combine(source, "skills", skill);
 	var to = Path.Combine(package, "skills", skill);

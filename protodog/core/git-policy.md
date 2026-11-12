@@ -69,12 +69,15 @@ checkpoint mechanics, not acceptance or the commit-to-main boundary.
 The agent commits coherent verified units in its managed worktree. Before a checkpoint: inspect the
 full worktree and index; reconcile unexpected or intervening changes; stage only the coherent
 in-scope unit; run the verification that makes the unit useful as a checkpoint; use a concise
-provisional subject describing the verified result. Do not commit merely because a step ended,
+provisional subject describing the verified result. The first checkpoint on a branch is the
+exception: squash workflows offer its subject as the integration title, so it names what the work
+does — the Task's outcome, or on a line worktree the runbook's objective — not the step it lands.
+Do not commit merely because a step ended,
 split one coherent change to mimic plan granularity, or hide unresolved failure in a nominal
 checkpoint.
 
 Checkpoints are provisional history: the engineer reviews the final diff and title at the commit
-to main, and
+to main — the first checkpoint's subject stands unless the delivered work drifted from it — and
 squashing rewrites them — preserve a reported recovery reference before any rewrite. A checkpoint
 is recorded in the owning plan only when its identity matters for resumption, integration, audit,
 or recovery; prefer an exact SHA as repository-state provenance. Plans never copy Git status, and

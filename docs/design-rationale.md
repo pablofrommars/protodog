@@ -408,6 +408,20 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     landing moment. Rejected: a per-landing grant (the engineer gave it every time), a new `authority:` token
     (the invocation carries it), and naming one repository's script in the Protocol.
 
+35. **The integration title is written forward, in the first commit** (added 2026-11-12;
+    provenance: the engineer's observation that suggested messages ran long and needed staged
+    changes, and that the first commit "remains the message for the squash"). Squash workflows
+    offer the first task commit's subject as the editable title, and the engineer keeps it more
+    often than not, so that subject names what the work does — the Task's outcome, or the
+    runbook's objective on a line worktree — rather than the step it lands. Landing keeps it
+    unless the delivered work drifted. Two user-only shortcuts carry the two moments:
+    `commit-message` for the staged changes, forward on a branch's first commit, and
+    `squash-message` for the commits past the base, confirming or revising the first subject.
+    Both cap at fifty characters; the colon list survives only for releases. Rejected: a `Title`
+    field in the Task plan (too rigid: the title lives in Git, where the workflow reads it, and
+    the squash prompt stays the place to edit it), reusing the Task label (it is also the
+    dispatch handle), and one skill with mode arguments (two names state the intention).
+
 ## Accepted background rationale
 
 - The protocol encodes the engineer's pre-AI methodology: custom fit, a personal delegation

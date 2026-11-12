@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.3.1
-codex plugin marketplace add ./dist/codex-4.3.1
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.4.0
+codex plugin marketplace add ./dist/codex-4.4.0
 codex plugin add protodog@kennel-codex
 ```
 
@@ -98,7 +98,7 @@ Restart Codex and open `/hooks` to review and trust Protodog's hook definitions.
 plugin alone does not activate untrusted hooks. Use `/skills` to select the installed Task
 skill, or invoke `$protodog:task` with intent or `plan: @plan/<plan-id>/task-plan.md`. The package exposes
 Task, plan-sweep, deferred-review, working-canvas, the ideation mini protocols, runbook, persist,
-interrogate, and commit-message — on Codex their argument is the invocation text, with no
+interrogate, commit-message, and squash-message — on Codex their argument is the invocation text, with no
 substitution and no shell injection; it does not expose ideation-audit or coordinate.
 Keep the generated marketplace available while it is registered. To update, remove the old
 `kennel-codex` marketplace registration, register the new build, reinstall the plugin, restart,
@@ -434,7 +434,10 @@ a step on your surface grant (`authority:`) rather than a superseding spec, and 
 live plan adopts closes as carried by it; the register keeps what no unit owns.
 
 `/protodog:commit-message` proposes one line for the staged changes in your own style and
-commits nothing.
+commits nothing; on a branch's first commit it names what the planned work does, since squash
+workflows offer that subject as the integration title. `/protodog:squash-message` proposes the
+title at the `squash` or `merge` prompt: it keeps the first subject unless the commits past the
+base drifted from it. Both hold to fifty characters.
 
 For a large register, use a cheaper model for a bounded first pass, then select a stronger model
 in a fresh session for focused verification. Both hosts use the same skill and handoff format:

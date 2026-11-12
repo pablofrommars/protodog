@@ -42,9 +42,9 @@ for read-only survey subagents. The Agent tool's model parameter selects a rung 
 fork inherits the session model and cannot be downshifted. `/protodog:coordinate` dispatches a
 runbook's units from one session as isolated-worktree subagents under this adapter; it is not
 exposed on Codex. The ideation mini protocols (`/protodog:ideate-feature`, `-concept`, `-domain`),
-`/protodog:runbook`, `/protodog:persist`, `/protodog:interrogate`, and `/protodog:commit-message`
-take the invocation text as their argument and may inject repository state through shell before
-the prompt is read.
+`/protodog:runbook`, `/protodog:persist`, `/protodog:interrogate`, `/protodog:commit-message`, and
+`/protodog:squash-message` take the invocation text as their argument and may inject repository
+state through shell before the prompt is read.
 
 ## Codex
 
@@ -99,8 +99,8 @@ $protodog:task plan: @plan/retry-fix/task-plan.md
 `plan-sweep`, `deferred-review`, and `working-canvas` use the same artifact contracts in both
 hosts. Resolve their package root relative to their loaded skill directory as above. In Codex use
 `$protodog:plan-sweep`, `$protodog:deferred-review`, and `$protodog:working-canvas`. The ideation
-mini protocols, `runbook`, `persist`, `interrogate`, and `commit-message` are exposed in both
-hosts; on Codex (`$protodog:ideate-feature …`, `$protodog:runbook …`) the text after the skill
+mini protocols, `runbook`, `persist`, `interrogate`, `commit-message`, and `squash-message` are
+exposed in both hosts; on Codex (`$protodog:ideate-feature …`, `$protodog:runbook …`) the text after the skill
 mention is the argument, nothing is substituted, and the package build rewrites each shell
 injection into an instruction to inspect the same fact by hand.
 Deferred review supports `triage` and `verify <handoff-path>` in both hosts; the engineer selects

@@ -30,8 +30,9 @@ ready and waits.
 
 - **The guarded script is the path.** Where the contributing guide documents a guarded Git
   script, every operation it covers goes through it, run from the worktree the guide says it
-  runs in, with its interactive prompts answered from the plan (the title is the unit's
-  outcome). Raw Git covers only what the script does not: local inspection, unit worktrees and
+  runs in, with its interactive prompts answered from the plan (the title is the first
+  checkpoint's subject, kept unless the delivered work drifted from it; a line lands under the
+  runbook's objective). Raw Git covers only what the script does not: local inspection, unit worktrees and
   branches it cannot base where the unit binds, and ordinary merges between unit and line
   branches. A hook denial is never retried or routed around; an operation neither the script
   nor the hooks allow is reported and waits for the engineer.

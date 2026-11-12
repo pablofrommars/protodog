@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.4.0 — 2026-11-12
+
+- The first commit on a branch names what the work does, not the step it lands: squash workflows
+  offer its subject as the integration title, and it now stands at landing unless the delivered
+  work drifted. The coordinator answers the title prompt the same way; a line lands under the
+  runbook's objective.
+- `/protodog:squash-message` (new, both hosts) proposes the title at the `squash` or `merge`
+  prompt from the commits past the base and the planned work, keeping the first subject unless it
+  no longer fits. `/protodog:commit-message` proposes the forward title on a branch's first commit.
+  Both cap at fifty characters; the colon list is kept for releases.
+  Rationale in `docs/design-rationale.md` decision 35.
+
 ## 4.3.1 — 2026-11-12
 
 - The .NET SDK baseline is 11: `global.json` pins SDK 11.0.100 (latest-patch roll-forward), the
