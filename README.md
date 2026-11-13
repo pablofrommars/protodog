@@ -89,8 +89,8 @@ must be a new directory; use a new versioned destination when updating. Generate
 not maintained source copies. From this repository:
 
 ```bash
-dotnet protodog/scripts/build-codex-package.cs dist/codex-4.4.0
-codex plugin marketplace add ./dist/codex-4.4.0
+dotnet protodog/scripts/build-codex-package.cs dist/codex-4.5.0
+codex plugin marketplace add ./dist/codex-4.5.0
 codex plugin add protodog@kennel-codex
 ```
 

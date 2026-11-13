@@ -14,6 +14,12 @@ policy, and the hooks govern it unchanged. This skill is not a Protocol entry po
 no plan of its own. It is Claude-native: it needs isolated writer worktrees, which the Codex
 adapter does not support, so the Codex package does not expose it.
 
+Units are for code that lands. Exploration — probing how a provider or a system behaves, where
+each finding sets the next question — is not dispatched as a unit: it runs in this session,
+without a plan or spec, under a spend bound the engineer has ruled, with every paid call
+described to the engineer before it is sent, a log of what was sent and found, and a pause after
+every one to three probes and at the end.
+
 Load `core/host-runtime.md`, `core/foundation.md`, `core/task-protocol.md`, and
 `core/git-policy.md` from the package root (`../..` from this file's directory) before
 dispatching: the routing ladder, the HIL interface, the worktree rule, and the Git policy's
@@ -96,14 +102,27 @@ runbook or in this session, is that unit's rung for the phase named.
    `cadence: continuous` among them), the same dispatch instructions, and the instruction to end
    the turn, next boundary persisted, before any step the plan marks with a capability escalation
    above its rung; when a turn ends there, the remainder is relaunched the same way on the
-   escalated rung. A rung that moved from the runbook's estimate is reported and re-issues the
+   escalated rung, and stays there: nothing relaunches it back down. A plan whose steps alternate
+   rungs therefore runs as one agent on the highest rung its steps name, the only writer of the
+   plan and the worktree, handing bounded mechanical batches to subagents on the lower rung; no
+   step then runs below the rung the recommendation gave it. Its dispatch carries the instruction
+   not to end a turn while a subagent of its own is still running, and, when a turn is forced to
+   end first, to persist in the plan what is still running and mark its report interim; the next
+   dispatch after an interim report first establishes whether that work finished. A rung that
+   moved from the runbook's estimate is reported and re-issues the
    runbook (step 6). Completed — go to step 4; a gate inside a standing ruling — rule it, have the
    ruling persisted in the plan with the provenance `ruled by coordinator under <ruling>`, and
    resume the agent whose turn ended, on its phase's rung; a gate outside — hold it; failure
    beyond recovery — report it. Gates held
    from all units are put to the engineer as one decision interrogation, the structured question
    tool with up to five requests per batch, recommendation first and default stated, and the
-   affected units resume after the answer. Nothing resumes on silence or elapsed time.
+   affected units resume after the answer. Nothing resumes on silence or elapsed time. A ruling
+   the engineer gives while an agent is still running is relayed to it as a message only when it
+   stays inside the authority the agent already holds — its scope, write surfaces, and paid
+   bounds; a ruling that grants authority reaches the unit in a dispatch or relaunch invocation,
+   where the Foundation places grants under `continuous`, and an agent that receives one as a
+   message records it and ends its turn. Either way the plan carries it with the provenance
+   `ruled by engineer, relayed by coordinator`.
 4. **Land.** Under the per-unit policy, land each completed unit on `main` through the guarded
    script and report the commit. Under the line policy, merge the completed unit's branch into
    the line's branch — an ordinary merge, never a merge of `main` — rerun the verification the

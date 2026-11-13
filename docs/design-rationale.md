@@ -422,6 +422,23 @@ and the build plans — lives in the frozen archive (`/Users/pablo/source/tmp/pr
     the squash prompt stays the place to edit it), reusing the Task label (it is also the
     dispatch handle), and one skill with mode arguments (two names state the intention).
 
+36. **Units are for code that lands; coordination gains three rules from its first long line**
+    (added 2026-11-13; provenance: the coordinator's report on an eight-unit line run under
+    4.4.0, and the engineer's ruling after seven merges that "it feels like a lot of work or
+    overhead", that units are for code that lands and exploration runs in the coordinator's
+    session). Probe series put through the Task profile bound acceptance before the first call
+    and then superseded the spec four times in an afternoon, so exploration is session work
+    under a spend bound, not a unit. A plan alternating rungs step by step cost a fresh agent
+    per change, each re-reading plan, spec, and sources; one agent on the highest rung that
+    delegates mechanical batches is cheaper and runs no step below its rung, and it does not
+    leave its own subagents running unread. Rulings relayed mid-run were refused by one agent
+    and accepted by others; the line is the Foundation's existing one, that a grant arrives in
+    the invocation, now stated for the coordinator with a provenance form for the engineer's
+    rulings it carries. Rejected: a light probe profile (the ruling removes the need), an
+    amendment path for a bound spec (all the evidence came from the probe unit, and the
+    withdrawn conditions were acceptance, which immutability protects), and a separate home for
+    rulings (the runbook header and the plans already hold them).
+
 ## Accepted background rationale
 
 - The protocol encodes the engineer's pre-AI methodology: custom fit, a personal delegation

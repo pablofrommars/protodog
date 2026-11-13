@@ -1,5 +1,19 @@
 # Changelog
 
+## 4.5.0 — 2026-11-13
+
+- Units are for code that lands. The runbook cut lists exploration (probing how a provider or a
+  system behaves) as session work with its question, spend bound, and pauses; the coordinator
+  runs it in its own session without a plan or spec, every paid call described before it is sent.
+- A plan whose steps alternate rungs runs as one agent on the highest rung, handing mechanical
+  batches to lower-rung subagents, instead of a relaunch at each change. That agent does not end
+  a turn while a subagent of its own is running; a forced end persists what is still running and
+  marks the report interim.
+- A ruling the engineer gives while an agent is running is relayed as a message only inside the
+  authority the agent already holds; a ruling that grants authority arrives in a dispatch or
+  relaunch. Both are recorded as `ruled by engineer, relayed by coordinator`.
+  Rationale in `docs/design-rationale.md` decision 36.
+
 ## 4.4.0 — 2026-11-12
 
 - The first commit on a branch names what the work does, not the step it lands: squash workflows
